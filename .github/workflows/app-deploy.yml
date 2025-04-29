@@ -12,15 +12,22 @@ jobs:
       uses: actions/checkout@v4
 
     - name: Setup SSH
-      uses: webfactory/ssh-agent@v0.7.0
-      with:
-        ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+      run: |
+        mkdir -p ~/.ssh
+        echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
+        chmod 600 ~/.ssh/id_rsa
+        ssh-keyscan -H 35.182.11.48 >> ~/.ssh/known_hosts
 
     - name: Deploy to Server
       run: |
         ssh -o StrictHostKeyChecking=no ubuntu@35.182.11.48 << 'EOF'
+          set -e
           sudo apt update
           sudo apt install docker.io docker-compose -y
+          echo "${{ secrets.DEPLOY_PRIVATE_KEY }}" > ~/deploy_key
+          chmod 600 ~/deploy_key
+          export GIT_SSH_COMMAND="ssh -i ~/deploy_key -o StrictHostKeyChecking=no"
+          
           cd /home/ubuntu
           if [ ! -d "odoo-self-hosted" ]; then
             git clone https://github.com/RamyaLogan/odoo-self-hosted.git
