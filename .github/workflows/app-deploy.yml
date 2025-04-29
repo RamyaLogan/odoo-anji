@@ -36,6 +36,7 @@ jobs:
           fi
           cd odoo-self-hosted
           git pull origin main
+          git submodule update --init --recursive
           sudo usermod -aG docker ubuntu
           newgrp docker
           docker-compose down
