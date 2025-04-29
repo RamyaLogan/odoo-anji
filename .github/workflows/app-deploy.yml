@@ -18,7 +18,7 @@ jobs:
 
     - name: Deploy to Server
       run: |
-        ssh -o StrictHostKeyChecking=no ubuntu@${{ env.odoo_server_ip }} << 'EOF'
+        ssh -o StrictHostKeyChecking=no ubuntu@$35.182.11.48 << 'EOF'
           sudo apt update
           sudo apt install docker.io docker-compose -y
           cd /home/ubuntu
