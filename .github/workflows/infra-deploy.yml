@@ -20,14 +20,6 @@ jobs:
       working-directory: infra/terraform
       run: terraform init
 
-    - name: Terraform Import Instance
-      working-directory: infra/terraform
-      run: |
-        terraform import aws_lightsail_instance.odoo odoo-server
-        terraform import aws_lightsail_static_ip.odoo_ip odoo-ip
-      env:
-        AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-        AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
 
     - name: Terraform Plan
       working-directory: infra/terraform
