@@ -1,0 +1,32 @@
+name: Deploy Odoo App to AWS Server
+
+on:
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout Code
+      uses: actions/checkout@v4
+
+    - name: Setup SSH
+      uses: webfactory/ssh-agent@v0.7.0
+      with:
+        ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+
+    - name: Deploy to Server
+      run: |
+        ssh -o StrictHostKeyChecking=no ubuntu@${{ secrets.SERVER_IP }} << 'EOF'
+          sudo apt update
+          sudo apt install docker.io docker-compose -y
+          cd /home/ubuntu
+          if [ ! -d "odoo-self-hosted" ]; then
+            git clone https://github.com/your-repo/odoo-self-hosted.git
+          fi
+          cd odoo-self-hosted
+          git pull origin main
+          docker-compose down
+          docker-compose up -d
+        EOF
