@@ -27,7 +27,7 @@ jobs:
             -o ServerAliveCountMax=10 \
             -o TCPKeepAlive=yes \
             ubuntu@35.182.11.48 << 'EOF'
-            
+
           set -e
           sudo apt update
           sudo apt install docker.io docker-compose -y
@@ -45,5 +45,6 @@ jobs:
           sudo usermod -aG docker ubuntu
           newgrp docker
           docker-compose down
+          docker-compose build --no-cache
           docker-compose up -d
         EOF
