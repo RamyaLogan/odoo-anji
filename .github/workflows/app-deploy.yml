@@ -8,8 +8,10 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout Code
+    - name: Checkout repo with submodules
       uses: actions/checkout@v4
+      with:
+        submodules: recursive
 
     - name: Setup SSH
       run: |
