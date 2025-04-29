@@ -1,0 +1,42 @@
+version: "3.9"
+
+services:
+  db:
+    image: postgres:14
+    container_name: odoo-db
+    restart: always
+    environment:
+      POSTGRES_USER: odoos
+      POSTGRES_PASSWORD: odoos
+    ports:
+      - "5432:5432"
+    volumes:
+      - db_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U odoos"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  odoo:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: odoo-web
+    depends_on:
+      db:
+        condition: service_healthy
+    ports:
+      - "8069:8069"
+    volumes:
+      - ./odoo:/opt/odoo
+      - ./config:/etc/odoo
+      - ./custom_addons:/opt/odoo/custom_addons
+    command: >
+      bash -c "
+        sleep 10 &&
+        python3 /opt/odoo/odoo-bin -c /etc/odoo/odoo.conf
+      "
+
+volumes:
+  db_data:
