@@ -18,7 +18,3 @@ resource "aws_lightsail_static_ip_attachment" "attach_ip" {
   static_ip_name = aws_lightsail_static_ip.odoo_ip.name
   instance_name = aws_lightsail_instance.odoo.name
 }
-
-output "odoo_public_ip" {
-  value = aws_lightsail_static_ip.odoo_ip.ip_address
-}
