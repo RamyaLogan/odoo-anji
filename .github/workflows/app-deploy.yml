@@ -23,7 +23,7 @@ jobs:
           sudo apt install docker.io docker-compose -y
           cd /home/ubuntu
           if [ ! -d "odoo-self-hosted" ]; then
-            git clone https://github.com/your-repo/odoo-self-hosted.git
+            git clone https://github.com/RamyaLogan/odoo-self-hosted.git
           fi
           cd odoo-self-hosted
           git pull origin main
