@@ -20,6 +20,16 @@ jobs:
       working-directory: infra/terraform
       run: terraform init
 
+    - name: Terraform Import Instance
+      working-directory: infra/terraform
+      run: |
+        terraform import aws_lightsail_instance.odoo odoo-server
+        terraform import aws_lightsail_static_ip.odoo_ip odoo-ip
+
+    - name: Terraform Plan
+      working-directory: infra/terraform
+      run: terraform plan
+
     - name: Terraform Apply
       working-directory: infra/terraform
       run: terraform apply -auto-approve
