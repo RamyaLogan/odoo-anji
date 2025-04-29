@@ -61,7 +61,8 @@
     # Create non-root user
     RUN useradd -m -U -r -d /opt/odoo odoo
     RUN chown -R odoo:odoo /opt/odoo /etc/odoo
-    
+    RUN mkdir -p /opt/odoo/.local && chown -R odoo:odoo /opt/odoo/.local
+
     USER odoo
     
     EXPOSE 8069
