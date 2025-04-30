@@ -3,6 +3,9 @@ name: Deploy Odoo App to AWS Server
 on:
   workflow_dispatch:
 
+env:
+  TF_TOKEN_app_terraform_io: ${{ secrets.TF_CLOUD_TOKEN }}
+
 jobs:
   deploy:
     runs-on: ubuntu-latest
