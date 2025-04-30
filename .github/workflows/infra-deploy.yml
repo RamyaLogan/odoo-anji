@@ -32,10 +32,10 @@ jobs:
       working-directory: infra/terraform
       run: |
         SERVER_IP=$(terraform output -raw odoo_server_ip 2>dev/null || echo "")
-        if [-z "$SERVER_IP"]; then
+        if [ -z "$SERVER_IP" ]; then
           echo "SERVER_IP not found"
           exit 1
         fi
-        printf "odoo_server_ip=%s\n" "$SERVER_IP" >> $GITHUB_ENV
+        echo "odoo_server_ip=${SERVER_IP}" >> $GITHUB_ENV
      
 
