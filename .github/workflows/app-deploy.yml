@@ -19,7 +19,7 @@ jobs:
         terraform_version: 1.5.0
     
     - name: init terraform 
-      working-directory: infra/terraform
+      working-directory: infra/terraform/
       env:
         TF_TOKEN_app_terraform_io: ${{ secrets.TF_CLOUD_TOKEN }}
       run: terraform init
@@ -30,13 +30,17 @@ jobs:
       run: |
         SERVER_IP=$(terraform output -raw odoo_server_ip | tr -d '\r' | tail -n 1)
         echo "odoo_ip=${SERVER_IP}" >> $GITHUB_ENV
+    
+    - name: Print
+      working-directory: infra/terraform
+      run: echo "ip: ${{ env.odoo_ip }}"
 
     - name: Setup SSH
       run: |
         mkdir -p ~/.ssh
         echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
         chmod 600 ~/.ssh/id_rsa
-        ssh-keyscan -H $odoo_ip >> ~/.ssh/known_hosts
+        ssh-keyscan -H ${{ env.odoo_ip }} >> ~/.ssh/known_hosts
 
     - name: Deploy to Server
       run: |
