@@ -18,7 +18,7 @@ jobs:
         mkdir -p ~/.ssh
         echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
         chmod 600 ~/.ssh/id_rsa
-        ssh-keyscan -H 35.182.11.48 >> ~/.ssh/known_hosts
+        ssh-keyscan -H ${{ env.odoo_server_ip }} >> ~/.ssh/known_hosts
 
     - name: Deploy to Server
       run: |
@@ -26,7 +26,7 @@ jobs:
             -o ServerAliveInterval=60 \
             -o ServerAliveCountMax=10 \
             -o TCPKeepAlive=yes \
-            ubuntu@35.182.11.48 << 'EOF'
+            ubuntu@${{ env.odoo_server_ip }} << 'EOF'
 
           set -e
           sudo apt update
