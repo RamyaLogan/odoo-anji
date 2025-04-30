@@ -3,10 +3,14 @@ name: Terraform Infrastructure Deployment
 on:
   workflow_dispatch:
 
+env:
+  TF_TOKEN_app_terraform_io: ${{ secrets.TF_CLOUD_TOKEN }}
+  
 jobs:
   terraform:
     runs-on: ubuntu-latest
-
+    outputs:
+      odoo_ip: ${{ steps.extract.outputs.odoo_ip }}
     steps:
     - name: Checkout Code
       uses: actions/checkout@v4
@@ -32,9 +36,10 @@ jobs:
       run: terraform output -raw odoo_server_ip
 
     - name: Terraform Output
+      id: extract
       working-directory: infra/terraform
       run: |
         SERVER_IP=$(terraform output -raw odoo_server_ip | tr -d '\r' | tail -n 1)
-        echo "odoo_server_ip=${SERVER_IP}" >> $GITHUB_ENV
+        echo "odoo_ip=${SERVER_IP}" >> $GITHUB_OUTPUT
      
 

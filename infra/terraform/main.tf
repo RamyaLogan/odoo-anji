@@ -1,3 +1,12 @@
+terraform { 
+  backend "remote" { 
+    organization = "doneztech" 
+
+    workspaces { 
+      name = "odoo-infra" 
+    } 
+  } 
+}
 provider "aws" {
   region = var.aws_region
 }
