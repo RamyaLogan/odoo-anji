@@ -33,7 +33,7 @@ jobs:
     
     - name: Print
       working-directory: infra/terraform
-      run: echo "ip: ${{ env.odoo_ip }}"
+      run: echo "ip ${{ env.odoo_ip }}"
 
     - name: Setup SSH
       run: |
