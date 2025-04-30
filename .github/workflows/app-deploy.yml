@@ -19,7 +19,7 @@ jobs:
         terraform_version: 1.5.0
     
     - name: init terraform 
-      working-directory: infra/terraform/
+      working-directory: infra/terraform
       env:
         TF_TOKEN_app_terraform_io: ${{ secrets.TF_CLOUD_TOKEN }}
       run: terraform init
