@@ -33,9 +33,9 @@ jobs:
       shell: bash
       run: |
         RAW_OUTPUT=$(terraform output -raw odoo_server_ip 2>&1)
-        SERVER_IP=$(echo "$RAW_OUTPUT" | grep -Eo '([0-9]{1,3}\.){3}[0-9]{1,3}')
+        SERVER_IP=$(echo "$RAW_OUTPUT" | grep -Eo '([0-9]{1,3}\.){3}[0-9]{1,3}' | xargs)
         echo "Extraced clean IP: $SERVER_IP"
-        echo "odoo_ip=${SERVER_IP}" >> $GITHUB_ENV
+        echo "odoo_ip=$SERVER_IP" >> $GITHUB_ENV
     
     - name: Print
       working-directory: infra/terraform
