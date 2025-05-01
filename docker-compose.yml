@@ -30,11 +30,14 @@ services:
       - "8069:8069"
     volumes:
       - ./odoo:/opt/odoo
+      - ./odoo_local:/opt/odoo/.local
       - ./config:/etc/odoo
       - ./custom_addons:/opt/odoo/custom_addons
     command: >
       bash -c "
         sleep 10 &&
+        mkdir -p odoo_local
+        chmod -R 777 odoo_local
         python3 /opt/odoo/odoo-bin -c /etc/odoo/odoo.conf
       "
 
