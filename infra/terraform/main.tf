@@ -15,7 +15,7 @@ resource "aws_lightsail_instance" "odoo" {
   name = var.instance_name
   availability_zone = "ca-central-1a"
   blueprint_id = "ubuntu_22_04"
-  bundle_id = "nano_2_0"
+  bundle_id = "small_2_0"
   key_pair_name = var.key_pair_name
 }
 
