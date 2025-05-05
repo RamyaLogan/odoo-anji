@@ -87,6 +87,8 @@ volumes:
   db_data:
   odoo_local:
   odoo_state:
+  cerbot-etc:
+  certbot-www:
 
 networks:
   odoo-net:
