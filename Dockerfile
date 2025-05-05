@@ -65,6 +65,6 @@
 
     USER odoo
     
-    EXPOSE 8069
+    EXPOSE 8069 8071 8072
     
     CMD ["bash"]
