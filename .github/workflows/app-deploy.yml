@@ -69,6 +69,9 @@ jobs:
             git clone git@github.com:RamyaLogan/odoo-self-hosted.git
           fi
           cd odoo-self-hosted
+          sudo chown -R ubuntu:uduntu .
+          git reset --hard
+          git clean -fd
           git pull origin main
           git submodule update --init --depth 1 --recursive
           sudo usermod -aG docker ubuntu
