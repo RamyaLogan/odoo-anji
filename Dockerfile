@@ -58,9 +58,12 @@
     # Copy installed Python packages
     COPY --from=builder /install /usr/local
     
+    COPY ./custom_addons /opt/odoo/custom_addons
+
     # Create non-root user
     RUN useradd -m -U -r -d /opt/odoo odoo
     RUN chown -R odoo:odoo /opt/odoo /etc/odoo
+    RUN chown -R odoo:odoo /opt/odoo/custom_addons
     RUN mkdir -p /opt/odoo/.local && chown -R odoo:odoo /opt/odoo/.local
 
     USER odoo
