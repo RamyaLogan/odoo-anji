@@ -1,0 +1,5 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_court_booking,court.booking,model_court_booking,base.group_user,1,1,1,1
+access_court_details,court.details,model_court_details,base.group_user,1,1,1,1
+access_court_time_slot,court.time.slot,model_court_time_slot,base.group_user,1,1,1,1
+access_court_facility_config,court.facility.config,model_court_facility_config,base.group_user,1,1,1,1
