@@ -52,6 +52,7 @@
     # Copy Odoo source code
     COPY ./odoo /opt/odoo
     COPY ./custom_addons /opt/odoo/custom_addons
+    RUN useradd -m -U -r -d /opt/odoo odoo
     RUN chown -R odoo:odoo /opt/odoo/custom_addons
     # Copy config file
     COPY ./config/odoo.conf /etc/odoo/odoo.conf
@@ -62,7 +63,7 @@
     
 
     # Create non-root user
-    RUN useradd -m -U -r -d /opt/odoo odoo
+  
     RUN chown -R odoo:odoo /opt/odoo /etc/odoo
 
     RUN mkdir -p /opt/odoo/.local && chown -R odoo:odoo /opt/odoo/.local
