@@ -59,12 +59,17 @@ jobs:
 
           set -e
           sudo apt update
-          sudo apt install docker.io docker-compose -y
           echo "${{ secrets.DEPLOY_PRIVATE_KEY }}" > ~/deploy_key
           chmod 600 ~/deploy_key
           export GIT_SSH_COMMAND="ssh -i ~/deploy_key -o StrictHostKeyChecking=no"
           
           cd /home/ubuntu
+          mkdir -p ~/.docker/cli-plugins
+          curl -SL https://github.com/docker/compose/releases/download/v2.24.5/docker-compose-linux-x86_64 \
+            -o ~/.docker/cli-plugins/docker-compose
+          chmod +x ~/.docker/cli-plugins/docker-compose
+          docker compose version
+          
           if [ ! -d "odoo-self-hosted" ]; then
             git clone git@github.com:RamyaLogan/odoo-self-hosted.git
           fi
