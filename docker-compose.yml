@@ -74,7 +74,12 @@ services:
     volumes:
       - ./certbot/webroot:/var/www/certbot
       - /opt/ssl/certbot:/etc/letsencrypt
-    entrypoint: ""
+    entrypoint: >
+      sh -c "trap exit TERM; while :; do  
+        certbot renew --webroot -w  /var/www/certbot &&
+        docker exec nginx nginx -s reload;
+        sleep 12h;
+        done"
     networks:
       - odoo-net
 
