@@ -10,7 +10,7 @@ if [ ! -f "$CERTBOT_PATH/live/$DOMAIN/fullchain.pem" ]; then
     echo "no cert found. Bootstrapping https..."
     
     cp nginx/nginx-http.conf nginx/conf.d/default.conf
-    docker-compose up -d nginx
+    docker compose down nginx && docker-compose up -d nginx
     
     sleep 5
     
