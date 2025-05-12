@@ -60,7 +60,7 @@ services:
       - "80:80"
       - "443:443"
     volumes:
-      - ./nginx/conf.d:/etc/nginx/nginx.conf.d
+      - ./nginx/conf.d:/etc/nginx/conf.d
       - ./certbot/webroot:/var/www/certbot
       - /opt/ssl/certbot:/etc/letsencrypt
     depends_on:
