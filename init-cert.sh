@@ -14,7 +14,7 @@ if [ ! -f "$CERTBOT_PATH/live/$DOMAIN/fullchain.pem" ]; then
     
     sleep 5
     
-    docker-compose run --rm --entrypoint "" certbot certonly --webroot -w $WEBROOT -d $DOMAIN -d odoo.$DOMAIN --email $EMAIL --agree-tos --non-interactive
+    docker-compose run --rm certbot certonly --webroot -w $WEBROOT -d $DOMAIN -d odoo.$DOMAIN --email $EMAIL --agree-tos --non-interactive
     
     cp nginx/nginx-https.conf nginx/conf.d/default.conf
     docker-compose restart nginx
