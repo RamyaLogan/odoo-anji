@@ -76,7 +76,11 @@ jobs:
           git submodule update --init --depth 1 --recursive
           sudo usermod -aG docker ubuntu
           newgrp docker
+          
+          [ -d /opt/ssl/certbot ] || sudo mkdir -p /opt/ssl/certbot
+          sudo chown -R ubuntu:ubuntu /opt/ssl
+
+          bash ./init-cert.sh
           docker-compose down
-          docker-compose build --no-cache
-          docker-compose up -d
+          docker-compose up -d --build
         EOF
