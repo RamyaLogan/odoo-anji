@@ -67,10 +67,9 @@ services:
       - odoo
     networks:
       - odoo-net
-
-  certbot:
+  certbot-renew:
     image: certbot/certbot
-    container_name: certbot
+    container_name: certbot-renew
     volumes:
       - ./certbot/webroot:/var/www/certbot
       - /opt/ssl/certbot:/etc/letsencrypt
@@ -80,6 +79,15 @@ services:
         docker exec nginx nginx -s reload;
         sleep 12h;
         done"
+    networks:
+      - odoo-net
+  certbot:
+    image: certbot/certbot
+    container_name: certbot
+    volumes:
+      - ./certbot/webroot:/var/www/certbot
+      - /opt/ssl/certbot:/etc/letsencrypt
+    entrypoint: ""
     networks:
       - odoo-net
 
