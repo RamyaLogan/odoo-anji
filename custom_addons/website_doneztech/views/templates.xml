@@ -1,0 +1,689 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+  <data noupdate="0">
+    <record id="view_homepage" model="ir.ui.view">
+      <field name="name">Homepage</field>
+      <field name="type">qweb</field>
+      <field name="key">website_doneztech.homepage</field>
+      <field name="arch" type="xml">
+        <![CDATA[
+        <t name="Homepage" t-name="website.homepage">
+    <t t-call="website.layout">
+        <t t-set="pageName" t-value="'homepage'"/>
+        <div id="wrap" class="oe_structure"><section class="s_cover parallax bg-black-50 o_colored_level pt200 pb256" data-scroll-background-ratio="-1.5" data-snippet="s_cover" data-name="Cover" style="background-image: none; position: relative;" data-oe-shape-data="{&quot;shape&quot;:&quot;web_editor/Origins/17&quot;,&quot;flip&quot;:[],&quot;showOnMobile&quot;:false,&quot;animated&quot;:&quot;true&quot;}">
+        <span class="s_parallax_bg oe_img_bg o_bg_img_center o_bg_img_origin_border_box" style="background-image: url(&quot;/web/image/894-fe370e9d/stock-photo-multicultural-businesspeople-shaking-hands-conference-hall.jpeg&quot;);" data-mimetype="image/jpeg" data-original-id="893" data-original-src="/web/image/893-1c9cffe1/stock-photo-multicultural-businesspeople-shaking-hands-conference-hall.jpeg" data-mimetype-before-conversion="image/jpeg" data-resize-width="1023" data-gl-filter="blur"/>
+        <div class="o_we_bg_filter bg-black-50"/><div class="o_we_shape o_web_editor_Origins_17 o_we_animated"/>
+        <div class="s_allow_columns container">
+            <h1 class="display-3" style="text-align: center; font-weight: bold;">Solutions that scale with your business</h1>
+            <p class="lead" style="text-align: center;"><br/></p>
+            <p style="text-align: center;">
+                <a class="btn btn-primary" href="/contactus" data-bs-original-title="" title="">Lets Explore</a>
+            <br/></p>
+        </div>
+    </section><section class="s_text_block o_colored_level o_cc o_cc5 pb48 pt40" data-snippet="s_text_block" data-name="Text" style="background-color: rgba(0, 0, 0, 0); background-image: linear-gradient(135deg, rgb(2, 75, 48) 0%, rgb(2, 3, 3) 100%);">
+        <div class="s_allow_columns container">
+            <p>At DoneZ Tech, we don’t just implement technology — we align it with business goals</p><p>The visionary behind the company. “Our mission is simple: <strong>turn technology into real business value</strong></p>
+            <p>Whether deploying an ERP system, modernizing legacy platforms, or creating secure, scalable cloud solutions, DoneZ Tech delivers more than code — it delivers results.</p></div>
+    </section><section class="s_three_columns o_cc o_cc2 o_colored_level pb88 pt56" data-vcss="001" data-snippet="s_three_columns" data-name="Columns" style="background-image: none; position: relative;" id="Restaurants" data-anchor="true" data-oe-shape-data="{&quot;shape&quot;:&quot;web_editor/Floats/09&quot;,&quot;colors&quot;:{&quot;c1&quot;:&quot;#305449&quot;,&quot;c2&quot;:&quot;#426A5A&quot;,&quot;c3&quot;:&quot;#305449&quot;},&quot;flip&quot;:[],&quot;showOnMobile&quot;:false,&quot;animated&quot;:&quot;true&quot;}"><div class="o_we_shape o_web_editor_Floats_09 o_we_animated" style="background-image: url(&quot;/web_editor/shape/web_editor%2FFloats%2F09.svg?c1=%23305449&amp;c2=%23426A5A&amp;c3=%23305449&quot;);"/>
+        <div class="container-fluid">
+            <div class="row d-flex o_grid_mode" data-row-count="14">
+                
+                
+                
+            <div class="s_col_no_bgcolor o_grid_item g-col-lg-3 g-height-13 col-lg-3" style="z-index: 1; grid-area: 2 / 1 / 15 / 4;">
+                    <div class="card text-bg-white h-100">
+                        <img src="/web/image/892-eca32bfa/welding-7609553_1280.svg" alt="" class="card-img-top img img-fluid o_we_custom_image o_we_image_cropped" data-shape="web_editor/composition/composition_square_2" data-shape-colors=";#9C0000;;;#471900" data-mimetype="image/svg+xml" data-original-id="871" data-original-src="/web/image/871-6e58a423/welding-7609553_1280.jpg" data-mimetype-before-conversion="image/jpeg" data-original-mimetype="image/webp" data-file-name="welding-7609553_1280.svg" data-y="134.49999999999991" data-width="674" data-height="1011" data-scale-x="1" data-scale-y="1" data-aspect-ratio="2/3" loading="lazy"/>
+                        <div class="card-body">
+                            <h1 class="card-title display-2" style="text-align: center;"><span class="o_animated_text o_animate o_anim_fade_in o_visible" style=""><span class="h2-fs"><strong><font style="color: rgb(1, 65, 45);">Manufacturing</font></strong></span></span></h1>
+                            <p class="card-text"><br/></p>
+                        </div>
+                    </div>
+                </div><div class="s_col_no_bgcolor o_grid_item g-col-lg-3 g-height-13 col-lg-3" style="z-index: 2; grid-area: 2 / 4 / 15 / 7;">
+                    <div class="card text-bg-white h-100">
+                        <img src="/web/image/890-e352aae6/vegan-4809593_1280.svg" alt="" class="card-img-top img img-fluid o_we_custom_image o_we_image_cropped" data-shape="web_editor/panel/panel_trio_out_r" data-shape-colors=";;;;" data-mimetype="image/svg+xml" data-original-id="872" data-original-src="/web/image/872-409cbb2c/vegan-4809593_1280.jpg" data-mimetype-before-conversion="image/jpeg" data-original-mimetype="image/webp" data-file-name="vegan-4809593_1280.svg" data-y="0.2500000000000492" data-width="853" data-height="1279.5" data-scale-x="1" data-scale-y="1" data-aspect-ratio="2/3" loading="lazy"/>
+                        <div class="card-body">
+                            <h1 class="card-title display-2" style="text-align: center;"><span class="h2-fs"><strong><font style="color: rgb(1, 65, 45);">Restaurants</font></strong></span></h1>
+                            <p class="card-text"><br/></p>
+                        </div>
+                    </div>
+                </div><div class="s_col_no_bgcolor o_grid_item g-col-lg-3 g-height-13 col-lg-3" style="z-index: 3; grid-area: 2 / 7 / 15 / 10;">
+                    <div class="card text-bg-white h-100">
+                        <img src="/web/image/889-7d98ed48/stock-photo-confluence-minds-scientists-gather-futuristic-center-collaborative-endeavors.svg" alt="" class="card-img-top img img-fluid o_we_custom_image o_we_image_cropped" data-shape="web_editor/geometric_round/geo_round_blob_soft" data-shape-colors=";;;;" data-mimetype="image/svg+xml" data-original-id="883" data-original-src="/web/image/883-48a267e6/stock-photo-confluence-minds-scientists-gather-futuristic-center-collaborative-endeavors.jpeg" data-mimetype-before-conversion="image/jpeg" data-original-mimetype="image/webp" data-file-name="stock-photo-confluence-minds-scientists-gather-futuristic-center-collaborative-endeavors.svg" data-width="682" data-height="1023" data-scale-x="1" data-scale-y="1" data-aspect-ratio="2/3" loading="lazy"/>
+                        <div class="card-body">
+                            <h1 class="card-title display-2" style="text-align: center;"><span class="h2-fs"><strong><font style="color: rgb(1, 65, 45);">Health Care</font></strong></span></h1>
+                            <p class="card-text"><br/></p>
+                        </div>
+                    </div>
+                </div><div class="s_col_no_bgcolor o_grid_item g-col-lg-3 g-height-13 col-lg-3" style="z-index: 4; grid-area: 2 / 10 / 15 / 13;">
+                    <div class="card text-bg-white h-100">
+                        <img src="/web/image/891-c668951d/stock-photo-stylish-young-couple-showcases-autumn-fashion-cozy-attires-radiating-warmth.svg" alt="" class="card-img-top img img-fluid o_we_custom_image" data-shape="web_editor/composition/composition_triangle_line" data-shape-colors="#7B3900;;;;" data-mimetype="image/svg+xml" data-original-id="888" data-original-src="/web/image/888-9c315b35/stock-photo-stylish-young-couple-showcases-autumn-fashion-cozy-attires-radiating-warmth.jpeg" data-mimetype-before-conversion="image/jpeg" data-original-mimetype="image/webp" data-resize-width="682" data-file-name="stock-photo-stylish-young-couple-showcases-autumn-fashion-cozy-attires-radiating-warmth.svg" loading="lazy"/>
+                        <div class="card-body">
+                            <h1 class="card-title display-2" style="text-align: center;"><span class="h2-fs"><strong><font class="text-o-color-5">Retail</font></strong></span></h1>
+                            <p class="card-text"><br/></p>
+                        </div>
+                    </div>
+                </div></div>
+        </div>
+    </section><section class="s_text_image o_colored_level pb56 pt56 o_cc o_cc5" data-snippet="s_text_image" data-name="Text - Image" style="background-color: rgb(1, 40, 21);">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-lg-6 pt16 pb16 o_colored_level">
+                    <h2>Your Trusted IT Partner</h2>
+                    <p>Our IT consulting services include ERP software development, system analytics &amp;amp; project management. We work closely with our clients to understand their needs and provide customized solutions to help them succeed.</p>
+                    <p>Expert IT Consulting Services – Let us help you achieve your business goals with our tailored IT solutions.</p>
+                    <p><a href="/contactus" class="btn btn-secondary" data-bs-original-title="" title="" aria-describedby="popover292447">Learn more</a></p>
+                </div>
+                <div class="col-lg-6 pt16 pb16 o_colored_level">
+                    <img src="/web/image/887-600828b3/stock-photo-businesspeople-discussing-and-brainstorming.svg" alt="" class="img img-fluid o_we_custom_image mx-auto d-block" data-mimetype="image/svg+xml" data-original-id="882" data-original-src="/web/image/882-95f86f6b/stock-photo-businesspeople-discussing-and-brainstorming.jpeg" data-mimetype-before-conversion="image/jpeg" data-resize-width="1023" data-shape="web_editor/geometric_round/geo_round_square" data-file-name="stock-photo-businesspeople-discussing-and-brainstorming.svg" data-shape-colors=";;;;" data-original-mimetype="image/jpeg" data-quality="100" data-gl-filter="custom" data-filter-options="{&quot;blur&quot;:&quot;0&quot;}" loading="lazy"/>
+                </div>
+            </div>
+        </div>
+    </section><section class="s_numbers o_cc o_cc2 pt24 pb24 o_colored_level" data-snippet="s_numbers" data-name="Numbers" style="background-image: none;">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-3 text-center pt24 pb24 o_colored_level">
+                    <span class="s_number display-4"><font style="color: rgb(39, 68, 59);">12</font><font style="background-color: rgba(41, 82, 24, 0.6); color: rgb(39, 68, 59);">​</font></span>
+                    <h6><font style="color: rgb(39, 68, 59);">Comprehensive services</font></h6>
+                </div>
+                <div class="col-lg-3 text-center pt24 pb24 o_colored_level">
+                    <span class="s_number display-4"><font style="color: rgb(39, 68, 59);">45</font></span>
+                    <h6><font style="color: rgb(39, 68, 59);">Engaging content</font></h6>
+                </div>
+                <div class="col-lg-3 text-center pt24 pb24 o_colored_level">
+                    <span class="s_number display-4"><font style="color: rgb(39, 68, 59);">8</font></span>
+                    <h6><font style="color: rgb(39, 68, 59);">Transformative solutions</font></h6>
+                </div>
+                <div class="col-lg-3 text-center pt24 pb24 o_colored_level">
+                    <span class="s_number display-4"><font style="color: rgb(39, 68, 59);">37</font></span>
+                    <h6><font style="color: rgb(39, 68, 59);">Exceptional visuals</font></h6>
+                </div>
+            </div>
+        </div>
+    </section></div>
+    </t>
+</t>
+        ]]>
+      </field>
+    </record>
+    <record id="view_aboutus" model="ir.ui.view">
+      <field name="name">About Us</field>
+      <field name="type">qweb</field>
+      <field name="key">website_doneztech.about-us</field>
+      <field name="arch" type="xml">
+        <![CDATA[
+        <t name="About Us" t-name="website.about-us">
+        <t t-call="website.layout">
+            <div id="wrap" class="">
+                <div class="oe_structure">
+                    <section class="s_title bg-black-50 o_colored_level s_parallax_no_overflow_hidden pt24 pb32" data-vcss="001" data-snippet="s_title" data-scroll-background-ratio="0" data-name="Title" style="background-image: none; position: relative;" data-oe-shape-data="{&quot;shape&quot;:&quot;web_editor/Wavy/27&quot;,&quot;colors&quot;:{&quot;c1&quot;:&quot;#D9E4D7&quot;,&quot;c2&quot;:&quot;#FFFFFF&quot;},&quot;flip&quot;:[],&quot;showOnMobile&quot;:false,&quot;animated&quot;:&quot;true&quot;}"><div class="o_we_shape o_web_editor_Wavy_27 o_we_animated" style="background-image: url(&quot;/web_editor/shape/web_editor%2FWavy%2F27.svg?c1=%23D9E4D7&amp;c2=%23FFFFFF&quot;); background-color: rgb(1, 40, 21);"/>
+                        
+                        
+                        <div class="container">
+                            <h1>About us</h1>
+                        </div>
+                    </section>
+                <section class="s_title o_colored_level pb0 pt16" data-vcss="001" data-snippet="s_title" data-name="Title" style="background-image: none;">
+        <div class="container s_allow_columns">
+            <h2 class="display-3-fs" style="text-align: center;">Our Core Values</h2>
+        </div>
+    </section></div>
+                <div class="oe_structure"><section class="s_process_steps pt24 pb24 s_process_steps_connector_line o_colored_level" data-vcss="001" data-snippet="s_process_steps" data-name="Steps" style="background-image: none;">
+        <svg class="s_process_step_svg_defs position-absolute">
+            <defs>
+                <marker class="s_process_steps_arrow_head" markerwidth="15" markerheight="10" refx="6" refy="6" orient="auto">
+                    <path d="M 2,2 L10,6 L2,10 L6,6 L2,2" vector-effect="non-scaling-size"/>
+                </marker>
+            </defs>
+        </svg>
+        <div class="container">
+            <div class="row g-0">
+                <div class="s_process_step pt24 pb24 o_colored_level col-lg-3">
+                    <svg class="s_process_step_connector" viewbox="0 0 152.5 80" preserveaspectratio="none" style="left: calc(50% + 40px); height: 80px; width: calc(100% - 80px);">
+                        <path d="M 0 40 L 152.5 40" vector-effect="non-scaling-stroke"/>
+                    </svg>
+                    <div class="s_process_step_icon">
+                        <i class="fa fa-street-view mx-auto rounded-circle bg-o-color-1 fa-2x"/>
+                    </div>
+                    <div class="s_process_step_content">
+                        <h2>Ethics</h2>
+                        <p>&amp;nbsp;Prioritize ethical solutions over shortcuts or compromises</p>
+                    </div>
+                </div>
+                <div class="s_process_step pt24 pb24 o_colored_level col-lg-3">
+                    <svg class="s_process_step_connector" viewbox="0 0 152.5 80" preserveaspectratio="none" style="left: calc(50% + 40px); height: 80px; width: calc(100% - 80px);">
+                        <path d="M 0 40 L 152.5 40" vector-effect="non-scaling-stroke"/>
+                    </svg>
+                    <div class="s_process_step_icon">
+                        <i class="fa fa-handshake-o fa-2x mx-auto rounded-circle bg-o-color-2"/>
+                    </div>
+                    <div class="s_process_step_content">
+                        <h2>Integrity</h2>
+                        <p/><p>Uphold confidentiality and data privacy at every level</p>
+<p>
+</p><p/>
+                    </div>
+                </div>
+                <div class="s_process_step pt24 pb24 o_colored_level col-lg-3">
+                    <svg class="s_process_step_connector" viewbox="0 0 152.5 80" preserveaspectratio="none" style="left: calc(50% + 40px); height: 80px; width: calc(100% - 80px);">
+                        <path d="M 0 40 L 152.5 40" vector-effect="non-scaling-stroke"/>
+                    </svg>
+                    <div class="s_process_step_icon">
+                        <i class="fa fa-group fa-2x mx-auto rounded-circle bg-o-color-1"/>
+                    </div>
+                    <div class="s_process_step_content">
+                        <h2>Teamwork</h2>
+                        <p>Every voice, challenge, knowledge and success is dealt as a team</p>
+                    </div>
+                </div>
+                <div class="col-lg-3 s_process_step pt24 pb24 o_colored_level">
+                    <svg class="s_process_step_connector" viewbox="0 0 100 20" preserveaspectratio="none">
+                        <path d="M 0 10 L 100 10" vector-effect="non-scaling-stroke"/>
+                    </svg>
+                    <div class="s_process_step_icon">
+                        <i class="fa fa-asl-interpreting mx-auto fa-2x rounded-circle bg-o-color-2"/>
+                    </div>
+                    <div class="s_process_step_content">
+                        <h2>Quality</h2>
+                        <p/><p>Rigorous attention to detail in every phase of implementation</p>
+<p>
+</p><p/>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section><section class="s_image_gallery o_slideshow pt24 o_colored_level s_image_gallery_show_indicators s_image_gallery_indicators_rounded pb0" data-vcss="001" data-columns="3" style="overflow: hidden; background-image: none; height: 600px;" data-snippet="s_image_gallery" data-name="Image Gallery">
+        <div class="container-fluid">
+            <div id="slideshow_1746545466187" class="carousel slide" data-bs-ride="carousel" data-bs-interval="0" style="margin: 0 12px;">
+                <div class="carousel-inner" style="padding: 0;">
+                    <div class="carousel-item active" style=""><h1>
+                        <img src="/web/image/1126-07164bc3/employees-wearing-face-masks-work_23-2148727671.webp" alt="" class="img img-fluid d-block o_we_custom_image o_we_image_cropped" style="width: 100% !important;" data-mimetype="image/webp" data-original-id="1112" data-original-src="/web/image/1112-3e1b75b4/employees-wearing-face-masks-work_23-2148727671.jpg" data-mimetype-before-conversion="image/jpeg" loading="lazy" data-y="0.2526595744680851" data-width="1920" data-height="958.7473404255318" data-scale-x="-1" data-scale-y="1" data-aspect-ratio="0/0"/><span class="display-4-fs">&amp;nbsp;</span></h1></div>
+                    <div class="carousel-item" style="">
+                        <img src="/web/image/1123-d8eea48a/startup-business-people-discussing-cafe_53876-101879.jpg" alt="" class="img img-fluid d-block o_we_custom_image o_we_image_cropped" data-mimetype="image/jpeg" data-original-id="1122" data-original-src="/web/image/1122-7555a4ef/startup-business-people-discussing-cafe_53876-101879.jpg" data-mimetype-before-conversion="image/jpeg" loading="lazy" data-width="1920.0000000000002" data-height="800.0000000000001" data-scale-x="1" data-scale-y="1" data-aspect-ratio="0/0"/>
+                    </div>
+                    <div class="carousel-item" style="">
+                        <img src="/web/image/1125-c7975475/people-office-writing-ideas-sticky-notes_23-2148502202.jpg" alt="" class="img img-fluid d-block o_we_custom_image o_we_image_cropped" data-mimetype="image/jpeg" data-original-id="1114" data-original-src="/web/image/1114-3287090e/people-office-writing-ideas-sticky-notes_23-2148502202.jpg" data-mimetype-before-conversion="image/jpeg" loading="lazy" data-width="1920" data-height="878.0293099248329" data-scale-x="1" data-scale-y="1" data-aspect-ratio="0/0"/>
+                    </div>
+                </div>
+                <ul class="carousel-indicators"><li class="o_indicators_left text-center d-none" aria-label="Previous" title="Previous">
+                        <i class="oi oi-chevron-left">​</i>
+                    </li>
+                    
+                    <li data-bs-target="#slideshow_1746545466187" data-bs-slide-to="0" style="background-image: url(&quot;/web/image/1126-07164bc3/employees-wearing-face-masks-work_23-2148727671.webp&quot;);" class="active" aria-current="true"/>
+                    <li data-bs-target="#slideshow_1746545466187" data-bs-slide-to="1" style="background-image: url(&quot;/web/image/1123-d8eea48a/startup-business-people-discussing-cafe_53876-101879.jpg&quot;);"/>
+                    <li data-bs-target="#slideshow_1746545466187" data-bs-slide-to="2" style="background-image: url(&quot;/web/image/1125-c7975475/people-office-writing-ideas-sticky-notes_23-2148502202.jpg&quot;);"/>
+                    
+                <li class="o_indicators_right text-center d-none" aria-label="Next" title="Next">
+                        <i class="oi oi-chevron-right">​</i>
+                    </li></ul>
+                <a class="carousel-control-prev o_we_no_overlay o_not_editable" href="#slideshow_1746545466187" data-bs-slide="prev" aria-label="Previous" title="Previous">
+                    <span class="oi oi-chevron-left fa-2x text-white"/>
+                    <span class="visually-hidden o_default_snippet_text">Previous</span>
+                </a>
+                <a class="carousel-control-next o_we_no_overlay o_not_editable" href="#slideshow_1746545466187" data-bs-slide="next" aria-label="Next" title="Next">
+                    <span class="oi oi-chevron-right fa-2x text-white"/>
+                    <span class="visually-hidden o_default_snippet_text">Next</span>
+                </a>
+            </div>
+        </div>
+    </section><section class="s_three_columns o_cc o_cc2 pb32 o_colored_level pt0" data-vcss="001" data-snippet="s_three_columns" data-name="Columns" style="background-image: none;">
+        <div class="container">
+            <div class="row d-flex align-items-stretch">
+                <div class="col-lg-4 s_col_no_bgcolor pb16 pt88">
+                    <div class="card text-bg-white h-100">
+                        <img src="/web/image/1118-0a169d30/surprised-girl-with-laptop-girl-laptop-technology-concept_169016-64954.jpg" alt="" class="card-img-top img img-fluid o_we_custom_image" data-mimetype="image/jpeg" data-original-id="1109" data-original-src="/web/image/1109-d9730496/surprised-girl-with-laptop-girl-laptop-technology-concept_169016-64954.jpg" data-mimetype-before-conversion="image/jpeg" data-resize-width="826" loading="lazy"/>
+                        <div class="card-body">
+                            <h3 class="card-title">Transparent</h3>
+                            <p class="card-text">We believe that clear communication, aligned expectations, and full visibility are key to successful outcomes.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-4 s_col_no_bgcolor pb16 pt88">
+                    <div class="card text-bg-white h-100">
+                        <img src="/web/image/1119-718f1f26/portrait-caucasian-student-girl-completing-her-class-notes-with-information_482257-123291.jpg" alt="" class="card-img-top img img-fluid o_we_custom_image" data-mimetype="image/jpeg" data-original-id="1110" data-original-src="/web/image/1110-ff97f621/portrait-caucasian-student-girl-completing-her-class-notes-with-information_482257-123291.jpg" data-mimetype-before-conversion="image/jpeg" data-resize-width="826" loading="lazy"/>
+                        <div class="card-body">
+                            <h3 class="card-title">Excellence</h3>
+                            <p class="card-text">We are committed to delivering high-quality results through precision, professionalism, and continuous improvement.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-4 s_col_no_bgcolor pb16 pt88">
+                    <div class="card text-bg-white h-100">
+                        <img src="/web/image/1120-08d83aa0/interested-teenage-girl-studies-online-school_169016-66163.jpg" alt="" class="card-img-top img img-fluid o_we_custom_image" data-mimetype="image/jpeg" data-original-id="1111" data-original-src="/web/image/1111-95f7310b/interested-teenage-girl-studies-online-school_169016-66163.jpg" data-mimetype-before-conversion="image/jpeg" data-resize-width="826" loading="lazy"/>
+                        <div class="card-body">
+                            <h3 class="card-title">Accountability</h3>
+                            <p class="card-text">We take ownership of our actions, decisions, and results — and stand by our commitments</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section></div>
+            </div>
+        </t>
+    </t>
+         ]]>
+      </field>
+    </record>
+    <record id="view_contactus" model="ir.ui.view">
+      <field name="name">Contact Us</field>
+      <field name="type">qweb</field>
+      <field name="key">website_doneztech.contactus</field>
+      <field name="arch" type="xml">
+        <![CDATA[
+        <t name="Contact Us" t-name="website.contactus">
+        <t t-call="website.layout">
+            <t t-set="logged_partner" t-value="request.env['website.visitor']._get_visitor_from_request().partner_id"/>
+            <t t-set="contactus_form_values" t-value="{                 'email_to': res_company.email,                 'name': request.params.get('name', ''),                 'phone': request.params.get('phone', ''),                 'email_from': request.params.get('email_from', ''),                 'company': request.params.get('company', ''),                 'subject': request.params.get('subject', ''),             }"/>
+            <span class="hidden" data-for="contactus_form" t-att-data-values="contactus_form_values"/>
+            <div id="wrap" class="oe_structure oe_empty">
+                <section class="s_title bg-black-50 pt24 pb24 o_colored_level s_parallax_no_overflow_hidden" data-vcss="001" data-snippet="s_title" data-scroll-background-ratio="0" data-name="Title" style="background-image: none; position: relative;" data-oe-shape-data="{&quot;shape&quot;:&quot;web_editor/Wavy/27&quot;,&quot;colors&quot;:{&quot;c1&quot;:&quot;#D9E4D7&quot;,&quot;c2&quot;:&quot;#FFFFFF&quot;},&quot;flip&quot;:[],&quot;showOnMobile&quot;:false,&quot;animated&quot;:&quot;true&quot;}"><div class="o_we_shape o_web_editor_Wavy_27 o_we_animated" style="background-image: url(&quot;/web_editor/shape/web_editor%2FWavy%2F27.svg?c1=%23D9E4D7&amp;c2=%23FFFFFF&quot;); background-color: rgb(1, 40, 21);"/>
+                    
+                    
+                    <div class="container">
+                        <h1>Contact us</h1>
+                    </div>
+                </section>
+                <section class="s_text_block pb40 o_colored_level pt0" data-snippet="s_text_block" data-name="Text" style="background-image: none;">
+                    <div class="s_allow_columns container">
+                        <div class="row">
+                            <div class="col-lg-8 mt-4 mt-lg-0 o_colored_level">
+                                <p>&amp;nbsp;</p><h3><strong>Let’s Start the Conversation</strong></h3><p>
+</p><p>Have questions about transforming your business with smart, scalable ERP solutions? We’re here to help.</p>
+                                <section class="s_website_form" data-vcss="001" data-snippet="s_website_form" data-name="Form">
+                                    <div class="container">
+                                        <form id="contactus_form" action="/website/form/" method="post" enctype="multipart/form-data" data-mark="*" data-model_name="mail.mail" data-success-mode="message" data-success-page="/contactus-thank-you" data-pre-fill="true" class="o_mark_required">
+                                            <div class="s_website_form_rows row s_col_no_bgcolor">
+                                                <div class="s_website_form_field mb-3 col-12 s_website_form_custom s_website_form_required" data-type="char" data-name="Field" data-translated-name="Field"><div class="row s_col_no_resize s_col_no_bgcolor"><label class="col-form-label col-sm-auto s_website_form_label" style="width: 200px" for="ofo47fjjluak"><span class="s_website_form_label_content">Name</span><span class="s_website_form_mark">     *</span></label><div class="col-sm"><input class="form-control s_website_form_input" type="text" name="Name" required="1" placeholder="" id="ofo47fjjluak" data-fill-with="name"/><div class="s_website_form_field_description small form-text text-muted">Pleasure to meet you&amp;nbsp;</div></div></div></div>
+                                                <div class="s_website_form_field mb-3 col-12 s_website_form_custom" data-type="tel" data-name="Field" data-translated-name="Field"><div class="row s_col_no_resize s_col_no_bgcolor"><label class="col-form-label col-sm-auto s_website_form_label" style="width: 200px" for="ojsj6aqjib9"><span class="s_website_form_label_content">Phone Number</span></label><div class="col-sm"><input class="form-control s_website_form_input" type="tel" name="Phone Number" placeholder="" id="ojsj6aqjib9" data-fill-with="phone"/><div class="s_website_form_field_description small form-text text-muted">No unwanted calls</div></div></div></div>
+                                                <div class="s_website_form_field mb-3 col-12 s_website_form_required" data-type="email" data-name="Field" data-translated-name="Field"><div class="row s_col_no_resize s_col_no_bgcolor"><label class="col-form-label col-sm-auto s_website_form_label" style="width: 200px" for="o930ylwvuxjc"><span class="s_website_form_label_content">Email</span><span class="s_website_form_mark"> *</span></label><div class="col-sm"><input class="form-control s_website_form_input" type="email" name="email_from" required="1" placeholder="" id="o930ylwvuxjc" data-fill-with="email"/></div></div></div>
+                                                <div class="s_website_form_field mb-3 col-12 s_website_form_custom" data-type="char" data-name="Field" data-translated-name="Field"><div class="row s_col_no_resize s_col_no_bgcolor"><label class="col-form-label col-sm-auto s_website_form_label" style="width: 200px" for="o3n6begj2crg"><span class="s_website_form_label_content">Company</span></label><div class="col-sm"><input class="form-control s_website_form_input" type="text" name="Company" placeholder="" id="o3n6begj2crg" data-fill-with="commercial_company_name"/></div></div></div>
+                                                <div class="s_website_form_field mb-3 col-12" data-type="char" data-name="Field" data-translated-name="Field"><div class="row s_col_no_resize s_col_no_bgcolor"><label class="col-form-label col-sm-auto s_website_form_label" style="width: 200px" for="oq7roycfjuvp"><span class="s_website_form_label_content">Subject</span></label><div class="col-sm"><input class="form-control s_website_form_input" type="text" name="subject" placeholder="" id="oq7roycfjuvp" data-fill-with="undefined"/><div class="s_website_form_field_description small form-text text-muted">Makes it easy for our&amp;nbsp;email sorting</div></div></div></div>
+                                                <div class="s_website_form_field mb-3 col-12 s_website_form_custom s_website_form_required" data-type="text" data-name="Field" data-translated-name="Field"><div class="row s_col_no_resize s_col_no_bgcolor"><label class="col-form-label col-sm-auto s_website_form_label" style="width: 200px" for="oqmdh034zuxn"><span class="s_website_form_label_content">Question</span><span class="s_website_form_mark">  *</span></label><div class="col-sm"><textarea class="form-control s_website_form_input" name="Question" required="1" placeholder="" id="oqmdh034zuxn" rows="2"/><div class="s_website_form_field_description small form-text text-muted">Lets talk about your open concerns</div></div></div></div>
+                                                
+                                                <div data-name="Field" class="s_website_form_field mb-3 col-12 s_website_form_dnone"><div class="row s_col_no_resize s_col_no_bgcolor"><label class="col-form-label col-sm-auto s_website_form_label" style="width: 200px"><span class="s_website_form_label_content"/></label><div class="col-sm"><input type="hidden" class="form-control s_website_form_input" name="email_to" value="info@doneztech.com"/><input type="hidden" value="46bd6b9f1da2b890bbb2a7222dfbf7beada8648add44e36a80d5314697b66f95" class="form-control s_website_form_input s_website_form_custom" name="website_form_signature"/></div></div></div><div class="mb-0 py-2 col-12 s_website_form_submit" data-name="Submit Button">
+                                                    <div style="width: 200px;" class="s_website_form_label"/>
+                                                    <a href="#" role="button" class="btn btn-primary s_website_form_send" data-bs-original-title="" title="">Submit</a>
+                                                    <span id="s_website_form_result"/>
+                                                </div>
+                                            </div>
+                                        </form><div class="s_website_form_end_message d-none"><div class="oe_structure"><section class="s_text_block pt64 pb64 o_colored_level o_cc o_cc2" data-snippet="s_text_block" data-name="Text"><div class="container"><h2 class="text-center"><span class="fa fa-check-circle"/> Thank You For Your Feedback </h2><p class="text-center"> Our team will message you back as soon as possible.<br/>In the meantime we invite you to visit our <a href="/">website</a>.<br/></p></div></section></div></div>
+                                    </div>
+                                </section>
+                            </div>
+                            <div class="mt-4 mt-lg-0 o_colored_level pt48 col-lg-4">
+                                <ul class="list-unstyled mb-0 ps-2">
+                                    <li><br/></li>
+                                </ul><p><br/></p><p><br/></p><p><br/></p><p><br/></p><p><br/></p><p>We ensure swift and professional communication — because your success is our focus.</p><p><span style="font-size: 1.25rem;"><strong>Let’s work together to achieve something remarkable.</strong></span><br/></p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </t>
+    </t>
+         ]]>
+      </field>
+    </record>
+    <record id="view_services" model="ir.ui.view">
+      <field name="name">Services</field>
+      <field name="type">qweb</field>
+      <field name="key">website_doneztech.services</field>
+      <field name="arch" type="xml">
+        <![CDATA[
+        <t name="Services" t-name="website.services">
+        <t t-call="website.layout">
+            <div id="wrap" class="">
+                <div class="oe_structure">
+                    <section class="s_title bg-black-50 pt24 o_colored_level s_parallax_no_overflow_hidden pb24" data-vcss="001" data-snippet="s_title" data-scroll-background-ratio="0" data-name="Title" style="background-image: none; position: relative;" data-oe-shape-data="{&quot;shape&quot;:&quot;web_editor/Wavy/27&quot;,&quot;colors&quot;:{&quot;c1&quot;:&quot;#D9E4D7&quot;,&quot;c2&quot;:&quot;#FFFFFF&quot;},&quot;flip&quot;:[],&quot;showOnMobile&quot;:false,&quot;animated&quot;:&quot;true&quot;}"><div class="o_we_shape o_web_editor_Wavy_27 o_we_animated" style="background-image: url(&quot;/web_editor/shape/web_editor%2FWavy%2F27.svg?c1=%23D9E4D7&amp;c2=%23FFFFFF&quot;); background-color: rgb(1, 40, 21);"/>
+                        
+                        
+                        <div class="container">
+                            <h1>Services</h1>
+                        </div>
+                    </section>
+                <section class="s_banner o_colored_level pb0 pt0" data-snippet="s_banner" data-name="Banner" style="background-image: none;">
+        <div class="container">
+            <div class="row s_nb_column_fixed o_grid_mode" data-row-count="9">
+                <div class="justify-content-center o_grid_item g-height-8 g-col-lg-5 col-lg-5 o_colored_level" data-name="Box" style="z-index: 1; grid-area: 2 / 1 / 10 / 6;">
+                    <h1 class="display-3">ERP That Just Works</h1>
+                    <p class="lead">Bring a plan, or bring an open mind to transform how your business runs</p>
+                    <div class="s_hr text-start pb32 pt4" data-snippet="s_hr" data-name="Separator">
+                        <hr class="w-100 mx-auto"/>
+                    </div>
+                    <p>
+                        <a class="btn btn-lg btn-primary o_default_snippet_text" href="/contactus" data-bs-original-title="" title="" aria-describedby="popover310304">Start Now <span class="fa fa-angle-right ms-2"/></a>
+                    </p></div>
+                
+            <div class="o_grid_item o_grid_item_image o_colored_level g-col-lg-7 g-height-8 col-lg-7" style="z-index: 2; grid-area: 2 / 6 / 10 / 13;"><img src="/web/image/1008-ebe8efe8/stock-photo-medical-concept-on-virtual-screen-healthcare-online-medical-consultation-and-health-check-emr-ehr.svg" alt="" class="img img-fluid mx-auto o_we_custom_image" data-mimetype="image/svg+xml" data-original-id="1007" data-original-src="/web/image/1007-2e21a01b/stock-photo-medical-concept-on-virtual-screen-healthcare-online-medical-consultation-and-health-check-emr-ehr.jpeg" data-mimetype-before-conversion="image/jpeg" data-resize-width="690" data-shape="web_editor/brushed/brush_4" data-file-name="stock-photo-medical-concept-on-virtual-screen-healthcare-online-medical-consultation-and-health-check-emr-ehr.svg" data-shape-colors=";;;;" data-original-mimetype="image/webp" loading="lazy"/></div></div>
+        </div>
+        </section><section class="s_text_image pt32 pb32 o_colored_level" data-snippet="s_image_text" data-name="Image - Text" style="background-image: none;">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-lg-6 pt16 pb16 o_colored_level">
+                    <img src="/web/image/1022-0f2ce81b/odoo_logo.webp" alt="" class="img img-fluid mx-auto o_we_custom_image" data-mimetype="image/webp" data-original-id="1020" data-original-src="/web/image/1020-0f2ce81b/odoo_logo.webp" data-mimetype-before-conversion="image/webp" data-resize-width="621" loading="lazy"/>
+                </div>
+                <div class="col-lg-6 pt16 pb16 o_colored_level o_anim_fade_in o_animate o_animate_on_scroll" style="animation-delay: -1.39571s;" data-scroll-zone-start="0" data-scroll-zone-end="100">
+                    <h2>Odoo</h2><ul><li><span class="h5-fs">CRM, Sales, Inventory, Accounting, Project &amp;amp; Website</span></li><li><span class="h5-fs">Community or Enterprise - We help you choose</span></li><li><span class="h5-fs">Tailored dashboards &amp;amp; Workflows</span></li><li><span class="h5-fs">Integration with payment gateways (PayPal, Stripe, etc.), eCommerce platforms (Shopify, WooCommerce) &amp;amp; Shipping providers, SMS gateways, barcode/RFID systems</span></li><li><span class="h5-fs">Upgrade support and long term care</span></li></ul><p><a href="/contactus" class="o_animate o_animate_on_scroll btn btn-secondary o_anim_fade_in o_anim_from_bottom" data-bs-original-title="" title="" data-scroll-zone-start="0" data-scroll-zone-end="100" style="animation-delay: -0.986115s;">Advise me</a><br/></p>
+                </div>
+            </div>
+        </div>
+        </section><section class="s_text_image pt32 pb32 o_colored_level" data-snippet="s_text_image" data-name="Text - Image" style="background-image: none;">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-lg-6 pt16 pb16 o_colored_level o_anim_fade_in o_animate o_animate_on_scroll" style="animation-delay: -1.33786s;" data-scroll-zone-start="0" data-scroll-zone-end="100">
+                    <h2>MS Dynamics 365</h2>
+                    <ul><li><span class="h5-fs">Map out a digital transformation roadmap using MS Dynamics 365</span></li><li><span class="h5-fs">Lets talk about the best module suitable for your business</span></li><li><span class="h5-fs">Microsoft ecosystem integration: Power BI, Azure, Office 365, Teams
+                    </span></li><li><span class="h5-fs">
+                      API development and data connectors</span></li></ul>
+                    <p><a href="/contactus" class="btn btn-secondary o_anim_fade_in o_animate o_anim_from_bottom o_visible" data-bs-original-title="" title="" style="">Learn more</a></p>
+                </div>
+                <div class="col-lg-6 pt16 pb16 o_colored_level">
+                    <img src="/web/image/1018-39ea8754/Dynamics-365-logo-1536x864.webp" alt="" class="img img-fluid mx-auto o_we_custom_image" data-mimetype="image/webp" data-original-id="1017" data-original-src="/web/image/1017-0ea23612/Dynamics-365-logo-1536x864.png" data-mimetype-before-conversion="image/png" data-resize-width="690" loading="lazy"/>
+                </div>
+            </div>
+        </div>
+        </section><section class="s_text_image pt32 o_colored_level pb56" data-snippet="s_image_text" data-name="Image - Text" style="background-image: none;">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-lg-6 pt16 pb16 o_colored_level">
+                    <img src="/web/image/1023-89809b3d/ZOHO_logo_2023.svg.webp" alt="" class="img img-fluid mx-auto o_we_custom_image" data-mimetype="image/webp" data-original-id="1019" data-original-src="/web/image/1019-b5c6ec0d/ZOHO_logo_2023.svg.png" data-mimetype-before-conversion="image/png" data-resize-width="690" loading="lazy"/>
+                </div>
+                <div class="pt16 pb16 o_colored_level col-lg-6">
+                    <h2>ZOHO&amp;nbsp;</h2>
+                    <ul><li><span class="h5-fs">Sales automation and lead tracking&amp;nbsp;</span></li><li><span class="h5-fs">Workflow rules and followup reminders</span></li><li><span class="h5-fs">Tailor-made forms, reports &amp;amp; dashboards</span></li><li><span class="h5-fs">Email/ SMS integration + Campaign setup&amp;nbsp;</span></li><li><span class="h5-fs">Affordable CRM support for smaller teams&amp;nbsp;</span></li></ul>
+                    <p><a href="/contactus" class="btn btn-secondary o_animate o_animate_on_scroll o_anim_fade_in o_anim_from_bottom" data-bs-original-title="" title="" data-scroll-zone-start="0" data-scroll-zone-end="100" style="animation-delay: -0.846289s;">Discover more</a></p>
+                </div>
+            </div>
+        </div>
+        </section></div>
+                <div class="oe_structure"><section class="s_masonry_block o_colored_level" data-vcss="001" data-vxml="001" data-snippet="s_masonry_block" data-name="Masonry" data-masonry-template="default" style="background-image: none;">
+        <div class="container-fluid">
+        <div class="row o_grid_mode" data-row-count="10">
+        <div class="o_grid_item col-lg-6 g-col-lg-6 g-height-10 o_grid_item_image text-center o_colored_level" data-name="Block" style="grid-area: 1 / 1 / 11 / 7; z-index: 1; background-image: none;">
+            <img src="/web/image/1794-95f86f6b/stock-photo-businesspeople-discussing-and-brainstorming.jpeg" alt="" class="img img-fluid mx-auto o_we_custom_image" data-mimetype="image/jpeg" data-original-id="882" data-original-src="/web/image/882-95f86f6b/stock-photo-businesspeople-discussing-and-brainstorming.jpeg" data-mimetype-before-conversion="image/jpeg" data-resize-width="1023" loading="lazy" data-quality="100"/>
+        </div>
+        <div class="o_grid_item col-lg-3 g-col-lg-3 g-height-5 text-center o_cc o_cc2 o_colored_level" data-name="Block" style="grid-area: 1 / 7 / 6 / 10; z-index: 2; background-image: none;">
+            <h3>Business Analysis &amp;amp; ERP Planning</h3>
+        </div>
+        <div class="o_grid_item col-lg-3 g-col-lg-3 g-height-5 text-center o_cc o_cc3 o_colored_level" data-name="Block" style="grid-area: 1 / 10 / 6 / 13; z-index: 3; background-image: none;">
+            <h3>ERP implementation &amp;amp; Customization</h3>
+        </div>
+        <div class="o_grid_item col-lg-3 g-col-lg-3 g-height-5 text-center o_cc o_cc4 o_colored_level" data-name="Block" style="grid-area: 6 / 7 / 11 / 10; z-index: 4; background-image: none;">
+            <h3>Data Migration</h3>
+        </div>
+        <div class="o_grid_item col-lg-3 g-col-lg-3 g-height-5 text-center o_cc o_cc2 o_colored_level" data-name="Block" style="grid-area: 6 / 10 / 11 / 13; z-index: 5; background-image: none;">
+            <h3>Third party integrations</h3>
+        </div>
+        </div>
+        </div>
+        </section><section class="s_image_gallery o_spc-small pb24 o_colored_level o_masonry pt72" data-vcss="001" data-columns="3" style="overflow: hidden; background-image: none;" data-snippet="s_images_wall" data-name="Images Wall">
+        <div class="container"><div class="row s_nb_column_fixed"><div class="o_masonry_col o_snippet_not_selectable col-lg-4"><img src="/web/image/1032-f2b7e90b/25644134_7015971.webp" alt="" class="img img-fluid d-block o_we_custom_image" data-mimetype="image/webp" data-original-id="1026" data-original-src="/web/image/1026-bcc9bf7f/25644134_7015971.jpg" data-mimetype-before-conversion="image/jpeg" data-resize-width="690" loading="lazy"/><img src="/web/image/1043-0b7daf4d/self-checkout-concept-illustration_114360-2228.webp" alt="" class="img img-fluid d-block o_we_custom_image" data-mimetype="image/webp" data-original-id="1039" data-original-src="/web/image/1039-b7ac377d/self-checkout-concept-illustration_114360-2228.jpg" data-mimetype-before-conversion="image/jpeg" data-resize-width="690" loading="lazy"/></div><div class="o_masonry_col o_snippet_not_selectable col-lg-4"><img src="/web/image/1044-c73ea04a/briefcase-calculator-accountants-working-with-graphs-laptop-accounting-financial-analysis-planning-concept-white-background_335657-1641.webp" alt="" class="img img-fluid d-block o_we_custom_image" data-mimetype="image/webp" data-original-id="1037" data-original-src="/web/image/1037-53c167b8/briefcase-calculator-accountants-working-with-graphs-laptop-accounting-financial-analysis-planning-concept-white-background_335657-1641.jpg" data-mimetype-before-conversion="image/jpeg" data-resize-width="690" loading="lazy"/><img src="/web/image/1042-3de2a5cc/conveyor-belt-warehouse-concept-illustration_114360-15026.webp" alt="" class="img img-fluid d-block o_we_custom_image" data-mimetype="image/webp" data-original-id="1038" data-original-src="/web/image/1038-555d3004/conveyor-belt-warehouse-concept-illustration_114360-15026.jpg" data-mimetype-before-conversion="image/jpeg" data-resize-width="690" loading="lazy"/></div><div class="o_masonry_col o_snippet_not_selectable col-lg-4"><img src="/web/image/1045-d60d8f65/sales-growth-concept-illustration_114360-25450.webp" alt="" class="img img-fluid d-block o_we_custom_image" data-mimetype="image/webp" data-original-id="1040" data-original-src="/web/image/1040-e7eb0072/sales-growth-concept-illustration_114360-25450.jpg" data-mimetype-before-conversion="image/jpeg" data-resize-width="690" loading="lazy"/><img src="/web/image/1035-29c7f303/recruit-agent-analyzing-candidates_74855-4565.webp" alt="" class="img img-fluid d-block o_we_custom_image" data-mimetype="image/webp" data-original-id="1029" data-original-src="/web/image/1029-661d27eb/recruit-agent-analyzing-candidates_74855-4565.jpg" data-mimetype-before-conversion="image/jpeg" data-resize-width="690" loading="lazy"/></div></div></div>
+        </section><section class="s_references o_colored_level pt32 pb80" data-snippet="s_references" data-name="References" style="background-image: none;">
+        <div class="container">
+            
+            
+            <div class="row o_grid_mode" data-row-count="5"><div class="o_grid_item g-col-lg-12 g-height-3 col-lg-12 o_colored_level" style="grid-area: 1 / 1 / 4 / 13; z-index: 1;"><h2 style="text-align: center;">Our Success Stories</h2><p style="text-align: center;">We are in good company</p></div>
+                
+                
+                
+                
+                
+                
+            <div class="o_colored_level o_grid_item o_grid_item_image g-col-lg-2 g-height-3 col-lg-2" style="z-index: 2; grid-area: 3 / 4 / 6 / 6;"><img src="/web/image/1072-18518d22/448139069_3677555235797010_8926452330369325429_n.png" alt="" class="img img-fluid mx-auto o_we_custom_image o_we_image_cropped" data-mimetype="image/png" data-original-id="1041" data-original-src="/web/image/1041-4025eefe/448139069_3677555235797010_8926452330369325429_n.png" data-mimetype-before-conversion="image/png" loading="lazy" data-x="390.75327510916986" data-y="601.3273078094851" data-width="613.480501675637" data-height="633.2413425408754" data-scale-x="1" data-scale-y="1" data-aspect-ratio="0/0" style="padding: 20px;"/></div><div class="o_colored_level o_grid_item o_grid_item_image g-col-lg-2 g-height-3 col-lg-2" style="z-index: 3; grid-area: 3 / 6 / 6 / 8;"><img src="/web/image/1068-1c62140a/276171422_117492550882367_1164658635234790172_n.svg" alt="" class="img img-fluid mx-auto o_we_custom_image o_we_image_cropped" data-mimetype="image/svg+xml" data-original-id="1067" data-original-src="/web/image/1067-69d72f6d/276171422_117492550882367_1164658635234790172_n.jpg" data-mimetype-before-conversion="image/jpeg" data-width="1080" data-height="1080" data-scale-x="1" data-scale-y="1" data-aspect-ratio="1/1" data-shape="web_editor/geometric_round/geo_round_hexagon" data-file-name="276171422_117492550882367_1164658635234790172_n.svg" data-shape-colors=";;;;" data-original-mimetype="image/jpeg" loading="lazy" style="padding: 20px; width: 100% !important;"/></div><div class="o_grid_item o_grid_item_image o_colored_level g-height-3 g-col-lg-2 col-lg-2" style="z-index: 4; grid-area: 3 / 8 / 6 / 10;"><img src="/web/image/1071-023ae7db/276171422_117492550882367_1164658635234790172_n.png" alt="" class="img img-fluid mx-auto o_we_custom_image o_we_image_cropped" data-mimetype="image/png" data-original-id="1070" data-original-src="/web/image/1070-7072e087/276171422_117492550882367_1164658635234790172_n.png" data-mimetype-before-conversion="image/png" data-x="4.460958815122777" data-y="8.992248062015504" data-width="503.0077519379845" data-height="503.0077519379845" data-scale-x="1" data-scale-y="1" data-aspect-ratio="1/1" loading="lazy" style="padding: 20px; width: 100% !important;"/></div></div>
+        </div>
+        </section></div>
+            </div>
+        </t>
+        </t>
+         ]]>
+      </field>
+    </record>
+    <record id="view_privacy" model="ir.ui.view">
+      <field name="name">Privacy Policy</field>
+      <field name="type">qweb</field>
+      <field name="key">website_doneztech.privacy-policy</field>
+      <field name="arch" type="xml">
+        <![CDATA[
+        <t name="Privacy Policy" t-name="website.privacy-policy">
+        <t t-call="website.layout">
+            <div id="wrap">
+                <div class="oe_structure">
+                    <section class="s_title parallax s_parallax_is_fixed bg-black-50 pt24 pb24" data-vcss="001" data-snippet="s_title" data-scroll-background-ratio="1">
+                        <span class="s_parallax_bg oe_img_bg" style="background-image: url('/web/image/website.s_parallax_default_image'); background-position: 50% 0;"/>
+                        <div class="o_we_bg_filter bg-black-50"/>
+                        <div class="container">
+                            <h1>Privacy Policy</h1>
+                        </div>
+                    </section>
+                </div>
+                <div class="oe_structure"><section class="s_faq_collapse pt32 pb32" data-snippet="s_faq_collapse">
+        <div class="container">
+            <div id="myCollapse" class="accordion" role="tablist">
+                <div class="card bg-white" data-name="Item" role="presentation">
+                    <a href="#" role="tab" data-bs-toggle="collapse" aria-expanded="true" class="card-header" data-bs-target="#myCollapseTab117675_1" aria-controls="myCollapseTab117675_1">Terms of service</a>
+                    <div class="collapse show" data-bs-parent="#myCollapse" role="tabpanel" id="myCollapseTab117675_1">
+                        <div class="card-body">
+                            <p class="card-text">These terms of service ("Terms", "Agreement") are an agreement between the website ("Website operator", "us", "we" or "our") and you ("User", "you" or "your"). This Agreement sets forth the general terms and conditions of your use of this website and any of its products or services (collectively, "Website" or "Services").</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="card bg-white" data-name="Item" role="presentation">
+                    <a href="#" role="tab" data-bs-toggle="collapse" aria-expanded="false" class="collapsed card-header" data-bs-target="#myCollapseTab117675_2" aria-controls="myCollapseTab117675_2">Links to other Websites</a>
+                    <div class="collapse" data-bs-parent="#myCollapse" role="tabpanel" id="myCollapseTab117675_2">
+                        <div class="card-body">
+                            <p class="card-text">Although this Website may be linked to other websites, we are not, directly or indirectly, implying any approval, association, sponsorship, endorsement, or affiliation with any linked website, unless specifically stated herein.</p>
+                            <p class="card-text">You should carefully review the legal statements and other conditions of use of any website which you access through a link from this Website. Your linking to any other off-site pages or other websites is at your own risk.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="card bg-white" data-name="Item" role="presentation">
+                    <a href="#" role="tab" data-bs-toggle="collapse" aria-expanded="false" class="collapsed card-header" data-bs-target="#myCollapseTab117675_3" aria-controls="myCollapseTab117675_3">Use of Cookies</a>
+                    <div class="collapse" data-bs-parent="#myCollapse" role="tabpanel" id="myCollapseTab117675_3">
+                        <div class="card-body">
+                            <p class="card-text">Website may use cookies to personalize and facilitate maximum navigation of the User by this site. The User may configure his / her browser to notify and reject the installation of the cookies sent by us.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section></div>
+            </div>
+        </t>
+    </t>
+         ]]>
+      </field>
+    </record>
+    <record id="footer_custom" model="ir.ui.view">
+      <field name="name">Default</field>
+      <field name="inherit_id" ref="website.layout" />
+      <field name="arch" type="xml">
+        <![CDATA[
+        <data inherit_id="website.layout" name="Default" active="True">
+    <xpath expr="//div[@id='footer']" position="replace">
+        <div id="footer" class="oe_structure oe_structure_solo" t-ignore="true" t-if="not no_footer">
+            <section class="s_text_block pt40 pb16" data-snippet="s_text_block" data-name="Text" style="background-image: none;">
+                <div class="container">
+                    <div class="row">
+                        <div class="col-lg-2 pt24 pb24">
+                            <h5 class="mb-3">Useful Links</h5>
+                            <ul class="list-unstyled">
+                                <li><a href="/">Home</a></li>
+                                <li><a href="#">About us</a></li>
+                                <li><a href="#">Products</a></li>
+                                <li><a href="#">Services</a></li>
+                                <li><a href="#">Legal</a></li>
+                                <li>
+                                    <a href="/privacy">Privacy Policy</a>
+                                </li><li>
+                                    <a href="/forum">Forum</a>
+                                </li>
+                                <li><a href="/contactus">Contact us</a></li>
+                            </ul>
+                        </div>
+                        <div class="pt24 pb24 o_colored_level col-lg-5">
+                            <h5 class="mb-3">About us</h5>
+                            <p>We are a team of passionate technology experts committed to improving businesses through smart, scalable ERP solutions. At <strong>DoneZ Tech Inc.</strong>, we don’t just implement systems — we solve real business challenges with precision and impact.</p><p>Specializing in powerful platforms like <strong>Odoo</strong> and <strong>Microsoft Dynamics</strong>, we help various&amp;nbsp;companies in <strong>manufacturing, healthcare, retail, and the restaurant industry</strong> streamline operations, enhance visibility, and accelerate growth.</p></div>
+                        <div id="connect" class="col-lg-4 offset-lg-1 pt24 pb24 o_colored_level">
+                            <h5 class="mb-3">Connect with us</h5>
+                            <ul class="list-unstyled">
+                                <li><i class="fa fa-comment fa-fw me-2"/><a href="/contactus">Contact us</a></li>
+                                <li><i class="fa fa-envelope fa-fw me-2"/><a href="mailto:info@doneztech.com" data-bs-original-title="" title="">info@doneztech.com</a></li>
+                                <li><i class="fa fa-phone fa-fw me-2"/><span class="o_force_ltr"><a href="tel:+12"><u>+1&amp;nbsp;2</u></a><u>89-928-3382</u></span></li>
+                            </ul>
+                            
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </xpath>
+</data>
+         ]]>
+      </field>
+    </record>
+    <record id="template_header_boxed" model="ir.ui.view">
+      <field name="name">Template Header Rounded Box</field>
+      <field name="inherit_id" ref="website.layout" />
+      <field name="arch" type="xml">
+        <![CDATA[
+        <data inherit_id="website.layout" name="Template Header Rounded Box" active="False">
+    <xpath expr="//header//nav" position="replace">
+        <div class="container py-3 px-0">
+            <t t-call="website.navbar">
+                <t t-set="_navbar_classes" t-valuef="o_full_border d-none d-lg-block rounded-pill py-2 px-3 shadow-sm"/>
+
+                <div id="o_main_nav" class="o_main_nav container">
+                    <!-- Brand -->
+                    <t t-call="website.placeholder_header_brand">
+                        <t t-set="_link_class" t-valuef="me-4"/>
+                    </t>
+                    <!-- Navbar -->
+                    <t t-call="website.navbar_nav">
+                        <t t-set="_nav_class" t-valuef="me-auto"/>
+
+                        <!-- Menu -->
+                        <t t-foreach="website.menu_id.child_id" t-as="submenu">
+                            <t t-call="website.submenu">
+                                <t t-set="item_class" t-valuef="nav-item"/>
+                                <t t-set="link_class" t-valuef="nav-link"/>
+                            </t>
+                        </t>
+                    </t>
+                    <!-- Extra elements -->
+                    <ul class="navbar-nav align-items-center gap-1 flex-wrap flex-shrink-0 justify-content-end ps-3">
+                        <!-- Search Bar -->
+                        <t t-call="website.placeholder_header_search_box" t-nocache="The searchbox should not cache previous searches.">
+                            <t t-set="_layout" t-valuef="modal"/>
+                            <t t-set="_input_classes" t-valuef="border border-end-0 p-3"/>
+                            <t t-set="_submit_classes" t-valuef="border border-start-0 px-4 bg-o-color-4"/>
+                            <t t-set="_button_classes" t-valuef="o_navlink_background text-reset"/>
+                        </t>
+                        <!-- Text element -->
+                        <t t-call="website.placeholder_header_text_element"/>
+                        <!-- Social -->
+                        <t t-call="website.placeholder_header_social_links"/>
+                        <!-- Language Selector -->
+                        <t t-call="website.placeholder_header_language_selector">
+                            <t t-set="_btn_class" t-valuef="btn-outline-secondary d-flex align-items-center gap-1 border-0 rounded-circle px-3"/>
+                            <t t-set="_txt_class" t-valuef="small"/>
+                            <t t-set="_dropdown_menu_class" t-valuef="dropdown-menu-end"/>
+                        </t>
+                        <!-- Sign In -->
+                        <t t-call="portal.placeholder_user_sign_in">
+                            <t t-set="_link_class" t-valuef="btn btn-outline-secondary rounded-circle px-3"/>
+                        </t>
+                        <!-- User Dropdown -->
+                        <t t-call="portal.user_dropdown">
+                            <t t-set="_icon" t-value="true"/>
+                            <t t-set="_user_name" t-value="false"/>
+                            <t t-set="_user_name_class" t-valuef="me-auto small"/>
+                            <t t-set="_item_class" t-valuef="dropdown"/>
+                            <t t-set="_link_class" t-valuef="btn-outline-secondary d-flex align-items-center border-0 rounded-circle px-3 fw-bold"/>
+                            <t t-set="_dropdown_menu_class" t-valuef="dropdown-menu-end"/>
+                        </t>
+                        <!-- Call To Action -->
+                        <t t-call="website.placeholder_header_call_to_action"/>
+                    </ul>
+                </div>
+            </t>
+            <t t-call="website.template_header_mobile">
+                <t t-set="_extra_navbar_classes" t-valuef="o_full_border mx-1 rounded-pill"/>
+            </t>
+        </div>
+    </xpath>
+</data>
+        ]]>
+      </field>     
+    </record>
+    <record id="header_visibility_fade_out" model="ir.ui.view">
+      <field name="name">Header Effect Fade Out</field>
+      <field name="inherit_id" ref="website.layout" />
+      <field name="arch" type="xml">
+        <![CDATA[
+        <data inherit_id="website.layout" name="Header Effect Fade Out" active="False">
+        <xpath expr="//header" position="attributes">
+        <attribute name="t-attf-class" add="o_header_fade_out" separator=" "/>
+       </xpath>
+        </data>
+        ]]>
+      </field>     
+    </record>
+    <record id="template_footer_slideout" model="ir.ui.view">
+      <field name="name">Template Footer Slideout</field>
+      <field name="inherit_id" ref="website.layout" />
+      <field name="arch" type="xml">
+        <![CDATA[
+        <data inherit_id="website.layout" name="Template Footer Slideout" active="False">
+    <xpath expr="//footer[@id='bottom']" position="attributes">
+        <attribute name="t-attf-class" add="o_footer_slideout" separator=" "/>
+    </xpath>
+</data>
+        ]]>
+      </field>     
+    </record>
+    <record id="footer_copyright_company_name" model="ir.ui.view">
+      <field name="name">footer_copyright_company_name</field>
+      <field name="inherit_id" ref="website.layout" />
+      <field name="arch" type="xml">
+        <![CDATA[
+        <data inherit_id="website.layout">
+    <xpath expr="//footer//span[hasclass('o_footer_copyright_name')]" position="replace">
+        <span class="o_footer_copyright_name me-2">Copyright © DoneZ Tech Inc.</span>
+    </xpath>
+</data>
+        ]]>
+      </field>     
+    </record>
+    <record id="option_footer_scrolltop" model="ir.ui.view">
+      <field name="name">option_footer_scrolltop</field>
+      <field name="inherit_id" ref="website.layout" />
+      <field name="arch" type="xml">
+        <![CDATA[
+        <data inherit_id="website.layout" active="False">
+    <xpath expr="//div[@id='footer']" position="after">
+        <div id="o_footer_scrolltop_wrapper" class="container h-0 d-flex align-items-center justify-content-center">
+            <a id="o_footer_scrolltop" role="button" href="#top" title="Scroll To Top" class="btn btn-primary rounded-circle d-flex align-items-center justify-content-center">
+                <span class="oi fa-1x oi-chevron-up"/>
+            </a>
+        </div>
+    </xpath>
+</data>
+        ]]>
+      </field>     
+    </record>
+    <record id="header_hoverable_dropdown" model="ir.ui.view">
+      <field name="name">Header Hoverable Dropdown</field>
+      <field name="inherit_id" ref="website.layout" />
+      <field name="arch" type="xml">
+        <![CDATA[
+        <data inherit_id="website.layout" name="Header Hoverable Dropdown" active="False">
+    <xpath expr="//header" position="attributes">
+        <attribute name="t-attf-class" add="o_hoverable_dropdown" separator=" "/>
+    </xpath>
+</data>
+        ]]>
+      </field>     
+    </record>
+
+  </data>
+</odoo>
