@@ -1,29 +1,22 @@
 #!/bin/bash
 set -e
 
-DOMAIN=doneztech.com
+DOMAINS=["doneztech.com" "demo.doneztech.com" "login.doneztech.com" "exploreodoo.doneztech.com" ]
 EMAIL=admin@doneztech.com
 WEBROOT=/var/www/certbot
 CERTBOT_PATH=/opt/ssl/certbot
 
-if [ ! -f "$CERTBOT_PATH/live/$DOMAIN/fullchain.pem" ]; then
-    echo "no cert found. Bootstrapping https..."
-    
-    cp nginx/nginx-http.conf nginx/conf.d/default.conf
-    docker compose down nginx && docker-compose up -d nginx
-    
-    sleep 5
-   
-    docker-compose run --rm certbot certbot certonly --webroot -w $WEBROOT -d $DOMAIN  --email $EMAIL --agree-tos --non-interactive
-    docker-compose run --rm certbot certbot certonly --webroot -w $WEBROOT -d odoo.$DOMAIN --email $EMAIL --agree-tos --non-interactive    
-    docker-compose run --rm certbot certbot certonly --webroot -w $WEBROOT -d login.$DOMAIN --email $EMAIL --agree-tos --non-interactive    
-    docker-compose run --rm certbot certbot certonly --webroot -w $WEBROOT -d exploreodoo.$DOMAIN --email $EMAIL --agree-tos --non-interactive    
-    docker-compose run --rm certbot certbot certonly --webroot -w $WEBROOT -d demo.$DOMAIN --email $EMAIL --agree-tos --non-interactive    
+cp nginx/nginx-http.conf nginx/conf.d/default.conf
+docker compose down nginx && docker-compose up -d nginx
+sleep 5
 
-    cp nginx/nginx-https.conf nginx/conf.d/default.conf
-    docker-compose restart nginx
-else
-    cp nginx/nginx-https.conf nginx/conf.d/default.conf
-    docker-compose restart nginx
-    echo "Cert already exists, skipping bootstrap."
-fi
+for DOMAIN in "${DOMAINS[@]}"; do
+    if [ ! -f "$CERTBOT_PATH/live/$DOMAIN/fullchain.pem" ]; then
+        echo "no cert found. Bootstrapping https..."
+    
+        docker-compose run --rm certbot certbot certonly --webroot -w $WEBROOT -d $DOMAIN  --email $EMAIL --agree-tos --non-interactive
+               
+    fi
+done
+cp nginx/nginx-https.conf nginx/conf.d/default.conf
+docker-compose restart nginx
