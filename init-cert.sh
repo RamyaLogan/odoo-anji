@@ -16,9 +16,14 @@ if [ ! -f "$CERTBOT_PATH/live/$DOMAIN/fullchain.pem" ]; then
    
     docker-compose run --rm certbot certbot certonly --webroot -w $WEBROOT -d $DOMAIN  --email $EMAIL --agree-tos --non-interactive
     docker-compose run --rm certbot certbot certonly --webroot -w $WEBROOT -d odoo.$DOMAIN --email $EMAIL --agree-tos --non-interactive    
+    docker-compose run --rm certbot certbot certonly --webroot -w $WEBROOT -d login.$DOMAIN --email $EMAIL --agree-tos --non-interactive    
+    docker-compose run --rm certbot certbot certonly --webroot -w $WEBROOT -d exploreodoo.$DOMAIN --email $EMAIL --agree-tos --non-interactive    
+    docker-compose run --rm certbot certbot certonly --webroot -w $WEBROOT -d demo.$DOMAIN --email $EMAIL --agree-tos --non-interactive    
 
     cp nginx/nginx-https.conf nginx/conf.d/default.conf
     docker-compose restart nginx
 else
+    cp nginx/nginx-https.conf nginx/conf.d/default.conf
+    docker-compose restart nginx
     echo "Cert already exists, skipping bootstrap."
 fi
