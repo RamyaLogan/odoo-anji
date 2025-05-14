@@ -1,0 +1,6 @@
+<style>
+    div[name="db"],
+    .js_select_db {
+        display: none !important;
+    }
+</style>
