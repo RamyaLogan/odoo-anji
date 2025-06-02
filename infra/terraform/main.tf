@@ -39,7 +39,7 @@ resource "aws_security_group" "ec2_sg" {
   }
 }
 resource "aws_instance" "odoo" {
-  ami = "ami-084568db4383264d4"
+  ami = "ami-08355844f8bc94f55"
   instance_type = "t3.medium"
   availability_zone = "ca-central-1a"
   key_name = var.key_pair_name
