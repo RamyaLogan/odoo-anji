@@ -47,7 +47,7 @@ resource "aws_instance" "odoo" {
   instance_type = "t3.medium"
   availability_zone = "ca-central-1a"
   key_name = aws_key_pair.deploy_key.key_name
-  vpc_security_group_ids = [aws_security_group.ec2_sg]
+  vpc_security_group_ids = [aws_security_group.ec2_sg.id]
   tags = {
     name = "odoo-ec2"
   }
