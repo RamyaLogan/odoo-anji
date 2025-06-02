@@ -13,4 +13,5 @@ variable "instance_name" {
 variable "ssh_public_key" {
   description = "SSH key pair name for access which is git deply key"
   type = string
+  default = "id_rsa"
 }
