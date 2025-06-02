@@ -10,6 +10,10 @@ terraform {
 provider "aws" {
   region = var.aws_region
 }
+resource "aws_key_pair" "deploy_key" {
+  key_name = "deploy_key"
+  public_key = var.ssh_public_key
+}
 resource "aws_security_group" "ec2_sg" {
   name = "ec2_sg"
   description = "Allow SSH, HTTP and HTTPS"
@@ -42,5 +46,5 @@ resource "aws_instance" "odoo" {
   ami = "ami-08355844f8bc94f55"
   instance_type = "t3.medium"
   availability_zone = "ca-central-1a"
-  key_name = var.key_pair_name
+  key_name = aws_key_pair.deploy_key.key_name
 }
