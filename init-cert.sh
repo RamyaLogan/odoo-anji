@@ -1,7 +1,7 @@
 #!/bin/bash
 set -e
 
-DOMAINS=("doneztech.com" "demo.doneztech.com" "login.doneztech.com" "exploreodoo.doneztech.com" )
+DOMAINS=( "mhs.doneztech.com" )
 EMAIL=admin@doneztech.com
 WEBROOT=/var/www/certbot
 CERTBOT_PATH=/opt/ssl/certbot
