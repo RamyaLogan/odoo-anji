@@ -69,15 +69,14 @@ jobs:
               -o /usr/local/bin/docker-compose
             sudo chmod +x /usr/local/bin/docker-compose
           fi
-          
           if [ ! -d "odoo-self-hosted" ]; then
-            git clone git@github.com:RamyaLogan/odoo-self-hosted.git
+            git clone -b $BRANCH_NAME git@github.com:RamyaLogan/odoo-self-hosted.git
           fi
           cd odoo-self-hosted
           sudo chown -R ubuntu:ubuntu .
           git reset --hard
           git clean -fd
-          git pull origin main
+          git pull origin $BRANCH_NAME
           git submodule update --init --depth 1 --recursive
           sudo apt update
           sudo apt install -y docker.io docker-compose
