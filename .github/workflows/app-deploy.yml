@@ -92,5 +92,5 @@ jobs:
 
           bash ./init-cert.sh
           docker-compose down
-          docker-compose up -d db odoo nginx --build
+          docker-compose up -d db odoo nginx redis --build
         EOF
