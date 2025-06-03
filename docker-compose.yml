@@ -25,6 +25,7 @@ services:
       context: .
       dockerfile: Dockerfile
     container_name: odoo-web
+    restart: always
     depends_on:
       db:
         condition: service_healthy
@@ -34,6 +35,7 @@ services:
       - LETSENCRYPT_EMAIL=admin@doneztech.com
     ports:
       - "8069:8069"
+      - "8072:8072"
     volumes:
       - ./odoo:/opt/odoo
       - odoo_local:/opt/odoo/.local
@@ -78,6 +80,9 @@ services:
     entrypoint: ""
     networks:
       - odoo-net
+redis:
+  image: redis:7
+  restart: always
 
 volumes:
   db_data:
