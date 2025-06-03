@@ -79,6 +79,10 @@ jobs:
           git clean -fd
           git pull origin main
           git submodule update --init --depth 1 --recursive
+          sudo apt update
+          sudo apt install -y docker.io docker-compose
+          sudo systemctl enable docker
+          sudo systemctl start docker
           sudo usermod -aG docker ubuntu
           newgrp docker
           
