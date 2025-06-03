@@ -80,9 +80,9 @@ services:
     entrypoint: ""
     networks:
       - odoo-net
-redis:
-  image: redis:7
-  restart: always
+  redis:
+    image: redis:7
+    restart: always
 
 volumes:
   db_data:
