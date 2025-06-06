@@ -3,7 +3,7 @@ terraform {
     organization = "doneztech" 
 
     workspaces { 
-      name = "odoo-infra" 
+      name = "odoo-mhs" 
     } 
   } 
 }
@@ -45,7 +45,7 @@ resource "aws_security_group" "ec2_sg" {
 resource "aws_instance" "odoo" {
   ami = "ami-08355844f8bc94f55"
   instance_type = "t3.medium"
-  availability_zone = "ca-central-1a"
+  availability_zone = "ap-south-1"
   key_name = aws_key_pair.deploy_key.key_name
   vpc_security_group_ids = [aws_security_group.ec2_sg.id]
   tags = {
