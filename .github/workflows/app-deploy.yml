@@ -69,10 +69,10 @@ jobs:
               -o /usr/local/bin/docker-compose
             sudo chmod +x /usr/local/bin/docker-compose
           fi
-          if [ ! -d "odoo-self-hosted" ]; then
-            git clone git@github.com:RamyaLogan/odoo-self-hosted.git
+          if [ ! -d "odoo-mhs" ]; then
+            git clone git@github.com:RamyaLogan/odoo-mhs.git
           fi
-          cd odoo-self-hosted
+          cd odoo-mhs
           sudo chown -R ubuntu:ubuntu .
           git reset --hard
           git clean -fd
