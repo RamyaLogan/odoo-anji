@@ -43,10 +43,15 @@ resource "aws_security_group" "ec2_sg" {
   }
 }
 resource "aws_instance" "odoo" {
-  ami = "ami-08355844f8bc94f55"
-  instance_type = "t3.medium"
+  ami = "ami-02521d90e7410d9f0"
+  instance_type = "t3.small"
   availability_zone = "ap-south-1"
   key_name = aws_key_pair.deploy_key.key_name
+  root_block_device {
+    volume_size = 30
+    volume_type = "gp3"
+    delete_on_termination = false
+  }
   vpc_security_group_ids = [aws_security_group.ec2_sg.id]
   tags = {
     name = "odoo-ec2"
