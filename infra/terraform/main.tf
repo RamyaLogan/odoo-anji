@@ -3,27 +3,57 @@ terraform {
     organization = "doneztech" 
 
     workspaces { 
-      name = "odoo-infra" 
+      name = "odoo-mhs" 
     } 
   } 
 }
 provider "aws" {
   region = var.aws_region
 }
-
-resource "aws_lightsail_instance" "odoo" {
-  name = var.instance_name
-  availability_zone = "ca-central-1a"
-  blueprint_id = "ubuntu_22_04"
-  bundle_id = "small_2_0"
-  key_pair_name = var.key_pair_name
+resource "aws_key_pair" "deploy_key" {
+  key_name = "deploy_key"
+  public_key = var.ssh_public_key
 }
-
-resource "aws_lightsail_static_ip" "odoo_ip" {
-  name = "odoo-ip"
+resource "aws_security_group" "ec2_sg" {
+  name = "ec2_sg"
+  description = "Allow SSH, HTTP and HTTPS"
+  ingress {
+    from_port = 22
+    to_port = 22
+    protocol = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+  ingress {
+    from_port = 80
+    to_port = 80
+    protocol = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+  ingress {
+    from_port = 443
+    to_port = 443
+    protocol = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+  egress {
+    from_port = 0
+    to_port = 0
+    protocol = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
 }
-
-resource "aws_lightsail_static_ip_attachment" "attach_ip" {
-  static_ip_name = aws_lightsail_static_ip.odoo_ip.name
-  instance_name = aws_lightsail_instance.odoo.name
+resource "aws_instance" "odoo" {
+  ami = "ami-02521d90e7410d9f0"
+  instance_type = "t3.small"
+  availability_zone = "ap-south-1a"
+  key_name = aws_key_pair.deploy_key.key_name
+  root_block_device {
+    volume_size = 30
+    volume_type = "gp3"
+    delete_on_termination = false
+  }
+  vpc_security_group_ids = [aws_security_group.ec2_sg.id]
+  tags = {
+    name = "odoo-ec2"
+  }
 }

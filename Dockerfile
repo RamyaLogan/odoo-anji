@@ -21,8 +21,13 @@
     # Install runtime system dependencies
     RUN apt-get update && apt-get install -y --no-install-recommends \
         libpq5 libxml2 libxslt1.1 zlib1g libjpeg62-turbo libldap-2.5-0 \
-        libsasl2-2 libssl3 fontconfig libfreetype6 libjpeg62-turbo libx11-6 libxext6 libxrender1 wget xz-utils wkhtmltopdf && \
-        rm -rf /var/lib/apt/lists/*
+        libsasl2-2 libssl3 fontconfig libfreetype6 libx11-6 libxext6 libxrender1 \
+        xfonts-base xfonts-75dpi wget xz-utils \
+        && wget https://github.com/wkhtmltopdf/packaging/releases/download/0.12.6.1-3/wkhtmltox_0.12.6.1-3.bookworm_amd64.deb \
+        && dpkg -i wkhtmltox_0.12.6.1-3.bookworm_amd64.deb \
+        && apt-get install -f -y \
+        && rm wkhtmltox_0.12.6.1-3.bookworm_amd64.deb \
+        && rm -rf /var/lib/apt/lists/*
     
     WORKDIR /opt/odoo
     

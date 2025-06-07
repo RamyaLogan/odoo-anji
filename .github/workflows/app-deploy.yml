@@ -35,19 +35,19 @@ jobs:
       run: |
         RAW_OUTPUT=$(terraform output -raw odoo_server_ip 2>&1)
         SERVER_IP=$(echo "$RAW_OUTPUT" | grep -Eo '([0-9]{1,3}\.){3}[0-9]{1,3}' | tail -n 1 | tr -d '\r\n')
-        echo "Extraced clean IP: $SERVER_IP"
-        echo "odoo_ip=$SERVER_IP" >> $GITHUB_ENV
+        echo "Extracted EC2 IP: $SERVER_IP"
+        echo "ec2_ip=$SERVER_IP" >> $GITHUB_ENV
     
     - name: Print
       working-directory: infra/terraform
-      run: echo "ip ${{ env.odoo_ip }}"
+      run: echo "ip ${{ env.ec2_ip }}"
 
     - name: Setup SSH
       run: |
         mkdir -p ~/.ssh
-        echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
+        echo "${{ secrets.DEPLOY_PRIVATE_KEY_SSH }}" > ~/.ssh/id_rsa
         chmod 600 ~/.ssh/id_rsa
-        ssh-keyscan -H ${{ env.odoo_ip }} >> ~/.ssh/known_hosts
+        ssh-keyscan -H ${{ env.ec2_ip }} >> ~/.ssh/known_hosts
 
     - name: Deploy to Server
       run: |
@@ -55,7 +55,7 @@ jobs:
             -o ServerAliveInterval=60 \
             -o ServerAliveCountMax=10 \
             -o TCPKeepAlive=yes \
-            ubuntu@$odoo_ip << 'EOF'
+            ubuntu@${{ env.ec2_ip }} << 'EOF'
 
           set -e
           sudo apt update
@@ -69,16 +69,21 @@ jobs:
               -o /usr/local/bin/docker-compose
             sudo chmod +x /usr/local/bin/docker-compose
           fi
-          
-          if [ ! -d "odoo-self-hosted" ]; then
-            git clone git@github.com:RamyaLogan/odoo-self-hosted.git
+          if [ ! -d "odoo-mhs" ]; then
+            git clone git@github.com:RamyaLogan/odoo-mhs.git
           fi
-          cd odoo-self-hosted
+          cd odoo-mhs
           sudo chown -R ubuntu:ubuntu .
           git reset --hard
           git clean -fd
-          git pull origin main
+          git fetch origin
+          git checkout deploy_ec2
+          git pull origin deploy_ec2
           git submodule update --init --depth 1 --recursive
+          sudo apt update
+          sudo apt install -y docker.io docker-compose
+          sudo systemctl enable docker
+          sudo systemctl start docker
           sudo usermod -aG docker ubuntu
           newgrp docker
           
@@ -87,5 +92,5 @@ jobs:
 
           bash ./init-cert.sh
           docker-compose down
-          docker-compose up -d db odoo nginx --build
+          docker-compose up -d db odoo nginx redis --build
         EOF
