@@ -77,8 +77,8 @@ jobs:
           git reset --hard
           git clean -fd
           git fetch origin
-          git checkout deploy_ec2
-          git pull origin deploy_ec2
+          git checkout 
+          git pull origin
           git submodule update --init --depth 1 --recursive
           sudo apt update
           sudo apt install -y docker.io docker-compose
