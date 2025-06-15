@@ -1,0 +1,37 @@
+<odoo>
+<record id="lead_import_wizard_view" model="ir.ui.view">
+        <field name="name">lead.import.wizard.form</field>
+        <field name="model">lead.import.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Import Leads from Excel" enctype="multipart/form-data">
+                <group>
+                    <field name="file" filename="filename"/>
+                    <field name="filename" invisible="1" />
+                    <field name="saved_filename" string="File Name"/>
+                    <field name="import_type" invisible="1"/>
+                </group>
+                <footer>
+                    <button name="action_import_leads" type="object" string="Import Leads" class="btn-primary"/>
+                    <button string="Cancel" class="btn-secondary" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+</record>
+<record id="lead_import_wizard_action" model="ir.actions.act_window">
+        <field name="name">Import Leads</field>
+        <field name="res_model">lead.import.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+        <field name="context">{'default_import_type': 'lead'}</field>
+</record>
+<record id="opportunity_import_wizard_action" model="ir.actions.act_window">
+        <field name="name">Import Opportunities</field>
+        <field name="res_model">lead.import.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+        <field name="context">{'default_import_type': 'opportunity'}</field>
+</record>
+<menuitem id="menu_imports" name="Import" parent="crm.crm_menu_root" sequence="20"/>
+<menuitem id="menu_lead_import" name="Import Leads" parent="menu_imports" action="lead_import_wizard_action" sequence="20"/>
+<menuitem id="menu_oppourtunity_import" name="Import Opportunities" parent="menu_imports" action="opportunity_import_wizard_action" sequence="21"/>
+</odoo>

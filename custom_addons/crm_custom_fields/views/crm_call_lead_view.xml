@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+<record id="crm_lead_form_custom" model="ir.ui.view">
+<field name="name">crm.lead.form.custom</field>
+<field name="model">crm.lead</field>
+<field name="inherit_id" ref="crm.crm_lead_view_form"/>
+<field name="arch" type="xml">
+<xpath expr="//group[@name='lead_info']//field[@id='phone_group_lead_info']" position="before" multiple="True">
+<field name="masked_phone" />
+<div class="custom-call-sms-buttons">
+<a href="/voip/initiate_call?phone=#{record.phone.raw_value}" class="btn-call">
+                        <i class="fa fa-phone"></i> Call
+                    </a>
+                    </div>
+</xpath>
+<xpath expr="//group[@name='lead_info']//field[@id='phone_group_lead_info']" position="replace" multiple="True">
+<field name="phone" id="phone_group_lead_info" widget="phone" invisible="true"/>
+</xpath>
+<xpath expr="//field[@name='phone']" position="before" multiple="True">
+<field name="masked_phone" />
+<div class="custom-call-sms-buttons">
+<button type="object"
+        name="action_trigger_smartflo_call"
+        class="btn btn-link"
+        prevent_default="1"
+        confirm="Initiate call to this lead?"
+        icon="fa-phone">Call
+</button>
+                    </div>
+</xpath>
+<xpath expr="//field[@name='phone']" position="replace" multiple="True">
+<field name="phone" widget="phone" invisible="true"/>
+</xpath>
+<xpath expr="//field[@name='email_from']/ancestor::div[1]" position="after" multiple="True">
+
+                <field name="import_source"/>
+              <field name="age"/>
+</xpath>
+<xpath expr="//group[@name='lead_info']//field[@name='email_from']/ancestor::div[1]" position="after" multiple="True">
+
+                <field name="import_source"/>
+              <field name="age"/>
+</xpath>
+<xpath expr="//group[@name='lead_info']//field[@name='mobile']/ancestor::div[1]" position="attributes">
+    <attribute name="invisible">1</attribute>
+</xpath>
+</field>
+</record>
+
+</odoo>

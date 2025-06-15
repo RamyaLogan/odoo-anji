@@ -13,6 +13,7 @@
     
     RUN pip install --upgrade pip
     RUN pip install --prefix=/install psycopg2-binary
+    RUN pip install --prefix=/install openpyxl
     RUN pip install --prefix=/install -r /opt/odoo/requirements.txt || true
     
     # -------- Stage 2: Runtime Stage --------

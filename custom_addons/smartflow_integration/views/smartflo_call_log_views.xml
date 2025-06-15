@@ -1,0 +1,56 @@
+<odoo>
+  <record id="view_smartflo_call_log_tree" model="ir.ui.view">
+    <field name="name">smartflo.call.log.tree</field>
+    <field name="model">smartflo.call.log</field>
+    <field name="arch" type="xml">
+      <tree>
+        <field name="lead_id"/> 
+        <field name="start_time"/>
+        <field name="status"/>
+        <field name="direction"/>
+        <field name="customer_number"/>
+        <field name="duration"/>
+        <field name="recording_url" widget="url"/>   
+      </tree>
+    </field>
+  </record>
+
+  <record id="view_smartflo_call_log_form" model="ir.ui.view">
+    <field name="name">smartflo.call.log.form</field>
+    <field name="model">smartflo.call.log</field>
+    <field name="arch" type="xml">
+      <form string="Smartflo Call Log">
+        <group>
+          <field name="call_id"/>
+          <field name="uuid"/>
+          <field name="status"/>
+          <field name="direction"/>
+          <field name="lead_id"/> 
+          <field name="customer_number"/>
+          <field name="agent_id"/>
+          <field name="start_time"/>
+          <field name="answer_time"/>
+          <field name="end_time"/>
+          <field name="duration"/>
+          <field name="billsec"/>
+          <field name="hangup_cause"/>
+          <field name="recording_url" invisible="1"/>
+            <div class="o_form_label">Recording</div>
+            <audio controls="controls" style="width:100%; margin-top:8px;">
+                <source src="[[ recording_url ]]" type="audio/mpeg"/>
+                Your browser does not support the audio element.
+            </audio>          
+        </group>
+      </form>
+    </field>
+  </record>
+
+  <record id="action_smartflo_call_log" model="ir.actions.act_window">
+    <field name="name">Smartflo Call Logs</field>
+    <field name="res_model">smartflo.call.log</field>
+    <field name="view_mode">tree,form</field>
+  </record>
+
+  <menuitem id="menu_smartflo_root" name="Smartflo" sequence="1000"/>
+  <menuitem id="menu_smartflo_call_logs" name="Call Logs" parent="menu_smartflo_root" action="action_smartflo_call_log"/>
+</odoo>
