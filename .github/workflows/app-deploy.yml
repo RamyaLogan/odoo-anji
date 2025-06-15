@@ -48,6 +48,12 @@ jobs:
         echo "${{ secrets.DEPLOY_PRIVATE_KEY_SSH }}" > ~/.ssh/id_rsa
         chmod 600 ~/.ssh/id_rsa
         ssh-keyscan -H ${{ env.ec2_ip }} >> ~/.ssh/known_hosts
+    
+    - name: Print branch
+      run: echo "Deploying ${{ github.ref_name }}"
+
+    - name: Export triggering branch name to env
+      run: echo "DEPLOY_BRANCH=${GITHUB_REF_NAME}" >> $GITHUB_ENV
 
     - name: Deploy to Server
       run: |
@@ -77,8 +83,8 @@ jobs:
           git reset --hard
           git clean -fd
           git fetch origin
-          git checkout 
-          git pull origin
+          git checkout $DEPLOY_BRANCH
+          git pull origin $DEPLOY_BRANCH
           git submodule update --init --depth 1 --recursive
           sudo apt update
           sudo apt install -y docker.io docker-compose
