@@ -56,8 +56,10 @@ class LeadImportWizard(models.TransientModel):
     def process_uploaded_leads_from_s3(self, s3_key, import_type):
         import tempfile
         s3 = boto3.client('s3')
-        with tempfile.NamedTemporaryFile(delete=False) as tmp:
+        with tempfile.NamedTemporaryFile(delete=False, suffix=".xlsx") as tmp:
             s3.download_fileobj(S3_BUCKET, s3_key, tmp)
+            tmp.flush()
+            os.fsync(tmp.fileno())  # Ensure data is fully written to disk
             tmp_path = tmp.name
 
         try:
