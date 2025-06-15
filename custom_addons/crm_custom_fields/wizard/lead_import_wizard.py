@@ -100,7 +100,7 @@ class LeadImportWizard(models.TransientModel):
             index += 1
 
             if len(leads_to_create) >= 500:
-                imported += self._create_leads_and_activities(leads_to_create, activities_to_create)
+                imported += self._create_leads_and_activities(leads_to_create)
                 leads_to_create, activities_to_create = [], []
 
         # Create activities for existing leads
@@ -108,10 +108,7 @@ class LeadImportWizard(models.TransientModel):
 
         # Final batch processing
         if leads_to_create:
-            imported += self._create_leads_and_activities(leads_to_create, activities_to_create)
-
-        if activities_to_create:
-            self.env['mail.activity'].create(activities_to_create)
+            imported += self._create_leads_and_activities(leads_to_create)
 
         os.remove(file_path)
         _logger.info(f"Leads imported: {imported}, Duplicates: {duplicates}, Existing Leads: {len(existing_leads)}")
@@ -152,7 +149,7 @@ class LeadImportWizard(models.TransientModel):
         except:
             return 0
 
-    def _create_leads_and_activities(self, leads_data, activities_buffer,activity_type_id):
+    def _create_leads_and_activities(self, leads_data):
         created = self.env['crm.lead'].create(leads_data)
         self.create_followup_activities(created, summary="Follow Up Call", days=1)
         return len(created)
@@ -173,16 +170,11 @@ class LeadImportWizard(models.TransientModel):
                 'user_id': lead.user_id.id,
                 'date_deadline': deadline,
             })
-        BATCH_SIZE = 500
-        self.env['mail.activity'].sudo().create(activities_to_create)
-        for i in range(0, len(activities_to_create), BATCH_SIZE):
-            batch = activities_to_create[i:i+BATCH_SIZE]
-            self.bulk_insert_activities(batch)
-            """ if len(activities_to_create) >= 500:
+        if len(activities_to_create) >= 500:
                 Activity.create(activities_to_create)
                 activities_to_create = []
         if activities_to_create:
-            Activity.create(activities_to_create) """
+            Activity.create(activities_to_create)
 
     def _prepare_activity(self, lead, user_id,summary, activity_type_id):
         return {
