@@ -83,8 +83,8 @@ jobs:
           git reset --hard
           git clean -fd
           git fetch origin
-          git checkout $DEPLOY_BRANCH
-          git pull origin $DEPLOY_BRANCH
+          git checkout ${{ github.ref_name }}
+          git pull origin ${{ github.ref_name }}
           git submodule update --init --depth 1 --recursive
           sudo apt update
           sudo apt install -y docker.io docker-compose
