@@ -35,10 +35,7 @@ class LeadImportWizard(models.TransientModel):
             base, ext = os.path.splitext(self.filename)
             timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
             self.saved_filename = f"{base}_{timestamp}{ext}"
-import boto3
 
-S3_BUCKET = 'your-bucket-name'
-S3_PREFIX = 'crm-imports/'  # optional prefix/folder
 
     def action_import_leads(self):
         s3 = boto3.client('s3')
