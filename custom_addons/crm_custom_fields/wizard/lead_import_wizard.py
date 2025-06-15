@@ -11,7 +11,10 @@ from psycopg2.extras import execute_values
 from odoo.api import Environment
 import psycopg2
 from odoo.modules.registry import Registry
+import boto3
 
+S3_BUCKET = 'mhs-doneztech'
+S3_PREFIX = 'crm-imports/' 
 _logger = logging.getLogger(__name__)
 
 class LeadImportWizard(models.TransientModel):
@@ -32,19 +35,40 @@ class LeadImportWizard(models.TransientModel):
             base, ext = os.path.splitext(self.filename)
             timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
             self.saved_filename = f"{base}_{timestamp}{ext}"
+import boto3
+
+S3_BUCKET = 'your-bucket-name'
+S3_PREFIX = 'crm-imports/'  # optional prefix/folder
 
     def action_import_leads(self):
+        s3 = boto3.client('s3')
         for record in self:
             if record.file and record.filename:
-                tmp_dir = '/opt/odoo/tmp'
-                os.makedirs(tmp_dir, exist_ok=True) 
-                # Decode and save locally
-                filepath = os.path.join(tmp_dir, record.filename)
-                with open(filepath, "wb") as f:
-                    f.write(base64.b64decode(record.file))
-                self.env['lead.import.wizard'].with_delay(description="CRM CSV Import").process_uploaded_leads(filepath,self.import_type)
-            
+                base, ext = os.path.splitext(record.filename)
+                timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
+                s3_key = f"{S3_PREFIX}{base}_{timestamp}{ext}"
+
+                decoded_file = base64.b64decode(record.file)
+                s3.upload_fileobj(io.BytesIO(decoded_file), S3_BUCKET, s3_key)
+
+                # Trigger the job with the S3 path
+                self.env['lead.import.wizard'].with_delay(description="CRM S3 Import").process_uploaded_leads_from_s3(s3_key, self.import_type)
+    
     @api.model
+    def process_uploaded_leads_from_s3(self, s3_key, import_type):
+        import tempfile
+        s3 = boto3.client('s3')
+        with tempfile.NamedTemporaryFile(delete=False) as tmp:
+            s3.download_fileobj(S3_BUCKET, s3_key, tmp)
+            tmp_path = tmp.name
+
+        try:
+            return self.process_uploaded_leads(tmp_path, import_type)
+        finally:
+            if os.path.exists(tmp_path):
+                os.remove(tmp_path)
+
+    
     def process_uploaded_leads(self, file_path,import_type):
         team_name = 'Online Sales Team' if import_type == 'lead' else 'Offline Sales Team'
         online_team = self.env['crm.team'].search([('name', '=', team_name)], limit=1)

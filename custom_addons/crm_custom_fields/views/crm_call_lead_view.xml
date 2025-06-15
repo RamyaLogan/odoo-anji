@@ -8,9 +8,13 @@
 <xpath expr="//group[@name='lead_info']//field[@id='phone_group_lead_info']" position="before" multiple="True">
 <field name="masked_phone" />
 <div class="custom-call-sms-buttons">
-<a href="/voip/initiate_call?phone=#{record.phone.raw_value}" class="btn-call">
-                        <i class="fa fa-phone"></i> Call
-                    </a>
+<button type="object"
+        name="action_trigger_smartflo_call"
+        class="btn btn-link"
+        prevent_default="1"
+        confirm="Initiate call to this lead?"
+        icon="fa-phone">Call
+</button>
                     </div>
 </xpath>
 <xpath expr="//group[@name='lead_info']//field[@id='phone_group_lead_info']" position="replace" multiple="True">
