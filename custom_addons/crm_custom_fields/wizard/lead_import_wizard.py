@@ -12,6 +12,7 @@ from odoo.api import Environment
 import psycopg2
 from odoo.modules.registry import Registry
 import boto3
+import io
 
 S3_BUCKET = 'mhs-doneztech'
 S3_PREFIX = 'crm-imports/' 
