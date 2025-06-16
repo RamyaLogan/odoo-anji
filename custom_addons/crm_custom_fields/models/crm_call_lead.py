@@ -3,14 +3,54 @@ from odoo import models, fields
 class CrmCallLead(models.Model):
     _inherit = "crm.lead"
 
-    masked_phone = fields.Char(string='Phone mask', compute='_compute_masked_phone')
+    masked_phone = fields.Char(string='Phone', compute='_compute_masked_phone')
     import_source = fields.Char(string='Lead Source')
     age = fields.Integer(string='Age')
-    
+    sugar_level = fields.Selection([
+        ('120-150', '120-150'),
+        ('150-200', '150-200'),
+        ('200-250', '200-250'),
+        ('250-300', '250-300'),
+        ('>300', '>300')
+    ], string='Sugar Level')
+    available_for_webinar = fields.Boolean(strinf="Available for Webinar")
+    treatment_status = fields.Selection([
+        ('yes','Yes'),
+        ('no','No')
+    ], string="Treatment Status", default='no')
+    webinar_attended = fields.Selection([
+        ('yes','Yes'),
+        ('no','No')
+    ], string="Webinar Attended", default='no')
+    call_status = fields.Selection([
+        ('dnp', 'DNP'),
+        ('follow_up', 'Follow Up'),
+        ('disqualified', 'Disqualified')
+    ], string="Call Status")
+    language = fields.Selection([
+        ('tamil','Tamil'),
+        ('english', 'English'),
+        ('hindi', 'Hindi'),
+        ('telugu', 'Telugu'),
+        ('malayalam', 'Malayalam'),
+        ('other', 'Other')
+    ], string="Language")
+    occupation = fields.Selection([
+        ('house_wife', 'House Wife'),
+        ('it', 'IT'),
+        ('student', 'Student'),
+        ('retired', 'Retired'),
+        ('other','Other')], string="Occupation"
+    )
+    gender = fields.Selection([
+        ('male','Male'),
+        ('female','Female')
+    ],string="Gender")
+
     def _compute_masked_phone(self):
         for rec in self:
             if rec.phone:
-                rec.masked_phone = rec.phone[:2] + '****' + rec.phone[-2:]
+                rec.masked_phone = rec.phone[:2] + '******' + rec.phone[-2:]
             else:
                 rec.masked_phone = ''
 

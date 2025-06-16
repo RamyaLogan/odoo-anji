@@ -5,49 +5,101 @@
 <field name="model">crm.lead</field>
 <field name="inherit_id" ref="crm.crm_lead_view_form"/>
 <field name="arch" type="xml">
-<xpath expr="//group[@name='lead_info']//field[@id='phone_group_lead_info']" position="before" multiple="True">
-<field name="masked_phone" />
-<div class="custom-call-sms-buttons">
-<button type="object"
-        name="action_trigger_smartflo_call"
-        class="btn btn-link"
-        prevent_default="1"
-        confirm="Initiate call to this lead?"
-        icon="fa-phone">Call
-</button>
-                    </div>
-</xpath>
 <xpath expr="//group[@name='lead_info']//field[@id='phone_group_lead_info']" position="replace" multiple="True">
 <field name="phone" id="phone_group_lead_info" widget="phone" invisible="true"/>
 </xpath>
-<xpath expr="//field[@name='phone']" position="before" multiple="True">
-<field name="masked_phone" />
-<div class="custom-call-sms-buttons">
-<button type="object"
+<xpath expr="//label[@for='street']" position="before" multiple="True">
+<field name="sugar_level"/>
+</xpath>
+<xpath expr="//label[@for='email_from']" position="before" multiple="True">
+<span  class="o_form_label">Phone</span>
+                                        <div class="o_row">
+                                            <field name="masked_phone" id="masked_phone_page_lead"/>
+                                         <div><button type="object"
         name="action_trigger_smartflo_call"
-        class="btn btn-link"
+        class="btn btn-link" 
         prevent_default="1"
         confirm="Initiate call to this lead?"
         icon="fa-phone">Call
-</button>
-                    </div>
-</xpath>
-<xpath expr="//field[@name='phone']" position="replace" multiple="True">
-<field name="phone" widget="phone" invisible="true"/>
-</xpath>
-<xpath expr="//field[@name='email_from']/ancestor::div[1]" position="after" multiple="True">
+</button></div>  </div>
 
                 <field name="import_source"/>
               <field name="age"/>
+              <field name="gender"/>
 </xpath>
-<xpath expr="//group[@name='lead_info']//field[@name='email_from']/ancestor::div[1]" position="after" multiple="True">
-
+<xpath expr="//group[@name='lead_info']//label[@for='contact_name']" position="before" multiple="True">
+   <span  class="o_form_label">Phone</span>
+                                        <div class="o_row">
+                                            <field name="masked_phone" id="masked_phone_page_lead"/>
+                                         <div><button type="object"
+        name="action_trigger_smartflo_call"
+        class="btn btn-link "
+        prevent_default="1"
+        confirm="Initiate call to this lead?"
+        icon="fa-phone">Call
+</button> </div></div>
                 <field name="import_source"/>
               <field name="age"/>
+              <field name="gender"/>
 </xpath>
 <xpath expr="//group[@name='lead_info']//field[@name='mobile']/ancestor::div[1]" position="attributes">
     <attribute name="invisible">1</attribute>
 </xpath>
+<xpath expr="//group[@name='lead_info']//field[@name='function']" position="attributes">
+    <attribute name="invisible">1</attribute>
+</xpath>
+<xpath expr="//group[@name='opportunity_partner']//field[@name='partner_id']" position="attributes">
+    <attribute name="invisible">1</attribute>
+</xpath>
+<xpath expr="//field[@name='partner_id']" position="attributes">
+    <attribute name="invisible">1</attribute>
+</xpath>
+<xpath expr="//field[@name='phone']" position="attributes">
+    <attribute name="invisible">1</attribute>
+</xpath>
+<xpath expr="//label[@for='contact_name']" position="attributes">
+    <attribute name="invisible">1</attribute>
+</xpath>
+<xpath expr="//field[@name='contact_name']//ancestor::div[1]" position="attributes">
+    <attribute name="invisible">1</attribute>
+</xpath>
+<xpath expr="//field[@name='email_cc']" position="attributes">
+    <attribute name="invisible">1</attribute>
+</xpath>
+<xpath expr="//group[@name='lead_info']//field[@name='phone']" position="attributes">
+ <attribute name="invisible">1</attribute>
+</xpath>
+<xpath expr="//field[@name='website']" position="attributes">
+ <attribute name="invisible">1</attribute>
+</xpath>
+<xpath expr="//field[@name='partner_name']" position="attributes">
+ <attribute name="invisible">1</attribute>
+</xpath>
+<xpath expr="//field[@name='title']" position="attributes">
+ <attribute name="invisible">1</attribute>
+</xpath>
+<xpath expr="//sheet/notebook/page[@name='internal_notes']" position="before">
+        <page string="Online Sales" name='online_sales'>
+          <group>
+          <group>
+          <field name="available_for_webinar"/>       
+          <field name="age"/>
+          <field name="call_status"/>
+          <field name="language"/>
+          </group>
+          <group>
+          <field name="gender"/>
+          <field name="treatment_status"/>
+          <field name="occupation"/>
+          <field name="webinar_attended"/>
+          </group>
+          </group>
+        </page>
+        <page string="Offline Sales">
+          <group>
+          </group>
+        </page>
+      </xpath>
 </field>
 </record>
 
