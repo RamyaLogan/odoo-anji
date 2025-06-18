@@ -31,12 +31,18 @@ export class FloatingSoftphone extends Component {
                 if (payload.call_start && payload.call_start.startsWith(today)) {
                     const index = this.state.todayCalls.findIndex(call => call.uuid === payload.uuid);
                     if (index === -1) {
-                        this.state.todayCalls.unshift(payload);
+                        this.state.todayCalls.unshift({
+                            ...payload,
+                            call_start_ist: this.formatToIST(payload.call_start),
+                        });     
                         if (this.state.todayCalls.length > 6) {
                             this.state.todayCalls.pop();
                         }
                     } else {
-                        this.state.todayCalls[index] = payload;
+                        this.state.todayCalls[index] = {
+                        ...payload,
+                        call_start_ist: this.formatToIST(payload.call_start),
+                    };
                     }
                 }
                
@@ -55,10 +61,19 @@ export class FloatingSoftphone extends Component {
     async loadRecentCalls() {
         try {
             const response = await jsonrpc("/smartflo/recent_calls");
-            this.state.todayCalls.push(...response);
+            this.state.todayCalls.push(
+                ...response.map(call => ({
+                    ...call,
+                    call_start_ist: this.formatToIST(call.call_start),
+                }))
+            );
         } catch (err) {
             console.error("Failed to load recent calls:", err);
         }
+    }
+    formatToIST(utcString) {
+        if (!utcString) return "--:--";    
+        return utcString.slice(11, 16);
     }
 
     toggleExpand(uuid) {

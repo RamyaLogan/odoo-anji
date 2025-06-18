@@ -40,7 +40,18 @@ class SmartfloCallLog(models.Model):
 
     color = fields.Integer(string="Color Index")
     active = fields.Boolean(default=True)
+    effective_start_time = fields.Datetime(
+        string="Effective Start Time",
+        compute="_compute_effective_start_time",
+        store=True,
+        index=True
+    )
 
+    @api.depends('start_time', 'requested_time')
+    def _compute_effective_start_time(self):
+        for rec in self:
+            rec.effective_start_time = rec.start_time or rec.requested_time 
+            
     @api.model
     def auto_archive_old_logs(self):
         cutoff = fields.Datetime.now() - relativedelta(days=180)
@@ -155,6 +166,7 @@ class SmartfloCallLog(models.Model):
                     'status': status,
                     'duration': duration,
                     'uuid': uuid,
+                    'direction': direction,
             }
             channel = f"smartflo.agent.{agent_user.partner_id.id}"
             self.env['bus.bus']._sendone(channel,'smartflo.call',message)

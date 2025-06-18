@@ -4,19 +4,21 @@ from odoo.http import request
 import json
 import requests
 import uuid
-from datetime import datetime
+from odoo.fields import Datetime
+import pytz
 
 class SmartfloController(http.Controller):
 
     @http.route('/smartflo/recent_calls', type='json', auth='user')
     def get_recent_calls(self):
-        today_str = datetime.utcnow().strftime('%Y-%m-%d')
         partner_id = request.env.user.partner_id.id
         channel = f"smartflo.agent.{partner_id}"
-
+        ist = pytz.timezone("Asia/Kolkata")
+        today_ist = Datetime.now(ist).replace(hour=0, minute=0, second=0, microsecond=0)
+        today_utc = today_ist.astimezone(pytz.utc)
         calls = request.env['smartflo.call.log'].sudo().search(
-            [('start_time', '>=', today_str)],
-            order='start_time desc',
+            [('requested_time', '>=', today_utc)],
+            order='requested_time desc',
             limit=5
         )
 
@@ -26,7 +28,7 @@ class SmartfloController(http.Controller):
             'lead_name': c.lead_id.name,
             'status': c.status,
             'duration': c.duration,
-            'call_start': c.start_time,
+            'call_start': c.start_time.astimezone(ist).isoformat() if c.start_time else c.requested_time.astimezone(ist).isoformat() if c.requested_time else None,
             'direction': c.direction
         } for c in calls]
 
@@ -34,6 +36,7 @@ class SmartfloController(http.Controller):
     def c2c_call(self, **kw):
         data = json.loads(request.httprequest.data.decode('utf-8'))
         phone = data.get('phone')
+        ist = pytz.timezone("Asia/Kolkata")
         caller_id = request.env.user.smartflo_caller_id
         extension = request.env.user.smartflo_extension_number
         if not phone:
@@ -88,7 +91,7 @@ class SmartfloController(http.Controller):
                     'lead_name': data.get('lead_name'),
                     'lead_id': data.get('lead_id'),
                     'phone': phone,
-                    'call_start': fields.Datetime.now().isoformat().replace('T', ' '),
+                    'call_start': fields.Datetime.now().astimezone(ist).isoformat(),
                     'status': "initiated",
                     'uuid': call_uuid,
                     'direction': 'outbound',

@@ -103,7 +103,7 @@
                                     <!-- Start Time -->
                                     <div style="display: flex; align-items: center; font-size: 14px;">
                                         <span style="margin-left: 6px;">
-                                            🕒 <t t-esc="log.call_start.split(' ')[1].slice(0, 5)"/>
+                                            🕒 <t t-esc="log.call_start_ist"/>
                                         </span>
                                     </div>
 

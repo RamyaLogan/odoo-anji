@@ -7,12 +7,13 @@
       <xpath expr="//sheet/notebook" position="inside">
         <page string="Call History">
           <field name="smartflo_call_log_ids" mode="tree,form" context="{'default_lead_id': active_id}">
-            <tree>
+            <tree string="Call Logs" default_order="effective_start_time desc">
               <field name="agent_id"/>
               <field name="status"/>
-              <field name="start_time"/>      
+              <field name="start_time"/> 
+              <field name="requested_time"/>      
               <field name="duration"/>
-              <field name="recording_url"/>
+              <field name="direction"/>
             </tree>
           </field>
         </page>

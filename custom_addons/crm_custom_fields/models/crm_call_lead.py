@@ -13,7 +13,7 @@ class CrmCallLead(models.Model):
         ('250-300', '250-300'),
         ('>300', '>300')
     ], string='Sugar Level')
-    available_for_webinar = fields.Boolean(strinf="Available for Webinar")
+    available_for_webinar = fields.Boolean(string="Available for Webinar")
     treatment_status = fields.Selection([
         ('yes','Yes'),
         ('no','No')
