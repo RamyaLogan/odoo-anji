@@ -89,11 +89,11 @@ class LeadImportWizard(models.TransientModel):
             if phone in duplicate_records:
                 duplicates += 1
                 continue
-            name, source, age = row[header_map['name']], row[header_map['source']], self._safe_int(row[header_map['age']])
+            name, email = row[header_map['name']], row[header_map['email']]
             assigned_user_id = assigned_users[index % user_count]
 
             leads_to_create.append({
-                'name': name, 'phone': phone, 'age': age, 'import_source': source,
+                'name': name, 'phone': phone, 'email_from': email,
                 'user_id': assigned_user_id, 'type': 'lead',
             })
             duplicate_records.add(phone)
@@ -124,7 +124,7 @@ class LeadImportWizard(models.TransientModel):
         header_row = [cell.value for cell in next(sheet.iter_rows(min_row=1, max_row=1))]
         header_map = {header.lower().strip(): idx for idx, header in enumerate(header_row)}
 
-        required_cols = ['name', 'phone', 'source', 'age']
+        required_cols = ['name', 'phone', 'email', 'whatsapp_no']
         for col in required_cols:
             if col not in header_map:
                 raise UserError(f"Missing required column: {col}")
