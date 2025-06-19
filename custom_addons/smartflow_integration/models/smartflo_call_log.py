@@ -1,5 +1,7 @@
 from odoo import models, fields, api
 from dateutil.relativedelta import relativedelta
+import pytz
+from datetime import datetime
 
 class SmartfloCallLog(models.Model):
     _name = 'smartflo.call.log'
@@ -63,73 +65,118 @@ class SmartfloCallLog(models.Model):
         cutoff = fields.Datetime.now() - relativedelta(years=1)
         self.search([('create_date', '<', cutoff)]).unlink()
 
-    @api.model
-    def process_webhook_data(self, data):
-        uuid = data.get('custom_identifier', {}).get('odoo_uuid') or data.get('uuid')
-        call_id = data.get('call_id')
-        customer_number = data.get('customer_no_with_prefix') or data.get('customer_number')
+    def _resolve_call_status(self, data, direction):
+        call_status_raw = (data.get('call_status') or '').lower()
+        reason_key = (data.get('reason_key') or '').lower()
+        billsec = self.safe_int(data.get('billsec'))
+        call_flow = data.get('call_flow') or []
+        missed_agents = data.get('missed_agent') or []
 
+        if call_status_raw == 'missed':
+            if missed_agents:
+                return 'missed_by_agent'
+            else:
+                return 'missed_by_customer'
+        elif any(step.get("type") == "Agent" and step.get("id") is None for step in call_flow[1:]) \
+                and reason_key == "call disconnected by caller" and billsec < 30:
+            return 'answered_voicemail'
+        elif not call_status_raw and direction == 'inbound':
+            return 'initiated'
+        else:
+            return 'answered_talk'
+
+    def _resolve_lead(self, customer_number_raw):
+        if customer_number_raw and customer_number_raw.startswith("+91"):
+            customer_number_trimmed = customer_number_raw[3:]
+        else:
+            customer_number_trimmed = customer_number_raw
+
+        lead = self.env['crm.lead'].sudo().search([
+            ('phone', '=', customer_number_trimmed)
+        ], limit=1)
+        return lead
+
+    def _resolve_agent(self, data):
         agent_number = data.get('answered_agent_number')
         answered_agent = data.get('answered_agent')
         agent_extension = answered_agent.get('number') if isinstance(answered_agent, dict) else None
-        # If missed, try to get from missed_agent
+
+        # Fallback from missed agent block
         if not agent_number or agent_number == "_number":
             missed_agents = data.get('missed_agent') or []
             if missed_agents and isinstance(missed_agents, list):
                 agent_number = missed_agents[0].get('agent_number')
                 agent_extension = missed_agents[0].get('number')
-        # Lookup agent
-        agent_user = None
+
+        # Primary search if agent_number exists
         if agent_number:
             agent_user = self.env['res.users'].sudo().search([
                 '|',
                 ('smartflo_agent_number', '=', agent_number),
                 ('smartflo_extension_number', '=', agent_extension)
             ], limit=1)
+            return agent_user
 
-        # Resolve direction
-        direction = data.get('direction')
-        if direction == 'clicktocall':
-            direction = 'outbound'
+        # ✅ Final fallback using inbound `call_to_number` → DID based mapping
+        call_to_number = data.get('call_to_number')
+        if call_to_number:
+            if not call_to_number.startswith("+"):
+                if call_to_number.startswith("91"):
+                    call_to_number = "+" + call_to_number
+                elif len(call_to_number) == 10:
+                    call_to_number = "+91" + call_to_number
+            agent_user = self.env['res.users'].sudo().search([
+                '|','|',
+                ('smartflo_agent_number', '=', call_to_number),
+                ('smartflo_extension_number', '=', call_to_number),
+                ('smartflo_caller_id', '=', call_to_number)
+            ], limit=1)
+            return agent_user
 
-        billsec = self.safe_int(data.get('billsec'))
-        reason_key = (data.get('reason_key') or '').lower()
-        call_flow = data.get('call_flow') or []
-        duration = self.safe_int(data.get('duration'))
-        # Determine final status
-        call_status_raw = data.get('call_status', '').lower()
-        missed_agents = data.get('missed_agent') or []
+        return None
 
-        if call_status_raw == 'missed':
-            if missed_agents:
-                status = 'missed_by_agent'
-            else:
-                status = 'missed_by_customer'
-        elif any(
-            step.get("type") == "Agent" and step.get("id") is None
-            for step in call_flow[1:]
-        ) and reason_key == "call disconnected by caller" and billsec < 30:
-            status = 'answered_voicemail'
-        else:
-            status = 'answered_talk'
+    @api.model
+    def process_webhook_data(self, data):
+        uuid = data.get('custom_identifier', {}).get('odoo_uuid') or data.get('uuid')
+        call_id = data.get('call_id')
+        direction_raw = data.get('direction') or ''
+        direction = 'outbound' if direction_raw == 'clicktocall' else 'inbound'
 
-        # Build values
+        customer_number_raw = (
+            data.get('customer_no_with_prefix') or 
+            data.get('customer_number') or 
+            data.get('caller_id_number')
+        )
+
+        # Resolve Agent
+        agent_user = self._resolve_agent(data)
+
+        # Resolve Lead
+        lead = self._resolve_lead(customer_number_raw)
+        lead_id = lead.id if lead else False
+        lead_name = lead.name if lead else ''
+
+        # Status Resolution
+        status = self._resolve_call_status(data, direction)
+
+        # Build Values
         values = {
             'call_id': call_id,
             'uuid': uuid,
-            'customer_number': customer_number,
-            'agent_number': agent_number,
+            'customer_number': customer_number_raw,
+            'agent_number': data.get('answered_agent_number'),
             'agent_id': agent_user.id if agent_user else False,
             'start_time': data.get('start_stamp'),
             'answer_time': data.get('answer_stamp'),
             'end_time': data.get('end_stamp'),
-            'duration': duration,
-            'billsec': billsec,
+            'duration': self.safe_int(data.get('duration')),
+            'billsec': self.safe_int(data.get('billsec')),
             'recording_url': data.get('recording_url'),
             'hangup_cause': data.get('hangup_cause'),
             'call_connected': data.get('call_connected', False),
             'status': status,
             'direction': direction,
+            'lead_id': lead_id,
             'color': {
                 'answered': 10,
                 'voicemail': 7,
@@ -139,43 +186,41 @@ class SmartfloCallLog(models.Model):
             }.get(status, 0),
         }
 
-        # Link lead
-        lead_id = data.get('custom_identifier', {}).get('lead_id')
-        lead_name = data.get('custom_identifier', {}).get('lead_name')
-        if not lead_id:
-            lead = self.env['crm.lead'].sudo().search([('customer_number', '=', customer_number)], limit=1)
-            lead_id = lead.id if lead else False
-            lead_name = lead.name if lead else False
-        if lead_id:
-            values['lead_id'] = lead_id
-
-        # Update or create log
+        # Create or update record
         log = self.env['smartflo.call.log'].sudo().search([('uuid', '=', uuid)], limit=1)
         if log:
             log.write(values)
         else:
             self.env['smartflo.call.log'].sudo().create(values)
-
-        # Notify agent
+        # Send realtime bus only if agent found
         if agent_user:
             message = {
-                    'type': 'smartflo.call',
-                    'lead_name': lead_name,
-                    'lead_id': lead_id,
-                    'call_start': data.get('start_stamp'),
-                    'status': status,
-                    'duration': duration,
-                    'uuid': uuid,
-                    'direction': direction,
+                'type': 'smartflo.call',
+                'lead_name': lead_name,
+                'lead_id': lead_id,
+                'call_start': self.convert_utc_str_to_ist_str(data.get('start_stamp')),
+                'status': status,
+                'duration': values['duration'],
+                'uuid': uuid,
+                'direction': direction,
             }
             channel = f"smartflo.agent.{agent_user.partner_id.id}"
-            self.env['bus.bus']._sendone(channel,'smartflo.call',message)
-        return {
-            'message': message,
-            'channel': channel
-        }
+            self.env['bus.bus']._sendone(channel, 'smartflo.call', message)
+
+        return {'success': True}
+
+    @staticmethod
     def safe_int(val, default=0):
         try:
             return int(val)
         except (ValueError, TypeError):
             return default      
+
+    def convert_utc_str_to_ist_str(self,utc_str):
+        if not utc_str:
+            return None
+        utc_dt = fields.Datetime.from_string(utc_str)
+        ist = pytz.timezone("Asia/Kolkata")
+        utc_dt = utc_dt.replace(tzinfo=pytz.utc)
+        ist_dt = utc_dt.astimezone(ist)
+        return ist_dt.strftime("%Y-%m-%d %H:%M:%S")

@@ -1,11 +1,13 @@
 /** @odoo-module **/
 import { Component, useRef, useState, onMounted } from "@odoo/owl";
 import { jsonrpc } from "@web/core/network/rpc_service";
+import { useEnv } from "@odoo/owl";
 
 export class FloatingSoftphone extends Component {
     static template = "custom_softphone_ui.FloatingSoftphoneTemplate";
     static props = ['closeSoftphone', 'visible', 'openSoftphone']; 
     setup() {
+        this.env = useEnv(); 
         this.state = useState({
             currentCall: null,
             todayCalls: [],
@@ -21,6 +23,7 @@ export class FloatingSoftphone extends Component {
 
         // ✅ Bind toggleExpand to the component context
         this.toggleExpand = this.toggleExpand.bind(this);
+        this.openLead = this.openLead.bind(this);
     }
 
     handleBusCall({ detail: notifications }) {
@@ -28,7 +31,7 @@ export class FloatingSoftphone extends Component {
             if (type === "smartflo.call") {
                 const now = new Date();
                 const today = now.toISOString().slice(0, 10);
-                if (payload.call_start && payload.call_start.startsWith(today)) {
+                if (payload.call_start) {
                     const index = this.state.todayCalls.findIndex(call => call.uuid === payload.uuid);
                     if (index === -1) {
                         this.state.todayCalls.unshift({
@@ -107,9 +110,11 @@ export class FloatingSoftphone extends Component {
         if (leadId) {
             this.env.services.action.doAction({
                 type: 'ir.actions.act_window',
+                name: 'Lead',
                 res_model: 'crm.lead',
                 res_id: leadId,
-                view_mode: 'form',
+                views: [[false, 'form']],  // ✅ VERY IMPORTANT
+                target: 'current',
             });
         }
     }

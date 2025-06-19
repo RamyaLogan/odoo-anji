@@ -3,8 +3,13 @@
     <field name="name">smartflo.call.log.tree</field>
     <field name="model">smartflo.call.log</field>
     <field name="arch" type="xml">
-      <tree string="Call Logs" default_order="effective_start_time desc">
+      <tree string="Call Logs" default_order="effective_start_time desc" decoration-danger="color == 1"
+      decoration-warning="color == 2"
+      decoration-info="color == 3"
+      decoration-primary="color == 7"
+      decoration-success="color == 10">
         <field name="agent_id"/>
+        <field name="color" invisible="1"/>
         <field name="lead_id"/> 
         <field name="start_time"  widget="datetime" options="{'timezone': 'Asia/Kolkata'}"/>
         <field name="status"/>
@@ -34,23 +39,17 @@
           <field name="duration"/>
           <field name="hangup_cause"/>
           <field name="requested_time" widget="datetime"/>
-          <field name="recording_url" invisible="1"/>
-            <div class="o_form_label">Recording</div>
-            <audio controls="controls" style="width:100%; margin-top:8px;">
-                <source src="[[ recording_url ]]" type="audio/mpeg"/>
-                Your browser does not support the audio element.
-            </audio>          
+          <field name="recording_url" widget="audio_player"/>
         </group>
       </form>
     </field>
   </record>
 
   <record id="action_smartflo_call_log" model="ir.actions.act_window">
-    <field name="name">Smartflo Call Logs</field>
+    <field name="name">Call Logs</field>
     <field name="res_model">smartflo.call.log</field>
     <field name="view_mode">tree,form</field>
   </record>
 
-  <menuitem id="menu_smartflo_root" name="Smartflo" sequence="1000"/>
-  <menuitem id="menu_smartflo_call_logs" name="Call Logs" parent="menu_smartflo_root" action="action_smartflo_call_log"/>
+  <menuitem id="menu_smartflo_root" name="Call Logs"  action="action_smartflo_call_log"/>
 </odoo>

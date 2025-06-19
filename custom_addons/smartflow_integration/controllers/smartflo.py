@@ -51,7 +51,7 @@ class SmartfloController(http.Controller):
         call_uuid = str(uuid.uuid4())
         payload = {
             "agent_number": extension,
-            "destination_number": "9962390577",
+            "destination_number": phone,
             "caller_id": caller_id,
             "async": 1,
             "custom_identifier": {

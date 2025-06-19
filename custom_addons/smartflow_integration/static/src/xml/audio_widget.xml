@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+    <t t-name="smartflow_integration.AudioPlayerField">
+        <t t-if="url">
+            <audio controls="controls" style="width: 60%; margin-top: 5px;">
+                <source t-att-src="url" type="audio/mpeg"/>
+                Your browser does not support the audio element.
+            </audio>
+        </t>
+        <t t-if="!url">
+            <span>No Recording Available</span>
+        </t>
+    </t>
+
+</templates>
