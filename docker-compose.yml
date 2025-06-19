@@ -77,7 +77,7 @@ services:
     command: >
       bash -c "
         sleep 15 ;
-        exec python3 /opt/odoo/odoo-bin -c /etc/odoo/odoo.conf --load=web,queue_job
+        exec python3 /opt/odoo/odoo-bin -c /etc/odoo/odoo.conf --workers=0 --load=web,queue_job
       "
 
   nginx:
