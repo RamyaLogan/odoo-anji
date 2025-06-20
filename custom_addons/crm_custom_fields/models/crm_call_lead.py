@@ -1,4 +1,4 @@
-from odoo import models, fields
+from odoo import models, fields, api
 
 class CrmCallLead(models.Model):
     _inherit = "crm.lead"
@@ -47,12 +47,45 @@ class CrmCallLead(models.Model):
         ('female','Female')
     ],string="Gender")
 
+    payment_status = fields.Selection([
+        ('partial', 'Partially Paid'),
+        ('paid', 'Fully Paid'),
+    ],  string="Payment Status")
+
+    payment_date = fields.Date(string="Payment Date")
+    payment_reference = fields.Char(string="Payment Reference")
+    payment_amount = fields.Float(string="Payment Amount")
+    payment_mode = fields.Selection([
+        ('tagmango', 'Tag Mango'),
+        ('razorpay', 'Razor Pay'),
+        ('upi', 'UPI'),
+    ],  string="Payment Mode")
+    access_batch_code = fields.Char(string='Access Batch Code')
+    next_payment_date = fields.Date(string="Next Partial Payment Date")
+
+    @api.model
+    def create_payment_followup_activity(self):
+        for lead in self:
+            if lead.next_payment_date:
+                lead.activity_schedule(
+                    'mail.activity_data_call',
+                    date_deadline=lead.next_payment_date,
+                    summary='Follow-up for next payment installment',
+                    note='Reminder: collect partial payment today.'
+                )
+
     def _compute_masked_phone(self):
         for rec in self:
             if rec.phone:
                 rec.masked_phone = rec.phone[:2] + '******' + rec.phone[-2:]
             else:
                 rec.masked_phone = ''
+
+    def write(self, vals):
+        res = super().write(vals)
+        if 'next_payment_date' in vals:
+            self.create_payment_followup_activity()
+        return res
 
     def action_trigger_smartflo_call(self):
         self.ensure_one()

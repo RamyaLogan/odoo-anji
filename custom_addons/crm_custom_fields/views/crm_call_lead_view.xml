@@ -99,6 +99,21 @@
           <group>
           </group>
         </page>
+        <page string="Payment">
+          <group>
+          <group>
+          <field name="payment_status"/>
+          <field name="payment_mode"/>
+          <field name="payment_amount"/>
+          <field name="payment_reference"/>
+          </group>
+          <group>
+          <field name="payment_date"/>
+          <field name="next_payment_date" invisible="payment_status!='partial'"/>
+          <field name="access_batch_code"/>
+          </group>
+          </group>
+        </page>
       </xpath>
 </field>
 </record>

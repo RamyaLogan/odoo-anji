@@ -9,7 +9,6 @@ class AudioPlayerField extends Component {
     static props = standardFieldProps;  // 🔥 important!
 
     get url() {
-        alert('k');
         return this.props.record.data[this.props.name];
     }
 }
