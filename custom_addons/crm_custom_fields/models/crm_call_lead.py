@@ -4,6 +4,7 @@ class CrmCallLead(models.Model):
     _inherit = "crm.lead"
 
     masked_phone = fields.Char(string='Phone', compute='_compute_masked_phone')
+    whatsapp_no = fields.Char(string='Whatsapp No.')
     import_source = fields.Char(string='Lead Source')
     age = fields.Integer(string='Age')
     sugar_level = fields.Selection([
@@ -22,11 +23,19 @@ class CrmCallLead(models.Model):
         ('yes','Yes'),
         ('no','No')
     ], string="Webinar Attended", default='no')
-    call_status = fields.Selection([
-        ('dnp', 'DNP'),
-        ('follow_up', 'Follow Up'),
-        ('disqualified', 'Disqualified')
-    ], string="Call Status")
+    call_status = fields.Selection(
+        [
+            ('new', 'New'),
+            ('dnp', 'DNP'),
+            ('followup', 'Follow-up'),
+            ('disqualified', 'Disqualified'),
+            ('done', 'Done'),
+        ],
+        default="new",
+        required=True,
+        string="Call Status",
+        group_expand='_group_expand_call_status'
+    )
     language = fields.Selection([
         ('tamil','Tamil'),
         ('english', 'English'),
@@ -62,6 +71,10 @@ class CrmCallLead(models.Model):
     ],  string="Payment Mode")
     access_batch_code = fields.Char(string='Access Batch Code')
     next_payment_date = fields.Date(string="Next Partial Payment Date")
+
+    @api.model
+    def _group_expand_call_status(self, states, domain, order):
+        return ['new', 'dnp', 'followup', 'disqualified', 'done']
 
     @api.model
     def create_payment_followup_activity(self):
