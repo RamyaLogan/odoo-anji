@@ -6,7 +6,7 @@ import requests
 import uuid
 from odoo.fields import Datetime
 import pytz
-
+from datetime import datetime, time
 class SmartfloController(http.Controller):
 
     @http.route('/smartflo/recent_calls', type='json', auth='user')
@@ -14,14 +14,16 @@ class SmartfloController(http.Controller):
         partner_id = request.env.user.partner_id.id
         channel = f"smartflo.agent.{partner_id}"
         ist = pytz.timezone("Asia/Kolkata")
-        today_ist = Datetime.now(ist).replace(hour=0, minute=0, second=0, microsecond=0)
+        now_ist = Datetime.now(ist)
+        # Today IST 00:00
+        today_ist = ist.localize(datetime(now_ist.year, now_ist.month, now_ist.day, 0, 0, 0))
+        # Convert to UTC for search
         today_utc = today_ist.astimezone(pytz.utc)
         calls = request.env['smartflo.call.log'].sudo().search(
-            [('requested_time', '>=', today_utc)],
-            order='requested_time desc',
+            [('effective_start_time', '>=', today_utc)],
+            order='effective_start_time desc',
             limit=5
         )
-
         return [{
             'uuid': c.uuid,
             'lead_id': c.lead_id.id,

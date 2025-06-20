@@ -88,8 +88,10 @@ class SmartfloCallLog(models.Model):
     def _resolve_lead(self, customer_number_raw):
         if customer_number_raw and customer_number_raw.startswith("+91"):
             customer_number_trimmed = customer_number_raw[3:]
-        else:
+        elif len(call_to_number) == 10:
             customer_number_trimmed = customer_number_raw
+        else:
+            customer_number_trimmed = customer_number_raw[2:]
 
         lead = self.env['crm.lead'].sudo().search([
             ('phone', '=', customer_number_trimmed)
@@ -152,7 +154,7 @@ class SmartfloCallLog(models.Model):
         agent_user = self._resolve_agent(data)
 
         # Resolve Lead
-        lead = self._resolve_lead(customer_number_raw)
+        lead = data.get('custom_identifier', {}).get('lead_id') or self._resolve_lead(customer_number_raw)
         lead_id = lead.id if lead else False
         lead_name = lead.name if lead else ''
 
