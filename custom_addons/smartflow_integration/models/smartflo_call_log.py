@@ -139,7 +139,8 @@ class SmartfloCallLog(models.Model):
 
     @api.model
     def process_webhook_data(self, data):
-        uuid = data.get('custom_identifier', {}).get('odoo_uuid') or data.get('uuid')
+        custom_identifier = data.get('custom_identifier', {})
+        uuid = custom_identifier.get('odoo_uuid') or data.get('uuid')
         call_id = data.get('call_id')
         direction_raw = data.get('direction') or ''
         direction = 'outbound' if direction_raw == 'clicktocall' else 'inbound'
@@ -154,10 +155,15 @@ class SmartfloCallLog(models.Model):
         agent_user = self._resolve_agent(data)
 
         # Resolve Lead
-        lead = data.get('custom_identifier', {}).get('lead_id') or self._resolve_lead(customer_number_raw)
-        lead_id = lead.id if lead else False
-        lead_name = lead.name if lead else ''
+        lead_id = custom_identifier.get('lead_id')
+        lead_name = custom_identifier.get('lead_name')
 
+        # Step 2: If lead_id not present, try to resolve
+        if not lead_id:
+            lead = self._resolve_lead(customer_number_raw)
+            lead_id = lead.id if lead else False
+            lead_name = lead.name if lead else ''
+    
         # Status Resolution
         status = self._resolve_call_status(data, direction)
 
