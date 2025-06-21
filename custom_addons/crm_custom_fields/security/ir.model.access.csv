@@ -1,2 +1,3 @@
 id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
 action_lead_import_wizard,lead_import_wizard_action,model_lead_import_wizard,base.group_user,1,1,1,1
+access_crm_assign_leads_wizard,access.crm.assign.leads.wizard,model_crm_assign_leads_wizard,,1,1,1,1

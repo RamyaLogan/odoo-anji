@@ -10,6 +10,8 @@
         "views/lead_import_wizard_view.xml",
         "views/crm_phone_number_search_view.xml",
         "views/crm_lead_stage_view.xml",
+        "views/crm_assign_lead_view.xml",
+        "views/crm_assign_lead_wizard_view.xml",
     ],
     "installable": True,
     "application": False,

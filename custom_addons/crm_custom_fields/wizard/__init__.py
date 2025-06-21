@@ -1,1 +1,1 @@
-from . import lead_import_wizard
+from . import lead_import_wizard, crm_assign_lead_wizard
