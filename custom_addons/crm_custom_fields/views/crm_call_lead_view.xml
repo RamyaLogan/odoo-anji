@@ -22,7 +22,7 @@
         confirm="Initiate call to this lead?"
         icon="fa-phone">Call
 </button></div>  </div>
-
+                <field name="whatsapp_no"/>
                 <field name="import_source"/>
               <field name="age"/>
               <field name="gender"/>
@@ -38,6 +38,7 @@
         confirm="Initiate call to this lead?"
         icon="fa-phone">Call
 </button> </div></div>
+                <field name="whatsapp_no"/>
                 <field name="import_source"/>
               <field name="age"/>
               <field name="gender"/>
@@ -110,7 +111,11 @@
           <group>
           <field name="payment_date"/>
           <field name="next_payment_date" invisible="payment_status!='partial'"/>
-          <field name="access_batch_code"/>
+          <span  class="o_form_label" style="width:100%;white-space:nowrap">Access Batch Code</span>
+                                        <div class="o_row" style="width: 50%;margin-top: -2px;">
+                                        <span style="width:5%;">DS</span>
+                                          <div style="width:40%;display:inline-block;margin-left:-5px"><field name="access_batch_code" id="masked_phone_page_lead"/></div>
+                                         <div></div>  </div>
           </group>
           </group>
         </page>

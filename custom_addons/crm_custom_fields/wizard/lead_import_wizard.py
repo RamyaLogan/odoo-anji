@@ -89,12 +89,12 @@ class LeadImportWizard(models.TransientModel):
             if phone in duplicate_records:
                 duplicates += 1
                 continue
-            name, email = row[header_map['name']], row[header_map['email']]
+            name, email,whatsapp_no = row[header_map['name']], row[header_map['email']], row[header_map['whatsapp_no']]
             assigned_user_id = assigned_users[index % user_count]
 
             leads_to_create.append({
                 'name': name, 'phone': phone, 'email_from': email,
-                'user_id': assigned_user_id, 'type': 'lead',
+                'user_id': assigned_user_id, 'type': 'lead','whatsapp_no': whatsapp_no
             })
             duplicate_records.add(phone)
             index += 1

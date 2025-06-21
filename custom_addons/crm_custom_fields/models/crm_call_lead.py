@@ -69,9 +69,30 @@ class CrmCallLead(models.Model):
         ('razorpay', 'Razor Pay'),
         ('upi', 'UPI'),
     ],  string="Payment Mode")
-    access_batch_code = fields.Char(string='Access Batch Code')
+    access_batch_code_full = fields.Char("Batch Code", required=False)
+
+    access_batch_code = fields.Char(
+        string="Access Batch Code",
+        compute="_compute_access_batch_code",
+        inverse="_inverse_access_batch_code",
+        store=False
+    )
     next_payment_date = fields.Date(string="Next Partial Payment Date")
 
+    @api.depends('access_batch_code_full')
+    def _compute_access_batch_code(self):
+        for rec in self:
+            if rec.access_batch_code_full and rec.access_batch_code_full.startswith('DS'):
+                rec.access_batch_code = rec.access_batch_code_full[2:]
+            else:
+                rec.access_batch_code = rec.access_batch_code_full or ''
+
+    def _inverse_access_batch_code(self):
+        for rec in self:
+            if rec.access_batch_code:
+                rec.access_batch_code_full = f'DS{rec.access_batch_code}'
+            else:
+                rec.access_batch_code_full = ''
     @api.model
     def _group_expand_call_status(self, states, domain, order):
         return ['new', 'dnp', 'followup', 'disqualified', 'done']
