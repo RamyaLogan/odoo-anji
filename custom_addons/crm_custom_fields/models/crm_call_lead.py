@@ -1,8 +1,16 @@
 from odoo import models, fields, api
 
 class CrmCallLead(models.Model):
-    _inherit = "crm.lead"
+    _inherit = 'crm.lead'
 
+    payment_attachments = fields.Many2many(
+        'ir.attachment', 
+        'crm_lead_payment_attachment_rel', 
+        'lead_id', 
+        'attachment_id',
+        string="Payment Attachments",
+        domain="[('res_model','=','crm.lead'), ('res_id','=', id)]",
+    )
     masked_phone = fields.Char(string='Phone', compute='_compute_masked_phone')
     whatsapp_no = fields.Char(string='Whatsapp No.')
     import_source = fields.Char(string='Lead Source')

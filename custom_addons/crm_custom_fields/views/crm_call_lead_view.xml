@@ -117,6 +117,7 @@
                                           <div style="width:40%;display:inline-block;margin-left:-5px"><field name="access_batch_code" id="masked_phone_page_lead"/></div>
                                          <div></div>  </div>
           </group>
+             <field name="payment_attachments" widget="many2many_binary" />
           </group>
         </page>
       </xpath>

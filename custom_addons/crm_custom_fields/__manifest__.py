@@ -3,7 +3,7 @@
     "version": "17.0.1.0.0",
     "category": "CRM",
     "summary": "Custom fields for CRM module",
-    "depends": ["crm", "base", "queue_job"],
+    "depends": ["base", "crm", "mail","queue_job"],
     "data": [
         "security/ir.model.access.csv",
         "views/crm_call_lead_view.xml",
