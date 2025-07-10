@@ -63,7 +63,7 @@ class LeadImportWizard(models.TransientModel):
             tmp_path = tmp.name
 
         try:
-            return self.process_uploaded_leads(tmp_path, import_type)
+            return self.process_uploaded_leads(tmp_path, import_type) if import_type == 'lead' else self.process_uploaded_opportunity(tmp_path)
         finally:
             if os.path.exists(tmp_path):
                 os.remove(tmp_path)
@@ -118,13 +118,113 @@ class LeadImportWizard(models.TransientModel):
             'duplicates': duplicates
         }
 
+    def process_uploaded_opportunity(self, file_path):
+        self = self.with_env(self.env(user=SUPERUSER_ID))
+
+        team_name = 'Offline Sales Team'
+        offline_team = self.env['crm.team'].search([('name', '=', team_name)], limit=1)
+        assigned_users = offline_team.member_ids.ids
+        user_count = len(assigned_users)
+
+        if not assigned_users:
+            raise UserError(f"No members found in team: {team_name}")
+
+        header_map, data_rows = self._load_excel(file_path)
+        phones_to_process = self._extract_phones(data_rows, header_map)
+        existing_leads = self.env['crm.lead'].search([
+            ('phone', 'in', list(phones_to_process)),
+            ('type', '=', 'lead')
+        ])
+        existing_lead_map = {self.normalize_phone(lead.phone): lead for lead in existing_leads}
+
+        # Prepare tag cache: hot, warm, cold
+        tag_cache = {}
+        for tag_label in ['hot', 'warm', 'cold']:
+            tag = self.env['crm.tag'].search([('name', '=', tag_label)], limit=1)
+            if not tag:
+                tag = self.env['crm.tag'].create({'name': tag_label})
+            tag_cache[tag_label] = tag
+
+        updated, skipped, created, index = 0, 0, 0,0
+
+        for row in data_rows:
+            try:
+                raw_phone = row[header_map.get('phone', '')]
+                if not raw_phone:
+                    skipped += 1
+                    continue
+
+                phone = self.normalize_phone(raw_phone)
+                lead = existing_lead_map.get(phone)
+
+                category_value = row[header_map['category']].strip().lower()
+                if category_value not in tag_cache:
+                    tag = self.env['crm.tag'].search([('name', '=', category_value)], limit=1)
+                    if not tag:
+                        tag = self.env['crm.tag'].create({'name': category_value})
+                    tag_cache[category_value] = tag
+                category_tag = tag_cache.get(category_value)
+                if not lead:
+                    lead = self.env['crm.lead'].create({
+                        'name': row[header_map['name']],
+                        'phone': phone,
+                        'type': 'opportunity',
+                        'sugar_level': row[header_map['sugar_level']],
+                        'status': row[header_map['stage']],
+                        'access_batch_code_full': row[header_map['batch_code']],
+                        'user_id': assigned_users[index % user_count],
+                    })
+                    created += 1
+                else:
+                # Add tag only if not already linked
+                    lead.write({
+                        'type': 'opportunity',
+                        'sugar_level': row[header_map['sugar_level']],
+                        'status': row[header_map['stage']],
+                        'access_batch_code_full': row[header_map['batch_code']],
+                        'user_id': assigned_users[index % user_count],
+                    })
+                    updated += 1
+                if category_tag.id not in lead.tag_ids.ids:
+                        lead.write({'tag_ids': [(4, category_tag.id)]})
+
+                # Follow-up activity in 48 hours
+                self.env['mail.activity'].create({
+                    'res_model_id': self.env['ir.model']._get_id('crm.lead'),
+                    'res_id': lead.id,
+                    'activity_type_id': self.env.ref('mail.mail_activity_data_call').id,
+                    'summary': "Post Conversion Follow-up",
+                    'user_id': lead.user_id.id,
+                    'date_deadline': fields.Date.today() + timedelta(days=2),
+                })
+
+                index += 1
+
+                if updated % 100 == 0:
+                    _logger.info(f"Updated {updated} leads...")
+
+            except Exception as e:
+                _logger.warning(f"Error processing row: {e}")
+                skipped += 1
+                continue
+
+        os.remove(file_path)
+        _logger.info(f"Conversion complete. Updated: {updated}, Skipped: {skipped}, Existing leads found: {len(existing_leads)}")
+
+        return {
+            'updated': updated,
+            'skipped': skipped,
+            'created': created,
+            'existing_leads': len(existing_leads),
+        }
+
     def _load_excel(self, file_path):
         workbook = openpyxl.load_workbook(file_path)
         sheet = workbook.active
         header_row = [cell.value for cell in next(sheet.iter_rows(min_row=1, max_row=1))]
         header_map = {header.lower().strip(): idx for idx, header in enumerate(header_row)}
 
-        required_cols = ['name', 'phone', 'email', 'whatsapp_no']
+        required_cols = ['name', 'phone', 'email', 'whatsapp_no'] if self.import_type == 'lead' else ['name', 'phone', 'category', 'sugar_level', 'stage', 'batch_code']
         for col in required_cols:
             if col not in header_map:
                 raise UserError(f"Missing required column: {col}")

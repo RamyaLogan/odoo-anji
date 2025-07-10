@@ -16,6 +16,7 @@
     RUN pip install --prefix=/install openpyxl
     RUN pip install --prefix=/install -r /opt/odoo/requirements.txt || true
     RUN pip install --prefix=/install boto3
+    RUN pip install --prefix=/install google-auth
     # -------- Stage 2: Runtime Stage --------
     FROM python:3.11-slim-bookworm
     

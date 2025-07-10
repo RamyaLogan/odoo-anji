@@ -214,8 +214,29 @@ class SmartfloCallLog(models.Model):
             }
             channel = f"smartflo.agent.{agent_user.partner_id.id}"
             self.env['bus.bus']._sendone(channel, 'smartflo.call', message)
-
+        self.update_call_summary(agent_user, data.get('start_stamp'), values['duration'])
         return {'success': True}
+
+    def update_call_summary(self,agent_user, call_start_str, duration):
+        call_start_dt = datetime.strptime(call_start_str, "%Y-%m-%dT%H:%M:%SZ")
+        call_date = call_start_dt.date()
+        summary = self.env['call.log.summary'].sudo().search([
+            ('user_id', '=', agent_user.id),
+            ('date', '=', call_date)
+        ], limit=1)
+
+        if summary:
+            summary.sudo().write({
+                'total_calls': summary.total_calls + 1,
+                'total_duration': summary.total_duration + duration
+            })
+        else:
+            self.env['call.log.summary'].sudo().create({
+                'user_id': agent_user.id,
+                'date': call_date,
+                'total_calls': 1,
+                'total_duration': duration
+            })
 
     @staticmethod
     def safe_int(val, default=0):

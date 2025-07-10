@@ -9,6 +9,9 @@
             <attribute name="sum_field"></attribute>
             <attribute name="recurring_revenue_sum_field"></attribute>
         </xpath>
+        <xpath expr="/kanban" position="attributes">
+            <attribute name="default_group_by">status</attribute>
+        </xpath>
     </field>
 </record>
 <record id="view_crm_lead_tree_stage" model="ir.ui.view">

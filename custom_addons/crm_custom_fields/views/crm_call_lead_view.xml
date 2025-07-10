@@ -84,33 +84,42 @@
           <group>
           <group>
           <field name="available_for_webinar"/>       
-          <field name="age"/>
+          <field name="webinar_attended"/>
           <field name="call_status"/>
-          <field name="language"/>
+          <field name="follow_up_on" invisible="call_status!='follow_up'" required="call_status=='follow_up'"/>
+          <field name="remarks" />         
           </group>
           <group>
+          <field name="age"/>
           <field name="gender"/>
+          <field name="language"/>
           <field name="treatment_status"/>
-          <field name="occupation"/>
-          <field name="webinar_attended"/>
+          <field name="occupation"/>       
           </group>
           </group>
         </page>
         <page string="Offline Sales">
           <group>
+          <group>
+          <field name="status"/>
+          <field name="walk_in_date"  invisible="status!='walk_in'" required="status=='walk_in'"/>
+          <field name="follow_up_on" invisible="status!='follow_up'" required="status=='follow_up'" />
+          <field name="next_payment_date" invisible="status!='l1_basic_course_enrolled_partially_paid'" required="status=='l1_basic_course_enrolled_partially_paid'"/>
+          <field name="remarks" />
+          </group>
           </group>
         </page>
         <page string="Payment">
           <group>
           <group>
           <field name="payment_status"/>
-          <field name="payment_mode"/>
-          <field name="payment_amount"/>
-          <field name="payment_reference"/>
+          <field name="payment_mode" required="payment_status in ['paid','partial']" />
+          <field name="payment_amount" required="payment_status in ['paid','partial']"/>
+          <field name="payment_reference" required="payment_status in ['paid','partial']"/>
           </group>
           <group>
-          <field name="payment_date"/>
-          <field name="next_payment_date" invisible="payment_status!='partial'"/>
+          <field name="payment_date" required="payment_status in ['paid','partial']"/>
+          <field name="next_payment_date" invisible="payment_status!='partial'" required="payment_status in ['partial']"/>
           <span  class="o_form_label" style="width:100%;white-space:nowrap">Access Batch Code</span>
                                         <div class="o_row" style="width: 50%;margin-top: -2px;">
                                         <span style="width:5%;">DS</span>

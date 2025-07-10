@@ -1,11 +1,18 @@
 <templates xml:space="preserve">
     <!-- ✅ Systray Button: UNCHANGED -->
     <t t-name="custom_softphone_ui.SystrayButtonTemplate">
-        <div style="margin-top: 0px;margin-bottom: 0px;display: -webkit-box;display: -webkit-flex;display: flex;align-items: center;">
-            <button t-on-click="toggleSoftphone"
-                style="background: none; border: none; padding: 4px; display: flex; align-items: center; justify-content: center;">
-                <img src="/smartflow_integration/static/src/img/phone.svg" width="40" height="20" alt="Call" />
-            </button>
+        <div class="o-dropdown dropdown o-mail-DiscussSystray-class o-dropdown--no-caret" style="margin-top: 0px;margin-bottom: 0px;display: -webkit-box;display: -webkit-flex;display: flex;align-items: center;">
+            
+            <button t-on-click="toggleSoftphone" class="dropdown-toggle" style="background: none; border: none; padding-top: 6px; display: flex; align-items: center; justify-content: center;">
+  <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="none" stroke="currentcolor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
+  <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.9 19.9 0 0 1-8.63-3.07 
+           19.5 19.5 0 0 1-6-6A19.9 19.9 0 0 1 2.1 4.18 
+           2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.72c.1.88.3 1.74.57 2.57 
+           a2 2 0 0 1-.45 2L8.09 9.91a16 16 0 0 0 6 6l1.62-1.62 
+           a2 2 0 0 1 2-.45c.83.27 1.69.47 2.57.57 
+           a2 2 0 0 1 1.72 2z"></path>
+</svg>
+</button>
             <FloatingSoftphone t-props="{ visible: isVisible.panelVisible, closeSoftphone: onCloseSoftphone,openSoftphone: openSoftphone }"/>
         </div>
     </t>

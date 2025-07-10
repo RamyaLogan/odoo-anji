@@ -13,6 +13,7 @@
         'web.assets_backend': [
             'smartflow_integration/static/src/img/*.svg',
             'https://cdn.jsdelivr.net/npm/jssip/dist/jssip.min.js',
+            "https://cdn.jsdelivr.net/npm/chart.js",
             'smartflow_integration/static/src/js/*.js',
             'smartflow_integration/static/src/xml/*.xml',
         ],
