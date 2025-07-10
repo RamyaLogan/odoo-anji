@@ -9,7 +9,6 @@ on:
       image_tag:
         description: 'ECR Image Tag to deploy (usually branch name)'
         required: true
-
 env:
   TF_TOKEN_app_terraform_io: ${{ secrets.TF_CLOUD_TOKEN }}
 
