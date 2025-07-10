@@ -1,6 +1,3 @@
-# ====================
-# ✅ deploy.yml – Pull & Deploy on EC2
-# ====================
 name: Deploy Odoo App to Prod AWS Server
 
 on:
