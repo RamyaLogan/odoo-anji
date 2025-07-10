@@ -4,7 +4,7 @@ services:
   db:
     image: postgres:14
     container_name: odoo-db
-    restart: always
+    restart: unless-stopped
     environment:
       POSTGRES_USER: odoo
       POSTGRES_PASSWORD: odoo
@@ -21,28 +21,21 @@ services:
       - odoo-net
 
   odoo:
-    build:
-      context: .
-      dockerfile: Dockerfile
+    image: ${ODOO_IMAGE}
     container_name: odoo-web
-    restart: always
+    restart: unless-stopped
     depends_on:
       db:
         condition: service_healthy
     environment:
-      - VIRTUAL_HOST=mhs.doneztech.com
-      - LETSENCRYPT_HOST=mhs.doneztech.com
-      - LETSENCRYPT_EMAIL=admin@doneztech.com
       - MAX_CRON_THREADS=0
     ports:
       - "8069:8069"
       - "8072:8072"
     volumes:
-      - ./odoo:/opt/odoo
       - odoo_local:/opt/odoo/.local
       - odoo_state:/opt/odoo/.db-initialized
-      - ./config:/etc/odoo
-      - ./custom_addons:/opt/odoo/custom_addons
+      - /opt/ssl:/opt/ssl
     networks:
       - odoo-net
     command: >
@@ -55,23 +48,20 @@ services:
         fi;
         exec python3 /opt/odoo/odoo-bin -c /etc/odoo/odoo.conf 
       "
+
   odoo-runner:
-    build:
-      context: .
-      dockerfile: Dockerfile
+    image: ${ODOO_IMAGE}
     container_name: odoo-jobrunner
-    restart: always
+    restart: unless-stopped
     depends_on:
       db:
         condition: service_healthy
     environment:
       - MAX_CRON_THREADS=1
     volumes:
-      - ./odoo:/opt/odoo
       - odoo_local:/opt/odoo/.local
       - odoo_state:/opt/odoo/.db-initialized
-      - ./config:/etc/odoo
-      - ./custom_addons:/opt/odoo/custom_addons
+      - /opt/ssl:/opt/ssl
     networks:
       - odoo-net
     command: >
@@ -83,6 +73,7 @@ services:
   nginx:
     image: nginx:latest
     container_name: nginx
+    restart: unless-stopped
     ports:
       - "80:80"
       - "443:443"
@@ -90,25 +81,26 @@ services:
       - ./nginx/conf.d:/etc/nginx/conf.d
       - ./nginx/html:/etc/nginx/html
       - ./certbot/webroot:/var/www/certbot
-      - /opt/ssl/certbot:/etc/letsencrypt
-    depends_on:
-      - odoo
+      - /opt/ssl:/etc/letsencrypt
     networks:
       - odoo-net
-  
+
   certbot:
     image: certbot/certbot
     container_name: certbot
     volumes:
       - ./certbot/webroot:/var/www/certbot
-      - /opt/ssl/certbot:/etc/letsencrypt
+      - /opt/ssl:/etc/letsencrypt
     entrypoint: ""
     networks:
       - odoo-net
-      
+
   redis:
     image: redis:7
-    restart: always
+    container_name: redis
+    restart: unless-stopped
+    networks:
+      - odoo-net
 
 volumes:
   db_data:

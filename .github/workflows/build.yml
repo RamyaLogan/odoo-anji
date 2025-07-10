@@ -1,0 +1,36 @@
+# ====================
+# ✅ build.yml – Build & Push Odoo Image to ECR (Branch-Based)
+# ====================
+name: Build and Push Odoo to ECR
+
+on:
+  push:
+    branches:
+      - '**'  # Build for all branches
+
+env:
+  AWS_REGION: ap-south-1
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Log in to ECR
+        uses: aws-actions/amazon-ecr-login@v1
+
+      - name: Extract branch name
+        id: extract_branch
+        run: echo "branch_name=${GITHUB_REF#refs/heads/}" >> $GITHUB_OUTPUT
+
+      - name: Build and push Odoo image
+        run: |
+          IMAGE_TAG=${{ steps.extract_branch.outputs.branch_name }}
+          ECR_REPO=${{ secrets.ECR_REPO }}
+          docker build -t $ECR_REPO:$IMAGE_TAG -f Dockerfile .
+          docker push $ECR_REPO:$IMAGE_TAG
+
