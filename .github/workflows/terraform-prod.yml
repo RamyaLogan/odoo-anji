@@ -1,4 +1,4 @@
-name: Terraform Infrastructure Deployment
+name: Terraform Prod Deployment
 
 on:
   workflow_dispatch:
