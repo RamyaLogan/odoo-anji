@@ -1,7 +1,7 @@
 # ====================
 # ✅ deploy.yml – Pull & Deploy on EC2
 # ====================
-name: Deploy Odoo App to AWS Server
+name: Deploy Odoo App to Prod AWS Server
 
 on:
   workflow_dispatch:
@@ -26,7 +26,7 @@ jobs:
           terraform_version: 1.5.0
 
       - name: Init Terraform
-        working-directory: infra/terraform
+        working-directory: infra/terraform/prod
         env:
           TF_TOKEN_app_terraform_io: ${{ secrets.TF_CLOUD_TOKEN }}
         run: terraform init
@@ -41,7 +41,7 @@ jobs:
       - name: Setup SSH
         run: |
           mkdir -p ~/.ssh
-          echo "${{ secrets.DEPLOY_PRIVATE_KEY_SSH }}" > ~/.ssh/id_rsa
+          echo "${{ secrets.DEPLOY_PRIVATE_KEY_SSH_PROD }}" > ~/.ssh/id_rsa
           chmod 600 ~/.ssh/id_rsa
           ssh-keyscan -H ${{ env.ec2_ip }} >> ~/.ssh/known_hosts
 
