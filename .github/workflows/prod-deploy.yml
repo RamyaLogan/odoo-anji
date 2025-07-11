@@ -113,14 +113,6 @@ jobs:
             echo "Starting Redis..."; docker-compose up -d redis || { docker-compose logs redis; exit 1; }
           }
 
-          docker-compose ps | grep nginx | grep -q Up && echo "Nginx already up" || {
-            echo "Starting Nginx..."; docker-compose up -d nginx || { docker-compose logs nginx; exit 1; }
-          }
-
-          docker-compose ps | grep certbot | grep -q Up && echo "Certbot already up" || {
-            echo "Starting Certbot..."; docker-compose up -d certbot || { docker-compose logs certbot; exit 1; }
-          }
-
           echo "♻️ Restarting Odoo app containers..."
           docker-compose stop odoo odoo-runner || true
           docker-compose rm -f odoo odoo-runner || true
