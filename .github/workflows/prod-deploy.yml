@@ -113,25 +113,10 @@ jobs:
 
           # Pull app image and restart app containers
           docker pull ${ECR_REPO}:${IMAGE_TAG}
+          ODOO_IMAGE=${ECR_REPO}:${IMAGE_TAG}
 
+          docker-compose stop odoo odoo-runner || true
+          docker-compose rm -f odoo odoo-runner || true
 
-          docker stop odoo-web || true && docker rm odoo-web || true
-          docker stop odoo-jobrunner || true && docker rm odoo-jobrunner || true
-
-          docker run -d --name odoo-web \
-            --network odoo-net \
-            -p 8069:8069 -p 8072:8072 \
-            -v odoo_local:/opt/odoo/.local \
-            -v odoo_state:/opt/odoo/.db-initialized \
-            -v /opt/ssl:/opt/ssl \
-            -e MAX_CRON_THREADS=0 \
-            ${{ secrets.ECR_REPO }}:$IMAGE_TAG
-
-          docker run -d --name odoo-jobrunner \
-            --network odoo-net \
-            -v odoo_local:/opt/odoo/.local \
-            -v odoo_state:/opt/odoo/.db-initialized \
-            -v /opt/ssl:/opt/ssl \
-            -e MAX_CRON_THREADS=1 \
-            ${{ secrets.ECR_REPO }}:$IMAGE_TAG
+          ODOO_IMAGE=${ECR_REPO}:${IMAGE_TAG} docker-compose up -d odoo odoo-runner
           EOF
