@@ -25,7 +25,7 @@ resource "aws_db_instance" "odoo_rds" {
 resource "aws_security_group" "odoo_rds_sg" {
   name        = "odoo-rds-sg"
   description = "Allow EC2 access to RDS"
-  vpc_id      = var.vpc_id
+  vpc_id = data.aws_vpc.odoo_vpc.id
 
   ingress {
     from_port   = 5432
