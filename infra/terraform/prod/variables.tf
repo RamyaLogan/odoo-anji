@@ -24,13 +24,3 @@ variable "rds_master_password" {
   type        = string
   sensitive   = true
 }
-
-variable "private_subnet_ids" {
-  description = "List of private subnet IDs for RDS"
-  type        = list(string)
-}
-
-variable "vpc_id" {
-  description = "VPC ID for the infrastructure"
-  type        = string
-}
