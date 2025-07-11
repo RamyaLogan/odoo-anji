@@ -29,6 +29,7 @@ jobs:
       env:
         AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
         AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        AWS_REGION: ap-south-1
 
     - name: Print raw IP
       working-directory: infra/terraform/prod
@@ -40,3 +41,7 @@ jobs:
       run: |
         SERVER_IP=$(terraform output -raw odoo_server_ip | tr -d '\r\n%' | sed 's/::.*//')
         echo "odoo_ip=${SERVER_IP}" >> $GITHUB_OUTPUT
+    
+    - name: Get RDS Endpoint
+      working-directory: infra/terraform/prod
+      run: terraform output -raw rds_endpoint

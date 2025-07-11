@@ -56,4 +56,26 @@ resource "aws_instance" "odoo" {
   tags = {
     name = "odoo-prod-ec2"
   }
+  lifecycle {
+    prevent_destroy = true
+  }
+}
+data "aws_instance" "odoo_instance" {
+  instance_id = aws_instance.odoo.id
+}
+data "aws_subnet" "odoo_subnet" {
+  id = data.aws_instance.odoo_instance.subnet_id
+}
+data "aws_vpc" "odoo_vpc" {
+  id = data.aws_subnet.odoo_subnet.vpc_id
+}
+data "aws_subnets" "private_subnets" {
+  filter {
+    name   = "vpc-id"
+    values = [data.aws_vpc.odoo_vpc.id]
+  }
+}
+resource "aws_db_subnet_group" "rds_subnet_group" {
+  name       = "rds-subnet-group"
+  subnet_ids = data.aws_subnets.private_subnets.ids
 }
