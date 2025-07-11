@@ -52,7 +52,7 @@ jobs:
           ssh ubuntu@${{ env.ec2_ip }} << 'EOF'
           set -e
           export DEBIAN_FRONTEND=noninteractive
-
+          sudo chown -R ubuntu:ubuntu .
           # Install Docker and Compose only if missing
           if ! command -v docker &> /dev/null; then
             sudo apt update && sudo apt install -y docker.io
