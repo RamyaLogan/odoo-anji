@@ -99,9 +99,15 @@ jobs:
           sleep 5
 
           if [ ! -f /opt/ssl/certbot/live/mhs.doneztech.com/fullchain.pem ]; then
-            echo "Bootstrapping SSL..."
-            docker-compose run --rm certbot certbot certonly --webroot -w /var/www/certbot \
-              -d mhs.doneztech.com --email admin@doneztech.com --agree-tos --non-interactive
+            echo "🔐 Bootstrapping SSL with certbot"
+
+            if ! docker-compose run --rm certbot certbot certonly --webroot -w /var/www/certbot \
+              -d mhs.doneztech.com --email admin@doneztech.com --agree-tos --non-interactive; then
+              echo "❌ Certbot failed!"
+              docker-compose logs certbot
+              exit 1
+            fi
+
             cp nginx/nginx-https.conf nginx/conf.d/default.conf
             docker-compose restart nginx
           fi
