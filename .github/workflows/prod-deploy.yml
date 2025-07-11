@@ -107,10 +107,10 @@ jobs:
           fi
 
           # Start core services only if not running
-          docker ps -q --filter "name=^/db$" | grep -q . || docker-compose up -d db
-          docker ps -q --filter "name=^/redis$" | grep -q . || docker-compose up -d redis
-          docker ps -q --filter "name=^/nginx$" | grep -q . || docker-compose up -d nginx
-          docker ps -q --filter "name=^/certbot$" | grep -q . || docker-compose up -d certbot
+          docker-compose ps | grep db | grep -q Up || docker-compose up -d db
+          docker-compose ps | grep redis | grep -q Up || docker-compose up -d redis
+          docker-compose ps | grep nginx | grep -q Up || docker-compose up -d nginx
+          docker-compose ps | grep certbot | grep -q Up || docker-compose up -d certbot
 
           # Pull app image and restart app containers
           docker pull ${ECR_REPO}:${IMAGE_TAG}
@@ -119,5 +119,5 @@ jobs:
           docker-compose stop odoo odoo-runner || true
           docker-compose rm -f odoo odoo-runner || true
 
-          ODOO_IMAGE=${ECR_REPO}:${IMAGE_TAG} docker-compose up -d odoo odoo-runner
+          docker-compose up -d odoo odoo-runner
           EOF
