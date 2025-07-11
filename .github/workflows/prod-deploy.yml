@@ -63,7 +63,7 @@ jobs:
           export AWS_REGION="${AWS_REGION}"
           export IMAGE_TAG="${IMAGE_TAG}"
           export ECR_REPO="${ECR_REPO}"
-          echo "ODOO_IMAGE=${ECR_REPO}:${IMAGE_TAG}" > /home/ubuntu/.env
+          
           sudo chown -R ubuntu:ubuntu .
           # Install Docker and Compose only if missing
           if ! command -v docker &> /dev/null; then
