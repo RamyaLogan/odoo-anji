@@ -1,7 +1,4 @@
-# ====================
-# ✅ deploy.yml – Pull & Deploy on EC2
-# ====================
-name: Deploy Odoo App to AWS Server
+name: Deploy Odooo App to AWS Server
 
 on:
   workflow_dispatch:
