@@ -89,15 +89,15 @@ jobs:
             rm -rf aws awscliv2.zip
           fi
           # Login to ECR
-          aws ecr get-login-password --region ap-south-1 | docker login --username AWS --password-stdin $ECR_REPO
+          aws ecr get-login-password --region ap-south-1 | docker login --username AWS --password-stdin \$ECR_REPO
 
           cd /home/ubuntu
-          echo "ODOO_IMAGE=$ECR_REPO:$IMAGE_TAG" > .env
+          echo "ODOO_IMAGE=\$ECR_REPO:\$IMAGE_TAG" > .env
 
           # First time certbot init (if needed)
           cp nginx/nginx-http.conf nginx/conf.d/default.conf
           docker pull \$ECR_REPO:\$IMAGE_TAG
-          ODOO_IMAGE=$ECR_REPO:$IMAGE_TAG
+          ODOO_IMAGE=\$ECR_REPO:\$IMAGE_TAG
 
           docker-compose up -d nginx
           sleep 5
