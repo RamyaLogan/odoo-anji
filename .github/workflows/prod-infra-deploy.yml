@@ -11,6 +11,7 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       odoo_ip: ${{ steps.extract.outputs.odoo_ip }}
+      
     steps:
     - name: Checkout Code
       uses: actions/checkout@v4
@@ -39,5 +40,3 @@ jobs:
       run: |
         SERVER_IP=$(terraform output -raw odoo_server_ip | tr -d '\r\n%' | sed 's/::.*//')
         echo "odoo_ip=${SERVER_IP}" >> $GITHUB_OUTPUT
-     
-

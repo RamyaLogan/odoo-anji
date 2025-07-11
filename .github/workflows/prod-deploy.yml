@@ -1,11 +1,9 @@
 name: Deploy Odoo App to Prod AWS Server
 
 on:
-  workflow_dispatch:
-    inputs:
-      image_tag:
-        description: 'ECR Image Tag to deploy (usually branch name)'
-        required: true
+  push:
+    branches:
+      - '**'
 env:
   TF_TOKEN_app_terraform_io: ${{ secrets.TF_CLOUD_TOKEN }}
 
