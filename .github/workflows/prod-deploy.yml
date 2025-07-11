@@ -64,7 +64,7 @@ jobs:
           for vol in odoo_local odoo_state db_data; do
             docker volume inspect $vol >/dev/null 2>&1 || docker volume create $vol
           done
-
+          
           # Login to ECR
           aws ecr get-login-password --region ap-south-1 | docker login --username AWS --password-stdin ${{ secrets.ECR_REPO }}
 
