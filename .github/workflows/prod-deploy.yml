@@ -1,9 +1,11 @@
 name: Deploy Odoo App to Prod AWS Server
 
-on:
-  push:
-    branches:
-      - '**'
+on: 
+  workflow_dispatch:
+    inputs:
+      image_tag:
+        description: 'ECR Image Tag to deploy (usually branch name)'
+        required: true
 env:
   TF_TOKEN_app_terraform_io: ${{ secrets.TF_CLOUD_TOKEN }}
 
@@ -64,7 +66,7 @@ jobs:
           for vol in odoo_local odoo_state db_data; do
             docker volume inspect $vol >/dev/null 2>&1 || docker volume create $vol
           done
-          
+
           # Login to ECR
           aws ecr get-login-password --region ap-south-1 | docker login --username AWS --password-stdin ${{ secrets.ECR_REPO }}
 
