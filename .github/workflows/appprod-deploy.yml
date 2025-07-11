@@ -1,0 +1,118 @@
+name: Deploy Prod to AWS Server
+
+on:
+  workflow_dispatch:
+    inputs:
+      image_tag:
+        description: 'ECR Image Tag to deploy (usually branch name)'
+        required: true
+
+env:
+  TF_TOKEN_app_terraform_io: ${{ secrets.TF_CLOUD_TOKEN }}
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v2
+        with:
+          terraform_version: 1.5.0
+
+      - name: Init Terraform
+        working-directory: infra/terraform/prod
+        env:
+          TF_TOKEN_app_terraform_io: ${{ secrets.TF_CLOUD_TOKEN }}
+        run: terraform init
+
+      - name: Get EC2 IP
+        id: get_ip
+        working-directory: infra/terraform/prod
+        run: |
+          IP=$(terraform output -raw odoo_server_ip | grep -Eo '([0-9]{1,3}\.){3}[0-9]{1,3}')
+          echo "ec2_ip=$IP" >> $GITHUB_ENV
+
+      - name: Setup SSH
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.DEPLOY_PRIVATE_KEY_SSH }}" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+          ssh-keyscan -H ${{ env.ec2_ip }} >> ~/.ssh/known_hosts
+
+      - name: Upload configs to EC2
+        run: |
+          scp -r ./docker-compose.yml ./nginx ./init-cert.sh ubuntu@${{ env.ec2_ip }}:/home/ubuntu/
+
+      - name: Deploy to EC2
+        run: |
+          ssh ubuntu@${{ env.ec2_ip }} << 'EOF'
+          set -e
+          export DEBIAN_FRONTEND=noninteractive
+
+          # Install Docker and Compose only if missing
+          if ! command -v docker &> /dev/null; then
+            sudo apt update && sudo apt install -y docker.io
+            sudo systemctl enable docker && sudo systemctl start docker
+            sudo usermod -aG docker ubuntu
+          fi
+          if ! command -v docker-compose &> /dev/null; then
+            sudo curl -SL https://github.com/docker/compose/releases/download/v2.24.5/docker-compose-linux-x86_64 -o /usr/local/bin/docker-compose
+            sudo chmod +x /usr/local/bin/docker-compose
+          fi
+
+          # Ensure Docker volumes exist
+          for vol in odoo_local odoo_state db_data; do
+            docker volume inspect $vol >/dev/null 2>&1 || docker volume create $vol
+          done
+
+          # Login to ECR
+          aws ecr get-login-password --region ap-south-1 | docker login --username AWS --password-stdin ${{ secrets.ECR_REPO }}
+
+          cd /home/ubuntu
+
+          # First time certbot init (if needed)
+          cp nginx/nginx-http.conf nginx/conf.d/default.conf
+          docker-compose up -d nginx
+          sleep 5
+
+          if [ ! -f /opt/ssl/certbot/live/mhs.doneztech.com/fullchain.pem ]; then
+            echo "Bootstrapping SSL..."
+            docker-compose run --rm certbot certbot certonly --webroot -w /var/www/certbot \
+              -d mhs.doneztech.com --email admin@doneztech.com --agree-tos --non-interactive
+            cp nginx/nginx-https.conf nginx/conf.d/default.conf
+            docker-compose restart nginx
+          fi
+
+          # Start core services only if not running
+          docker ps -q --filter "name=^/db$" | grep -q . || docker-compose up -d db
+          docker ps -q --filter "name=^/redis$" | grep -q . || docker-compose up -d redis
+          docker ps -q --filter "name=^/nginx$" | grep -q . || docker-compose up -d nginx
+          docker ps -q --filter "name=^/certbot$" | grep -q . || docker-compose up -d certbot
+
+          # Pull app image and restart app containers
+          IMAGE_TAG=${{ github.event.inputs.image_tag }}
+          docker pull ${{ secrets.ECR_REPO }}:$IMAGE_TAG
+
+          docker stop odoo-web || true && docker rm odoo-web || true
+          docker stop odoo-jobrunner || true && docker rm odoo-jobrunner || true
+
+          docker run -d --name odoo-web \
+            --network odoo-net \
+            -p 8069:8069 -p 8072:8072 \
+            -v odoo_local:/opt/odoo/.local \
+            -v odoo_state:/opt/odoo/.db-initialized \
+            -v /opt/ssl:/opt/ssl \
+            -e MAX_CRON_THREADS=0 \
+            ${{ secrets.ECR_REPO }}:$IMAGE_TAG
+
+          docker run -d --name odoo-jobrunner \
+            --network odoo-net \
+            -v odoo_local:/opt/odoo/.local \
+            -v odoo_state:/opt/odoo/.db-initialized \
+            -v /opt/ssl:/opt/ssl \
+            -e MAX_CRON_THREADS=1 \
+            ${{ secrets.ECR_REPO }}:$IMAGE_TAG
+          EOF
