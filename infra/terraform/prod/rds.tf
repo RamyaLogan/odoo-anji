@@ -8,7 +8,7 @@ resource "aws_db_instance" "odoo_rds" {
   db_name                 = "odoo"
   username                = var.rds_master_username
   password                = var.rds_master_password
-  db_subnet_group_name    = aws_db_subnet_group.odoo_rds_subnet_group.name
+  db_subnet_group_name = aws_db_subnet_group.rds_subnet_group.name
   vpc_security_group_ids  = [aws_security_group.odoo_rds_sg.id]
   skip_final_snapshot     = true
   publicly_accessible     = false
