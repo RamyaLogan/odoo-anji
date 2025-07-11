@@ -1,9 +1,7 @@
 name: Terraform Prod Deployment
 
 on:
-  push:
-    branches:
-      - '**'
+  workflow_dispatch:
 
 env:
   TF_TOKEN_app_terraform_io: ${{ secrets.TF_CLOUD_TOKEN }}
@@ -13,7 +11,7 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       odoo_ip: ${{ steps.extract.outputs.odoo_ip }}
-
+      
     steps:
     - name: Checkout Code
       uses: actions/checkout@v4
