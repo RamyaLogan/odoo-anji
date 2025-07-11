@@ -48,6 +48,9 @@ jobs:
           scp -r ./docker-compose.yml ./nginx ./init-cert.sh ubuntu@${{ env.ec2_ip }}:/home/ubuntu/
 
       - name: Deploy to EC2
+        env:
+          IMAGE_TAG: ${{ github.event.inputs.image_tag }}
+          ECR_REPO: ${{ secrets.ECR_REPO }}
         run: |
           ssh ubuntu@${{ env.ec2_ip }} << 'EOF'
           set -e
@@ -68,7 +71,13 @@ jobs:
           for vol in odoo_local odoo_state db_data; do
             docker volume inspect $vol >/dev/null 2>&1 || docker volume create $vol
           done
-
+          if ! command -v aws &> /dev/null; then
+            echo "Installing AWS CLI..."
+            curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+            unzip -q awscliv2.zip
+            sudo ./aws/install
+            rm -rf aws awscliv2.zip
+          fi
           # Login to ECR
           aws ecr get-login-password --region ap-south-1 | docker login --username AWS --password-stdin ${{ secrets.ECR_REPO }}
 
@@ -94,8 +103,8 @@ jobs:
           docker ps -q --filter "name=^/certbot$" | grep -q . || docker-compose up -d certbot
 
           # Pull app image and restart app containers
-          IMAGE_TAG=${{ github.event.inputs.image_tag }}
-          docker pull ${{ secrets.ECR_REPO }}:$IMAGE_TAG
+          docker pull ${ECR_REPO}:${IMAGE_TAG}
+
 
           docker stop odoo-web || true && docker rm odoo-web || true
           docker stop odoo-jobrunner || true && docker rm odoo-jobrunner || true
