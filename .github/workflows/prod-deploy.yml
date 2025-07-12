@@ -48,6 +48,14 @@ jobs:
           echo "rds_username=$(terraform output -raw rds_username)" >> $GITHUB_ENV
           echo "rds_password=$(terraform output -raw rds_password)" >> $GITHUB_ENV
           echo "rds_db_name=$(terraform output -raw rds_db_name)" >> $GITHUB_ENV
+      
+      - name: Debug – Print RDS Env Vars
+        run: |
+          echo "🔍 RDS Endpoint: $rds_endpoint"
+          echo "🔍 RDS Username: $rds_username"
+          echo "🔍 RDS DB Name:  $rds_db_name"
+          echo "::add-mask::$rds_password"
+          echo "✅ Password is set and masked"
 
       - name: Setup SSH
         run: |
