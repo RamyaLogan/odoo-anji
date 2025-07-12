@@ -107,10 +107,10 @@ jobs:
           cd /home/ubuntu
           cat <<EOT > .env
           ODOO_IMAGE=${ECR_REPO}:${IMAGE_TAG}
-          PGHOST=${RDS_ENDPOINT}
-          PGUSER=${RDS_USERNAME}
-          PGPASSWORD=${RDS_PASSWORD}
-          PGDATABASE=${RDS_DB_NAME}
+          PGHOST=${{ env.rds_endpoint }}
+          PGUSER=${{ env.rds_username }}
+          PGPASSWORD=${{ env.rds_password }}
+          PGDATABASE=${{ env.rds_db_name }}
           EOT
 
           docker pull ${ECR_REPO}:${IMAGE_TAG}
