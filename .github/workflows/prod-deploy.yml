@@ -44,6 +44,7 @@ jobs:
         id: rds_outputs
         working-directory: infra/terraform/prod
         run: |
+          echo "Extracted RDS: $RDS_ENDPOINT"
           echo "rds_endpoint=$RDS_ENDPOINT" >> $GITHUB_ENV
           echo "rds_username=$RDS_USERNAME" >> $GITHUB_ENV
           echo "rds_password=$RDS_PASSWORD" >> $GITHUB_ENV
