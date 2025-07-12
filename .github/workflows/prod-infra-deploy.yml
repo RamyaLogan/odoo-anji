@@ -55,10 +55,11 @@ jobs:
       working-directory: infra/terraform/prod
       run: |
         RAW_ENDPOINT=$(terraform output -raw rds_endpoint | tr -d '\r' | cut -d':' -f1)
-        RDS_USERNAME=$(terraform output -raw rds_username | tr -d \r\n%' | sed 's/::.*//')
-        RDS_PASSWORD=$(terraform output -raw rds_password | tr -d \r\n% | sed 's/::.*//')
-        RDS_DB_NAME=$(terraform output -raw rds_db_name | tr -d \r\n% | sed 's/::.*//')
+        RAW_USERNAME=$(terraform output -raw rds_username | tr -d '\r')
+        RAW_PASSWORD=$(terraform output -raw rds_password | tr -d '\r')
+        RAW_DB_NAME=$(terraform output -raw rds_db_name | tr -d '\r')
+
         echo "rds_endpoint=${RAW_ENDPOINT}" >> $GITHUB_OUTPUT
-        echo "rds_username=${RDS_USERNAME}" >> $GITHUB_OUTPUT
-        echo "rds_password=${RDS_PASSWORD}" >> $GITHUB_OUTPUT
-        echo "rds_db_name=${RDS_DB_NAME}" >> $GITHUB_OUTPUT
+        echo "rds_username=${RAW_USERNAME}" >> $GITHUB_OUTPUT
+        echo "rds_password=${RAW_PASSWORD}" >> $GITHUB_OUTPUT
+        echo "rds_db_name=${RAW_DB_NAME}" >> $GITHUB_OUTPUT
