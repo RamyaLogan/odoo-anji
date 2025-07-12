@@ -35,9 +35,6 @@ services:
     image: ${ODOO_IMAGE}
     container_name: odoo-jobrunner
     restart: unless-stopped
-    depends_on:
-      db: 
-        condition: service_healthy
     environment:
       - PGHOST=${PGHOST}
       - PGUSER=${PGUSER}
