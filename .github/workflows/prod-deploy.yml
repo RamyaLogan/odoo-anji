@@ -27,6 +27,9 @@ jobs:
           TF_TOKEN_app_terraform_io: ${{ secrets.TF_CLOUD_TOKEN }}
         run: terraform init
 
+      - name: Ensure jq is installed
+        run: sudo apt-get update && sudo apt-get install -y jq
+        
       - name: Get EC2 IP
         id: get_ip
         working-directory: infra/terraform/prod
