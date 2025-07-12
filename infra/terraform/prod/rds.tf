@@ -19,6 +19,7 @@ resource "aws_db_instance" "odoo_rds" {
   }
   lifecycle {
     prevent_destroy = true
+    ignore_changes = [vpc_security_group_ids]
   }
 }
 
@@ -39,5 +40,8 @@ resource "aws_security_group" "odoo_rds_sg" {
     to_port     = 0
     protocol    = "-1"
     cidr_blocks = ["0.0.0.0/0"]
+  }
+  lifecycle {
+    prevent_destroy = true
   }
 }
