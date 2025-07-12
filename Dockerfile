@@ -11,13 +11,15 @@
     # Copy only requirements.txt
     COPY ./odoo/requirements.txt /opt/odoo/requirements.txt
     
-    RUN pip install --upgrade pip
-    RUN pip install --prefix=/install psycopg2-binary
-    RUN pip install --prefix=/install openpyxl
-    RUN pip install --prefix=/install -r /opt/odoo/requirements.txt || true
-    RUN pip install --prefix=/install boto3
-    RUN pip install --prefix=/install google-auth
-    RUN pip install --prefix=/zope.event
+    RUN pip install --upgrade pip && \
+        pip install --prefix=/install \
+            psycopg2-binary \
+            openpyxl \
+            boto3 \
+            google-auth \
+            zope.event && \
+        pip install --prefix=/install -r /opt/odoo/requirements.txt || true
+
     # -------- Stage 2: Runtime Stage --------
     FROM python:3.11-slim-bookworm
     
