@@ -46,9 +46,9 @@ jobs:
           echo "✅ Cleaned Endpoint: $CLEAN_ENDPOINT"
 
           printf "rds_endpoint=%s\n" "$CLEAN_ENDPOINT" >> $GITHUB_ENV
-          echo "RDS_USERNAME=$(terraform output -raw rds_username)" >> $GITHUB_ENV
-          echo "RDS_PASSWORD=$(terraform output -raw rds_password)" >> $GITHUB_ENV
-          echo "RDS_DB_NAME=$(terraform output -raw rds_db_name)" >> $GITHUB_ENV
+          printf "rds_username=%s\n" "$(terraform output -raw rds_username | tr -d '\r\n')" >> $GITHUB_ENV
+          printf "rds_password=%s\n" "$(terraform output -raw rds_password | tr -d '\r\n')" >> $GITHUB_ENV
+          printf "rds_db_name=%s\n" "$(terraform output -raw rds_db_name | tr -d '\r\n')" >> $GITHUB_ENV
 
       - name: Setup SSH
         run: |
