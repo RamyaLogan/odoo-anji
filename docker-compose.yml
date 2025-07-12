@@ -23,11 +23,6 @@ services:
     command: >
       bash -c "
         sleep 10 ;
-        if [ ! -f /opt/odoo/.db-initialized ]; then
-          echo 'Initializing db';
-          python3 /opt/odoo/odoo-bin -c /etc/odoo/odoo.conf -d ${PGDATABASE} -i base --without-demo=all --stop-after-init &&
-          touch /opt/odoo/.db-initialized;
-        fi;
         exec python3 /opt/odoo/odoo-bin -c /etc/odoo/odoo.conf 
       "
 
