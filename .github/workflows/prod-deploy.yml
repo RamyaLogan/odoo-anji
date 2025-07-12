@@ -40,15 +40,29 @@ jobs:
         id: rds_outputs
         working-directory: infra/terraform/prod
         run: |
-          RAW_ENDPOINT=$(terraform output -raw rds_endpoint)
-          CLEAN_ENDPOINT=$(echo "$RAW_ENDPOINT" | cut -d':' -f1 | tail -n 1 | tr -d '\r\n')
-          
+          RAW_ENDPOINT=$(terraform output -raw rds_endpoint 2>&1)
+          CLEAN_ENDPOINT=$(echo "$RAW_ENDPOINT" | grep -Eo '([a-zA-Z0-9-]+\.){2,}[a-zA-Z]{2,}' | tr -d '\r\n')
           echo "✅ Cleaned Endpoint: $CLEAN_ENDPOINT"
-          echo "db_endpoint=$CLEAN_ENDPOINT" >> $GITHUB_ENV
-          printf "rds_endpoint=%s\n" "$CLEAN_ENDPOINT" >> $GITHUB_ENV
-          printf "rds_username=%s\n" "$(terraform output -raw rds_username | tr -d '\r\n')" >> $GITHUB_ENV
-          printf "rds_password=%s\n" "$(terraform output -raw rds_password | tr -d '\r\n')" >> $GITHUB_ENV
-          printf "rds_db_name=%s\n" "$(terraform output -raw rds_db_name | tr -d '\r\n')" >> $GITHUB_ENV
+
+          # Extract and clean username
+          RAW_USER=$(terraform output -raw rds_username 2>&1)
+          CLEAN_USER=$(echo "$RAW_USER" | tr -d '\r\n')
+          echo "✅ Cleaned Username: $CLEAN_USER"
+
+          # Extract and clean password (avoid echoing for security)
+          RAW_PASS=$(terraform output -raw rds_password 2>&1)
+          CLEAN_PASS=$(echo "$RAW_PASS" | tr -d '\r\n')
+
+          # Extract and clean db name
+          RAW_DB=$(terraform output -raw rds_db_name 2>&1)
+          CLEAN_DB=$(echo "$RAW_DB" | tr -d '\r\n')
+          echo "✅ Cleaned DB Name: $CLEAN_DB"
+
+          # Write to GitHub env
+          echo "rds_endpoint=$CLEAN_ENDPOINT" >> $GITHUB_ENV
+          echo "rds_username=$CLEAN_USER" >> $GITHUB_ENV
+          echo "rds_password=$CLEAN_PASS" >> $GITHUB_ENV
+          echo "rds_db_name=$CLEAN_DB" >> $GITHUB_ENV
 
       - name: Setup SSH
         run: |
@@ -107,7 +121,7 @@ jobs:
           cd /home/ubuntu
           cat <<EOT > .env
           ODOO_IMAGE=${ECR_REPO}:${IMAGE_TAG}
-          PGHOST=${{ env.db_endpoint }}
+          PGHOST=${{ env.rds_endpoint }}
           PGUSER=${{ env.rds_username }}
           PGPASSWORD=${{ env.rds_password }}
           PGDATABASE=${{ env.rds_db_name }}
