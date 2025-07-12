@@ -40,15 +40,28 @@ jobs:
         id: rds_outputs
         working-directory: infra/terraform/prod
         run: |
-          RAW_ENDPOINT=$(terraform output -raw rds_endpoint 2>&1)
-          RAW_USERNAME=$(terraform output -raw rds_username 2>&1)
-          RAW_PASSWORD=$(terraform output -raw rds_password 2>&1)
-          RAW_DB_NAME=$(terraform output -raw rds_db_name 2>&1)
+          set -e  # Fail immediately on error
 
-          # Clean each using grep/regex to ensure no debug text or duplicates
-          CLEAN_ENDPOINT=$(echo "$RAW_ENDPOINT" | grep -Eo '([a-zA-Z0-9.-]+\.rds\.amazonaws\.com)' | head -n1)
-          CLEAN_USERNAME=$(echo "$RAW_USERNAME" | grep -Eo '^[a-zA-Z0-9_]+$')
-          CLEAN_DB_NAME=$(echo "$RAW_DB_NAME" | grep -Eo '^[a-zA-Z0-9_]+$')
+          # Capture raw outputs (with stderr to log it, but not used for assignment)
+          RAW_ENDPOINT=$(terraform output -raw rds_endpoint 2>/dev/null || echo "")
+          RAW_USERNAME=$(terraform output -raw rds_username 2>/dev/null || echo "")
+          RAW_PASSWORD=$(terraform output -raw rds_password 2>/dev/null || echo "")
+          RAW_DB_NAME=$(terraform output -raw rds_db_name 2>/dev/null || echo "")
+
+          echo "🧪 RAW_ENDPOINT: $RAW_ENDPOINT"
+          echo "🧪 RAW_USERNAME: $RAW_USERNAME"
+          echo "🧪 RAW_DB_NAME: $RAW_DB_NAME"
+
+          # Clean values
+          CLEAN_ENDPOINT=$(echo "$RAW_ENDPOINT" | grep -Eo '([a-zA-Z0-9.-]+\.rds\.amazonaws\.com)' | head -n1 || echo "")
+          CLEAN_USERNAME=$(echo "$RAW_USERNAME" | grep -Eo '^[a-zA-Z0-9_]+$' || echo "")
+          CLEAN_DB_NAME=$(echo "$RAW_DB_NAME" | grep -Eo '^[a-zA-Z0-9_]+$' || echo "")
+
+          # Fail early if anything critical is missing
+          if [[ -z "$CLEAN_ENDPOINT" || -z "$CLEAN_USERNAME" || -z "$RAW_PASSWORD" || -z "$CLEAN_DB_NAME" ]]; then
+            echo "❌ One or more required RDS outputs are missing or invalid"
+            exit 1
+          fi
 
           echo "✅ Cleaned Endpoint: $CLEAN_ENDPOINT"
           echo "✅ Cleaned Username: $CLEAN_USERNAME"
@@ -56,7 +69,7 @@ jobs:
 
           echo "rds_endpoint=$CLEAN_ENDPOINT" >> $GITHUB_ENV
           echo "rds_username=$CLEAN_USERNAME" >> $GITHUB_ENV
-          echo "rds_password=$RAW_PASSWORD" >> $GITHUB_ENV  # No regex here; it's a secret
+          echo "rds_password=$RAW_PASSWORD" >> $GITHUB_ENV
           echo "rds_db_name=$CLEAN_DB_NAME" >> $GITHUB_ENV
 
       - name: Setup SSH
