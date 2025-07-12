@@ -1,5 +1,5 @@
 # -------- Stage 1: Build Stage --------
-    FROM python:3.11-slim-bookworm AS builder
+    FROM python:3.10-slim-bookworm AS builder
 
     # Install build dependencies
     RUN apt-get update && apt-get install -y --no-install-recommends \
@@ -21,7 +21,7 @@
         pip install --prefix=/install -r /opt/odoo/requirements.txt || true
 
     # -------- Stage 2: Runtime Stage --------
-    FROM python:3.11-slim-bookworm
+    FROM python:3.10-slim-bookworm
     
     # Install runtime system dependencies
     RUN apt-get update && apt-get install -y --no-install-recommends \
