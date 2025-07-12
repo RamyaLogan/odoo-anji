@@ -1,4 +1,4 @@
-name: Terraform Prod Deployment
+name: Deploy Terraform Prod 
 
 on:
   workflow_dispatch:

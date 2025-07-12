@@ -1,4 +1,4 @@
-name: Deploy Odoo App to Prod AWS Server
+name: Deploy Odoo Prod
 
 on: 
   workflow_dispatch:
