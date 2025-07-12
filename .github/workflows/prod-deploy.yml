@@ -41,28 +41,23 @@ jobs:
         working-directory: infra/terraform/prod
         run: |
           RAW_ENDPOINT=$(terraform output -raw rds_endpoint 2>&1)
-          CLEAN_ENDPOINT=$(echo "$RAW_ENDPOINT" | grep -Eo '([a-zA-Z0-9-]+\.){2,}[a-zA-Z]{2,}' | tr -d '\r\n')
+          RAW_USERNAME=$(terraform output -raw rds_username 2>&1)
+          RAW_PASSWORD=$(terraform output -raw rds_password 2>&1)
+          RAW_DB_NAME=$(terraform output -raw rds_db_name 2>&1)
+
+          # Clean each using grep/regex to ensure no debug text or duplicates
+          CLEAN_ENDPOINT=$(echo "$RAW_ENDPOINT" | grep -Eo '([a-zA-Z0-9.-]+\.rds\.amazonaws\.com)' | head -n1)
+          CLEAN_USERNAME=$(echo "$RAW_USERNAME" | grep -Eo '^[a-zA-Z0-9_]+$')
+          CLEAN_DB_NAME=$(echo "$RAW_DB_NAME" | grep -Eo '^[a-zA-Z0-9_]+$')
+
           echo "✅ Cleaned Endpoint: $CLEAN_ENDPOINT"
+          echo "✅ Cleaned Username: $CLEAN_USERNAME"
+          echo "✅ Cleaned DB Name: $CLEAN_DB_NAME"
 
-          # Extract and clean username
-          RAW_USER=$(terraform output -raw rds_username 2>&1)
-          CLEAN_USER=$(echo "$RAW_USER" | tr -d '\r\n')
-          echo "✅ Cleaned Username: $CLEAN_USER"
-
-          # Extract and clean password (avoid echoing for security)
-          RAW_PASS=$(terraform output -raw rds_password 2>&1)
-          CLEAN_PASS=$(echo "$RAW_PASS" | tr -d '\r\n')
-
-          # Extract and clean db name
-          RAW_DB=$(terraform output -raw rds_db_name 2>&1)
-          CLEAN_DB=$(echo "$RAW_DB" | tr -d '\r\n')
-          echo "✅ Cleaned DB Name: $CLEAN_DB"
-
-          # Write to GitHub env
           echo "rds_endpoint=$CLEAN_ENDPOINT" >> $GITHUB_ENV
-          echo "rds_username=$CLEAN_USER" >> $GITHUB_ENV
-          echo "rds_password=$CLEAN_PASS" >> $GITHUB_ENV
-          echo "rds_db_name=$CLEAN_DB" >> $GITHUB_ENV
+          echo "rds_username=$CLEAN_USERNAME" >> $GITHUB_ENV
+          echo "rds_password=$RAW_PASSWORD" >> $GITHUB_ENV  # No regex here; it's a secret
+          echo "rds_db_name=$CLEAN_DB_NAME" >> $GITHUB_ENV
 
       - name: Setup SSH
         run: |
