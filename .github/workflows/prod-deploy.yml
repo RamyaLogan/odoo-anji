@@ -40,26 +40,26 @@ jobs:
         id: rds_outputs
         working-directory: infra/terraform/prod
         run: |
-          set -e  # Fail immediately on error
-
-          # Capture raw outputs (with stderr to log it, but not used for assignment)
-          RAW_ENDPOINT=$(terraform output -raw rds_endpoint 2>/dev/null || echo "")
-          RAW_USERNAME=$(terraform output -raw rds_username 2>/dev/null || echo "")
-          RAW_PASSWORD=$(terraform output -raw rds_password 2>/dev/null || echo "")
-          RAW_DB_NAME=$(terraform output -raw rds_db_name 2>/dev/null || echo "")
+          set -e
+          # Get raw outputs (safely) with stderr suppressed
+          RAW_ENDPOINT=$(terraform output -raw rds_endpoint 2>&1)
+          RAW_USERNAME=$(terraform output -raw rds_username 2>&1)
+          RAW_PASSWORD=$(terraform output -raw rds_password 2>&1)
+          RAW_DB_NAME=$(terraform output -raw rds_db_name 2>&1)
 
           echo "🧪 RAW_ENDPOINT: $RAW_ENDPOINT"
           echo "🧪 RAW_USERNAME: $RAW_USERNAME"
           echo "🧪 RAW_DB_NAME: $RAW_DB_NAME"
 
-          # Clean values
-          CLEAN_ENDPOINT=$(echo "$RAW_ENDPOINT" | grep -Eo '([a-zA-Z0-9.-]+\.rds\.amazonaws\.com)' | head -n1 || echo "")
-          CLEAN_USERNAME=$(echo "$RAW_USERNAME" | grep -Eo '^[a-zA-Z0-9_]+$' || echo "")
-          CLEAN_DB_NAME=$(echo "$RAW_DB_NAME" | grep -Eo '^[a-zA-Z0-9_]+$' || echo "")
+          # Extract clean parts
+          CLEAN_ENDPOINT=$(echo "$RAW_ENDPOINT" | grep -Eo '([a-zA-Z0-9-]+\.){2,}[a-z]{2,}' | grep 'rds\.amazonaws\.com' | head -n1 | tr -d '\r')
+          CLEAN_USERNAME=$(echo "$RAW_USERNAME" | grep -Eo '^[a-zA-Z0-9_]+$' | head -n1 || echo "")
+          CLEAN_DB_NAME=$(echo "$RAW_DB_NAME" | grep -Eo '^[a-zA-Z0-9_]+$' | head -n1 || echo "")
+          CLEAN_PASSWORD=$(echo "$RAW_PASSWORD" | head -n1 || echo "")
 
-          # Fail early if anything critical is missing
-          if [[ -z "$CLEAN_ENDPOINT" || -z "$CLEAN_USERNAME" || -z "$RAW_PASSWORD" || -z "$CLEAN_DB_NAME" ]]; then
-            echo "❌ One or more required RDS outputs are missing or invalid"
+          # Fail if anything is missing
+          if [[ -z "$CLEAN_ENDPOINT" || -z "$CLEAN_USERNAME" || -z "$CLEAN_DB_NAME" || -z "$CLEAN_PASSWORD" ]]; then
+            echo "❌ One or more RDS values are invalid or empty"
             exit 1
           fi
 
@@ -67,9 +67,10 @@ jobs:
           echo "✅ Cleaned Username: $CLEAN_USERNAME"
           echo "✅ Cleaned DB Name: $CLEAN_DB_NAME"
 
+          # Export to GitHub Actions env
           echo "rds_endpoint=$CLEAN_ENDPOINT" >> $GITHUB_ENV
           echo "rds_username=$CLEAN_USERNAME" >> $GITHUB_ENV
-          echo "rds_password=$RAW_PASSWORD" >> $GITHUB_ENV
+          echo "rds_password=$CLEAN_PASSWORD" >> $GITHUB_ENV
           echo "rds_db_name=$CLEAN_DB_NAME" >> $GITHUB_ENV
 
       - name: Setup SSH
