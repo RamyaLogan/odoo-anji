@@ -43,5 +43,8 @@ resource "aws_security_group" "odoo_rds_sg" {
   }
   lifecycle {
     prevent_destroy = true
+    ignore_changes = [
+      vpc_id
+    ]
   }
 }
