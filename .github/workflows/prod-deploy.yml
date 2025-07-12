@@ -20,6 +20,7 @@ jobs:
         uses: hashicorp/setup-terraform@v2
         with:
           terraform_version: 1.5.0
+          terraform_wrapper: false
 
       - name: Init Terraform
         working-directory: infra/terraform/prod
@@ -43,31 +44,10 @@ jobs:
         id: rds_outputs
         working-directory: infra/terraform/prod
         run: |
-          set -e
-          # JSON-safe Terraform output
-          TF_OUTPUT_JSON=$(terraform output -json)
-          echo "$TF_OUTPUT_JSON"
-          # Extract clean values using jq
-          CLEAN_ENDPOINT=$(echo "$TF_OUTPUT_JSON" | jq -r '.rds_endpoint.value' | cut -d':' -f1)
-          CLEAN_USERNAME=$(echo "$TF_OUTPUT_JSON" | jq -r '.rds_username.value')
-          CLEAN_PASSWORD=$(echo "$TF_OUTPUT_JSON" | jq -r '.rds_password.value')
-          CLEAN_DB_NAME=$(echo "$TF_OUTPUT_JSON" | jq -r '.rds_db_name.value')
-
-          # Sanity check
-          if [[ -z "$CLEAN_ENDPOINT" || -z "$CLEAN_USERNAME" || -z "$CLEAN_PASSWORD" || -z "$CLEAN_DB_NAME" ]]; then
-            echo "❌ One or more required RDS values are missing"
-            exit 1
-          fi
-
-          echo "✅ Cleaned Endpoint: $CLEAN_ENDPOINT"
-          echo "✅ Cleaned Username: $CLEAN_USERNAME"
-          echo "✅ Cleaned DB Name: $CLEAN_DB_NAME"
-
-          # Export to GitHub env
-          echo "rds_endpoint=$CLEAN_ENDPOINT" >> $GITHUB_ENV
-          echo "rds_username=$CLEAN_USERNAME" >> $GITHUB_ENV
-          echo "rds_password=$CLEAN_PASSWORD" >> $GITHUB_ENV
-          echo "rds_db_name=$CLEAN_DB_NAME" >> $GITHUB_ENV
+          echo "rds_endpoint=$RDS_ENDPOINT" >> $GITHUB_ENV
+          echo "rds_username=$RDS_USERNAME" >> $GITHUB_ENV
+          echo "rds_password=$RDS_PASSWORD" >> $GITHUB_ENV
+          echo "rds_db_name=$RDS_DB_NAME" >> $GITHUB_ENV
 
       - name: Setup SSH
         run: |
