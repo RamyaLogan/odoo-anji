@@ -54,7 +54,7 @@ jobs:
       id: rds_outputs
       working-directory: infra/terraform/prod
       run: |
-        echo "rds_endpoint=$(terraform output -raw rds_endpoint)" >> $GITHUB_OUTPUT
-        echo "rds_username=$(terraform output -raw rds_username)" >> $GITHUB_OUTPUT
-        echo "rds_password=$(terraform output -raw rds_password)" >> $GITHUB_OUTPUT
-        echo "rds_db_name=$(terraform output -raw rds_db_name)" >> $GITHUB_OUTPUT
+        echo "rds_endpoint=$(terraform output -raw rds_endpoint | tr -d '\r')" >> $GITHUB_OUTPUT
+        echo "rds_username=$(terraform output -raw rds_username | tr -d '\r')" >> $GITHUB_OUTPUT
+        echo "rds_password=$(terraform output -raw rds_password | tr -d '\r')" >> $GITHUB_OUTPUT
+        echo "rds_db_name=$(terraform output -raw rds_db_name | tr -d '\r')" >> $GITHUB_OUTPUT
