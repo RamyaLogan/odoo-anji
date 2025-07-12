@@ -41,10 +41,10 @@ jobs:
         working-directory: infra/terraform/prod
         run: |
           RAW_ENDPOINT=$(terraform output -raw rds_endpoint)
-          CLEAN_ENDPOINT=$(echo "$RAW_ENDPOINT" | cut -d':' -f1 | tr -d '\r\n')
+          CLEAN_ENDPOINT=$(echo "$RAW_ENDPOINT" | cut -d':' -f1 | tail -n 1 | tr -d '\r\n')
           
           echo "✅ Cleaned Endpoint: $CLEAN_ENDPOINT"
-
+          echo "db_endpoint=$CLEAN_ENDPOINT" >> $GITHUB_ENV
           printf "rds_endpoint=%s\n" "$CLEAN_ENDPOINT" >> $GITHUB_ENV
           printf "rds_username=%s\n" "$(terraform output -raw rds_username | tr -d '\r\n')" >> $GITHUB_ENV
           printf "rds_password=%s\n" "$(terraform output -raw rds_password | tr -d '\r\n')" >> $GITHUB_ENV
@@ -107,7 +107,7 @@ jobs:
           cd /home/ubuntu
           cat <<EOT > .env
           ODOO_IMAGE=${ECR_REPO}:${IMAGE_TAG}
-          PGHOST=${{ env.rds_endpoint }}
+          PGHOST=${{ env.db_endpoint }}
           PGUSER=${{ env.rds_username }}
           PGPASSWORD=${{ env.rds_password }}
           PGDATABASE=${{ env.rds_db_name }}
