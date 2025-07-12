@@ -36,6 +36,17 @@ jobs:
           echo "Extracted EC2 IP: $SERVER_IP"
           echo "ec2_ip=$SERVER_IP" >> $GITHUB_ENV
 
+      - name: Export RDS Outputs
+        id: rds_outputs
+        working-directory: infra/terraform/prod
+        run: |
+          RAW_ENDPOINT=$(terraform output -raw rds_endpoint)
+          HOST_ONLY=$(echo "$RAW_ENDPOINT" | cut -d ':' -f 1)
+          echo "RDS_ENDPOINT=$HOST_ONLY" >> $GITHUB_ENV
+          echo "RDS_USERNAME=$(terraform output -raw rds_username)" >> $GITHUB_ENV
+          echo "RDS_PASSWORD=$(terraform output -raw rds_password)" >> $GITHUB_ENV
+          echo "RDS_DB_NAME=$(terraform output -raw rds_db_name)" >> $GITHUB_ENV
+
       - name: Setup SSH
         run: |
           mkdir -p ~/.ssh
@@ -91,7 +102,14 @@ jobs:
           aws ecr get-login-password | docker login --username AWS --password-stdin \$ECR_REPO
 
           cd /home/ubuntu
-          echo "ODOO_IMAGE=${ECR_REPO}:${IMAGE_TAG}" > .env
+          cat <<EOT > .env
+          ODOO_IMAGE=${ECR_REPO}:${IMAGE_TAG}
+          PGHOST=${RDS_ENDPOINT}
+          PGUSER=${RDS_USERNAME}
+          PGPASSWORD=${RDS_PASSWORD}
+          PGDATABASE=${RDS_DB_NAME}
+          EOT
+
           docker pull ${ECR_REPO}:${IMAGE_TAG}
           # First time certbot init (if needed)
           cp nginx/nginx-http.conf nginx/conf.d/default.conf
@@ -100,14 +118,9 @@ jobs:
 
           
           echo "📦 Ensuring volumes exist"
-          for vol in odoo_local odoo_state db_data; do
+          for vol in odoo_local odoo_state; do
             docker volume inspect \$vol >/dev/null 2>&1 || docker volume create \$vol
           done
-
-          echo "✅ Starting required services..."
-          docker-compose ps | grep db | grep -q Up && echo "DB already up" || {
-            echo "Starting DB..."; docker-compose up -d db || { docker-compose logs db; exit 1; }
-          }
 
           docker-compose ps | grep redis | grep -q Up && echo "Redis already up" || {
             echo "Starting Redis..."; docker-compose up -d redis || { docker-compose logs redis; exit 1; }

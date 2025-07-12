@@ -11,6 +11,10 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       odoo_ip: ${{ steps.extract.outputs.odoo_ip }}
+      rds_endpoint: ${{ steps.rds_outputs.outputs.rds_endpoint }}
+      rds_username: ${{ steps.rds_outputs.outputs.rds_username }}
+      rds_password: ${{ steps.rds_outputs.outputs.rds_password }}
+      rds_db_name: ${{ steps.rds_outputs.outputs.rds_db_name }}
       
     steps:
     - name: Checkout Code
@@ -45,3 +49,12 @@ jobs:
     - name: Get RDS Endpoint
       working-directory: infra/terraform/prod
       run: terraform output -raw rds_endpoint
+      
+    - name: Export RDS Outputs
+      id: rds_outputs
+      working-directory: infra/terraform/prod
+      run: |
+        echo "rds_endpoint=$(terraform output -raw rds_endpoint)" >> $GITHUB_OUTPUT
+        echo "rds_username=$(terraform output -raw rds_username)" >> $GITHUB_OUTPUT
+        echo "rds_password=$(terraform output -raw rds_password)" >> $GITHUB_OUTPUT
+        echo "rds_db_name=$(terraform output -raw rds_db_name)" >> $GITHUB_OUTPUT
