@@ -6,7 +6,7 @@ output "public_dns" {
 }
 output "rds_endpoint" {
   value = aws_db_instance.odoo_rds.endpoint
-
+}
 output "rds_username" {
   value = var.rds_master_username
 }
