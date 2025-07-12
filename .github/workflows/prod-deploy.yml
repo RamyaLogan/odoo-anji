@@ -29,7 +29,7 @@ jobs:
 
       - name: Ensure jq is installed
         run: sudo apt-get update && sudo apt-get install -y jq
-        
+
       - name: Get EC2 IP
         id: get_ip
         working-directory: infra/terraform/prod
@@ -46,7 +46,7 @@ jobs:
           set -e
           # JSON-safe Terraform output
           TF_OUTPUT_JSON=$(terraform output -json)
-
+          echo "$TF_OUTPUT_JSON"
           # Extract clean values using jq
           CLEAN_ENDPOINT=$(echo "$TF_OUTPUT_JSON" | jq -r '.rds_endpoint.value' | cut -d':' -f1)
           CLEAN_USERNAME=$(echo "$TF_OUTPUT_JSON" | jq -r '.rds_username.value')
