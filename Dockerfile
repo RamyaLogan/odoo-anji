@@ -1,7 +1,6 @@
 # -------- Stage 1: Build Stage --------
 FROM python:3.11-slim-bookworm AS builder
 
-# Install build dependencies
 RUN apt-get update && apt-get install -y --no-install-recommends \
     build-essential gcc python3-dev libpq-dev libxml2-dev libxslt1-dev \
     zlib1g-dev libjpeg-dev libldap2-dev libsasl2-dev libssl-dev \
@@ -9,13 +8,11 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 
 WORKDIR /opt/odoo
 
-# Copy only requirements.txt
-COPY ./odoo/requirements.txt /opt/odoo/requirements.txt
+COPY ./odoo/requirements.txt .
 
-# Install all Python dependencies directly into site-packages (no --prefix)
 RUN pip install --upgrade pip && \
     pip install \
-        -r /opt/odoo/requirements.txt \
+        -r requirements.txt \
         psycopg2-binary \
         openpyxl \
         boto3 \
@@ -40,15 +37,15 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 
 WORKDIR /opt/odoo
 
-# Copy installed Python packages from builder
-COPY --from=builder /usr/local /usr/local
+# ✅ Copy only site-packages and bin from builder
+COPY --from=builder /usr/local/lib/python3.11/site-packages /usr/local/lib/python3.11/site-packages
+COPY --from=builder /usr/local/bin /usr/local/bin
 
-# Copy source code and config
+# Copy code and config
 COPY ./odoo /opt/odoo
 COPY ./custom_addons /opt/odoo/custom_addons
 COPY ./config/odoo.conf /etc/odoo/odoo.conf
 
-# Setup Odoo user and permissions
 RUN useradd -m -U -r -d /opt/odoo odoo && \
     chown -R odoo:odoo /opt/odoo /etc/odoo && \
     mkdir -p /opt/odoo/.local && chown -R odoo:odoo /opt/odoo/.local
