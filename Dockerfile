@@ -22,7 +22,7 @@
     RUN pip install --prefix=/install \
         greenlet==2.0.2 \
         gevent==22.10.2 \
-        zope.event==5.0.1
+        zope.event==5.1
     # -------- Stage 2: Runtime Stage --------
     FROM python:3.10-slim-bookworm
     
