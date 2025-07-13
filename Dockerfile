@@ -7,11 +7,7 @@
         zlib1g-dev libjpeg-dev libldap2-dev libsasl2-dev libssl-dev git wget xz-utils fontconfig libfreetype6 libjpeg62-turbo libx11-6 libxext6 libxrender1
     
     WORKDIR /opt/odoo
-    
-    RUN pip install --prefix=/install \
-    greenlet==2.0.2 \
-    gevent==22.10.2 \
-    zope.event==5.0.1
+
     # Copy only requirements.txt
     COPY ./odoo/requirements.txt /opt/odoo/requirements.txt
     
@@ -23,7 +19,10 @@
             google-auth \
             zope.event && \
         pip install --prefix=/install -r /opt/odoo/requirements.txt || true
-
+    RUN pip install --prefix=/install \
+        greenlet==2.0.2 \
+        gevent==22.10.2 \
+        zope.event==5.0.1
     # -------- Stage 2: Runtime Stage --------
     FROM python:3.10-slim-bookworm
     
