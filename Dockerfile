@@ -14,6 +14,7 @@
     RUN pip install --upgrade pip
     RUN pip install --prefix=/install psycopg2-binary
     RUN pip install --prefix=/install openpyxl
+    RUN pip install --prefix=/install zope.event==5.1
     RUN pip install --prefix=/install -r /opt/odoo/requirements.txt || true
     RUN pip install --prefix=/install boto3
     RUN pip install --prefix=/install google-auth
