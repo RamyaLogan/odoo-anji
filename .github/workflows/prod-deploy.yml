@@ -92,6 +92,10 @@ jobs:
             sudo apt update && sudo apt install -y docker.io
             sudo systemctl enable docker && sudo systemctl start docker
             sudo usermod -aG docker ubuntu
+            newgrp docker <<EONG
+            # Re-enter shell with docker group activated
+            docker info
+            EONG
           fi
           if ! command -v docker-compose &> /dev/null; then
             sudo curl -SL https://github.com/docker/compose/releases/download/v2.24.5/docker-compose-linux-x86_64 -o /usr/local/bin/docker-compose
