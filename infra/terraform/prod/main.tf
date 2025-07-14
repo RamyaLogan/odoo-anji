@@ -56,9 +56,6 @@ resource "aws_instance" "odoo" {
   tags = {
     name = "odoo-prod-ec2"
   }
-  lifecycle {
-    prevent_destroy = true
-  }
 }
 data "aws_instance" "odoo_instance" {
   instance_id = aws_instance.odoo.id
