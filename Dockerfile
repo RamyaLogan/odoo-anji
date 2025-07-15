@@ -13,8 +13,11 @@
     
     RUN pip install --upgrade pip
     RUN pip install --prefix=/install psycopg2-binary
+    RUN pip install --prefix=/install openpyxl
+    RUN pip install --prefix=/install zope.event==5.1
     RUN pip install --prefix=/install -r /opt/odoo/requirements.txt || true
-    
+    RUN pip install --prefix=/install boto3
+    RUN pip install --prefix=/install google-auth
     # -------- Stage 2: Runtime Stage --------
     FROM python:3.11-slim-bookworm
     
@@ -28,7 +31,8 @@
         && apt-get install -f -y \
         && rm wkhtmltox_0.12.6.1-3.bookworm_amd64.deb \
         && rm -rf /var/lib/apt/lists/*
-    
+    RUN pip install --upgrade pip
+    RUN pip install zope.event==5.1
     WORKDIR /opt/odoo
     
     # Copy Odoo source code

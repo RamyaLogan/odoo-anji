@@ -1,0 +1,27 @@
+<odoo>
+    <record id="action_online_team_dashboard" model="ir.actions.client">
+        <field name="name">MHS Dashboard</field>
+        <field name="tag">online_team_dashboard.main</field>
+         <field name="context">{'active_tab': 'online'}</field>
+    </record>
+     <record id="action_offline_team_dashboard" model="ir.actions.client">
+        <field name="name">MHS Dashboard</field>
+        <field name="tag">online_team_dashboard.main</field>
+         <field name="context">{'active_tab': 'offline'}</field>
+    </record>
+
+    <menuitem id="menu_sales_dashboard_root"
+              name="Sales Dashboards"
+              sequence="100"/>
+
+    <menuitem id="menu_online_team_dashboard"
+              name="Online Team"
+              parent="menu_sales_dashboard_root"
+              action="action_online_team_dashboard"
+              sequence="10"/>
+    <menuitem id="menu_offline_team_dashboard"
+              name="Offline Team"
+              parent="menu_sales_dashboard_root"
+              action="action_offline_team_dashboard"
+              sequence="20"/>
+</odoo>

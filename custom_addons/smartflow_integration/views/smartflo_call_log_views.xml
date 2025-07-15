@@ -1,0 +1,55 @@
+<odoo>
+  <record id="view_smartflo_call_log_tree" model="ir.ui.view">
+    <field name="name">smartflo.call.log.tree</field>
+    <field name="model">smartflo.call.log</field>
+    <field name="arch" type="xml">
+      <tree string="Call Logs" default_order="effective_start_time desc" decoration-danger="color == 1"
+      decoration-warning="color == 2"
+      decoration-info="color == 3"
+      decoration-primary="color == 7"
+      decoration-success="color == 10">
+        <field name="agent_id"/>
+        <field name="color" invisible="1"/>
+        <field name="lead_id"/> 
+        <field name="start_time"  widget="datetime" options="{'timezone': 'Asia/Kolkata'}"/>
+        <field name="status"/>
+        <field name="direction"/>
+        <field name="duration"/>
+        <field name="recording_url" widget="url"/> 
+        <field name="requested_time" widget="datetime" options="{'timezone': 'Asia/Kolkata'}"/>  
+      </tree>
+    </field>
+  </record>
+
+  <record id="view_smartflo_call_log_form" model="ir.ui.view">
+    <field name="name">smartflo.call.log.form</field>
+    <field name="model">smartflo.call.log</field>
+    <field name="arch" type="xml">
+      <form string="Smartflo Call Log">
+        <group>
+          <field name="call_id"/>
+          <field name="uuid"/>
+          <field name="status"/>
+          <field name="direction"/>
+          <field name="lead_id"/> 
+          <field name="agent_id"/>
+          <field name="start_time" widget="datetime" options="{'timezone': 'Asia/Kolkata'}" />
+          <field name="answer_time" widget="datetime" options="{'timezone': 'Asia/Kolkata'}"/>
+          <field name="end_time" widget="datetime" options="{'timezone': 'Asia/Kolkata'}"/>
+          <field name="duration"/>
+          <field name="hangup_cause"/>
+          <field name="requested_time" widget="datetime"/>
+          <field name="recording_url" widget="audio_player"/>
+        </group>
+      </form>
+    </field>
+  </record>
+
+  <record id="action_smartflo_call_log" model="ir.actions.act_window">
+    <field name="name">Call Logs</field>
+    <field name="res_model">smartflo.call.log</field>
+    <field name="view_mode">tree,form</field>
+  </record>
+
+  <menuitem id="menu_smartflo_root" name="Call Logs"  action="action_smartflo_call_log"/>
+</odoo>

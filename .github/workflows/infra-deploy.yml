@@ -1,4 +1,4 @@
-name: Terraform Infrastructure Deployment
+name: Terraform Stage Deployment
 
 on:
   workflow_dispatch:
@@ -21,7 +21,7 @@ jobs:
         terraform_version: 1.5.0
 
     - name: Terraform init & Apply
-      working-directory: infra/terraform
+      working-directory: infra/terraform/stage
       run: |
         terraform init
         terraform apply -auto-approve
@@ -30,12 +30,12 @@ jobs:
         AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
 
     - name: Print raw IP
-      working-directory: infra/terraform
+      working-directory: infra/terraform/stage
       run: terraform output -raw odoo_server_ip
 
     - name: Terraform Output
       id: extract
-      working-directory: infra/terraform
+      working-directory: infra/terraform/stage
       run: |
         SERVER_IP=$(terraform output -raw odoo_server_ip | tr -d '\r\n%' | sed 's/::.*//')
         echo "odoo_ip=${SERVER_IP}" >> $GITHUB_OUTPUT

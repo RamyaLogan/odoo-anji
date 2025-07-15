@@ -43,7 +43,8 @@ resource "aws_security_group" "ec2_sg" {
   }
 }
 resource "aws_instance" "odoo" {
-  ami = "ami-02521d90e7410d9f0"
+
+  ami = "ami-021a584b49225376d"
   instance_type = "t3.small"
   availability_zone = "ap-south-1a"
   key_name = aws_key_pair.deploy_key.key_name
@@ -56,4 +57,23 @@ resource "aws_instance" "odoo" {
   tags = {
     name = "odoo-prod-ec2"
   }
+}
+data "aws_instance" "odoo_instance" {
+  instance_id = aws_instance.odoo.id
+}
+data "aws_subnet" "odoo_subnet" {
+  id = data.aws_instance.odoo_instance.subnet_id
+}
+data "aws_vpc" "odoo_vpc" {
+  id = data.aws_subnet.odoo_subnet.vpc_id
+}
+data "aws_subnets" "private_subnets" {
+  filter {
+    name   = "vpc-id"
+    values = [data.aws_vpc.odoo_vpc.id]
+  }
+}
+resource "aws_db_subnet_group" "rds_subnet_group" {
+  name       = "rds-subnet-group"
+  subnet_ids = data.aws_subnets.private_subnets.ids
 }

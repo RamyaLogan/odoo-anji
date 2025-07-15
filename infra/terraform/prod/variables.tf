@@ -14,3 +14,15 @@ variable "ssh_public_key" {
   description = "SSH key pair name for access which is git deply key"
   type = string
 }
+
+variable "rds_master_username" {
+  description = "Master username for RDS PostgreSQL"
+  type        = string
+}
+
+variable "rds_master_password" {
+  description = "Master password for RDS PostgreSQL"
+  type        = string
+  sensitive   = true
+}
+

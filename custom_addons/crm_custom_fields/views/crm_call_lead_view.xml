@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+<record id="crm_lead_form_custom" model="ir.ui.view">
+<field name="name">crm.lead.form.custom</field>
+<field name="model">crm.lead</field>
+<field name="inherit_id" ref="crm.crm_lead_view_form"/>
+<field name="arch" type="xml">
+<xpath expr="//group[@name='lead_info']//field[@id='phone_group_lead_info']" position="replace" multiple="True">
+<field name="phone" id="phone_group_lead_info" widget="phone" invisible="true"/>
+</xpath>
+<xpath expr="//label[@for='street']" position="before" multiple="True">
+<field name="sugar_level"/>
+</xpath>
+<xpath expr="//label[@for='email_from']" position="before" multiple="True">
+<span  class="o_form_label">Phone</span>
+                                        <div class="o_row">
+                                            <field name="masked_phone" id="masked_phone_page_lead"/>
+                                         <div><button type="object"
+        name="action_trigger_smartflo_call"
+        class="btn btn-link" 
+        prevent_default="1"
+        confirm="Initiate call to this lead?"
+        icon="fa-phone">Call
+</button></div>  </div>
+                <field name="whatsapp_no"/>
+                <field name="import_source"/>
+              <field name="age"/>
+              <field name="gender"/>
+</xpath>
+<xpath expr="//group[@name='lead_info']//label[@for='contact_name']" position="before" multiple="True">
+   <span  class="o_form_label">Phone</span>
+                                        <div class="o_row">
+                                            <field name="masked_phone" id="masked_phone_page_lead"/>
+                                         <div><button type="object"
+        name="action_trigger_smartflo_call"
+        class="btn btn-link "
+        prevent_default="1"
+        confirm="Initiate call to this lead?"
+        icon="fa-phone">Call
+</button> </div></div>
+                <field name="whatsapp_no"/>
+                <field name="import_source"/>
+              <field name="age"/>
+              <field name="gender"/>
+</xpath>
+<xpath expr="//group[@name='lead_info']//field[@name='mobile']/ancestor::div[1]" position="attributes">
+    <attribute name="invisible">1</attribute>
+</xpath>
+<xpath expr="//group[@name='lead_info']//field[@name='function']" position="attributes">
+    <attribute name="invisible">1</attribute>
+</xpath>
+<xpath expr="//group[@name='opportunity_partner']//field[@name='partner_id']" position="attributes">
+    <attribute name="invisible">1</attribute>
+</xpath>
+<xpath expr="//field[@name='partner_id']" position="attributes">
+    <attribute name="invisible">1</attribute>
+</xpath>
+<xpath expr="//field[@name='phone']" position="attributes">
+    <attribute name="invisible">1</attribute>
+</xpath>
+<xpath expr="//label[@for='contact_name']" position="attributes">
+    <attribute name="invisible">1</attribute>
+</xpath>
+<xpath expr="//field[@name='contact_name']//ancestor::div[1]" position="attributes">
+    <attribute name="invisible">1</attribute>
+</xpath>
+<xpath expr="//field[@name='email_cc']" position="attributes">
+    <attribute name="invisible">1</attribute>
+</xpath>
+<xpath expr="//group[@name='lead_info']//field[@name='phone']" position="attributes">
+ <attribute name="invisible">1</attribute>
+</xpath>
+<xpath expr="//field[@name='website']" position="attributes">
+ <attribute name="invisible">1</attribute>
+</xpath>
+<xpath expr="//field[@name='partner_name']" position="attributes">
+ <attribute name="invisible">1</attribute>
+</xpath>
+<xpath expr="//field[@name='title']" position="attributes">
+ <attribute name="invisible">1</attribute>
+</xpath>
+<xpath expr="//sheet/notebook/page[@name='internal_notes']" position="before">
+        <page string="Online Sales" name='online_sales'>
+          <group>
+          <group>
+          <field name="available_for_webinar"/>       
+          <field name="webinar_attended"/>
+          <field name="call_status"/>
+          <field name="follow_up_on" invisible="call_status!='follow_up'" required="call_status=='follow_up'"/>
+          <field name="remarks" />         
+          </group>
+          <group>
+          <field name="age"/>
+          <field name="gender"/>
+          <field name="language"/>
+          <field name="treatment_status"/>
+          <field name="occupation"/>       
+          </group>
+          </group>
+        </page>
+        <page string="Offline Sales">
+          <group>
+          <group>
+          <field name="status"/>
+          <field name="walk_in_date"  invisible="status!='walk_in'" required="status=='walk_in'"/>
+          <field name="follow_up_on" invisible="status!='follow_up'" required="status=='follow_up'" />
+          <field name="next_payment_date" invisible="status!='l1_basic_course_enrolled_partially_paid'" required="status=='l1_basic_course_enrolled_partially_paid'"/>
+          <field name="remarks" />
+          </group>
+          </group>
+        </page>
+        <page string="Payment">
+          <group>
+          <group>
+          <field name="payment_status"/>
+          <field name="payment_mode" required="payment_status in ['paid','partial']" />
+          <field name="payment_amount" required="payment_status in ['paid','partial']"/>
+          <field name="payment_reference" required="payment_status in ['paid','partial']"/>
+          </group>
+          <group>
+          <field name="payment_date" required="payment_status in ['paid','partial']"/>
+          <field name="next_payment_date" invisible="payment_status!='partial'" required="payment_status in ['partial']"/>
+          <span  class="o_form_label" style="width:100%;white-space:nowrap">Access Batch Code</span>
+                                        <div class="o_row" style="width: 50%;margin-top: -2px;">
+                                        <span style="width:5%;">DS</span>
+                                          <div style="width:40%;display:inline-block;margin-left:-5px"><field name="access_batch_code" id="masked_phone_page_lead"/></div>
+                                         <div></div>  </div>
+          </group>
+             <field name="payment_attachments" widget="many2many_binary" />
+          </group>
+        </page>
+      </xpath>
+</field>
+</record>
+
+</odoo>
