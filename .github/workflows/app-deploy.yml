@@ -21,6 +21,7 @@ jobs:
         uses: hashicorp/setup-terraform@v2
         with:
           terraform_version: 1.5.0
+          terraform_wrapper: false
 
       - name: Init Terraform
         working-directory: infra/terraform/stage
@@ -32,8 +33,10 @@ jobs:
         id: get_ip
         working-directory: infra/terraform/stage
         run: |
-          IP=$(terraform output -raw odoo_server_ip | grep -Eo '([0-9]{1,3}\.){3}[0-9]{1,3}')
-          echo "ec2_ip=$IP" >> $GITHUB_ENV
+          RAW_OUTPUT=$(terraform output -raw odoo_server_ip 2>&1)
+          SERVER_IP=$(echo "$RAW_OUTPUT" | grep -Eo '([0-9]{1,3}\.){3}[0-9]{1,3}' | tail -n 1 | tr -d '\r\n')
+          echo "Extracted EC2 IP: $SERVER_IP"
+          echo "ec2_ip=$SERVER_IP" >> $GITHUB_ENV
 
       - name: Setup SSH
         run: |
@@ -45,8 +48,14 @@ jobs:
       - name: Upload configs to EC2
         run: |
           scp -r ./docker-compose.yml ./nginx ./init-cert.sh ubuntu@${{ env.ec2_ip }}:/home/ubuntu/
-
+      
       - name: Deploy to EC2
+        env:
+          IMAGE_TAG: ${{ github.event.inputs.image_tag }}
+          ECR_REPO: ${{ secrets.ECR_REPO }}
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_REGION: ap-south-1
         run: |
           ssh -o StrictHostKeyChecking=no ubuntu@${{ env.ec2_ip }} <<EOF
           set -e
