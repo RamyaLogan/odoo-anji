@@ -116,17 +116,4 @@ jobs:
             echo "Starting Redis..."; docker-compose -f docker-compose.yml -f docker-compose.staging.yml up -d redis || { docker-compose logs redis; exit 1; }
           }
 
-          echo "♻️ Restarting Odoo app containers..."
-          docker-compose -f docker-compose.yml -f docker-compose.staging.yml stop odoo odoo-runner || true
-          docker-compose -f docker-compose.yml -f docker-compose.staging.yml rm -f odoo odoo-runner || true
-          docker-compose -f docker-compose.yml -f docker-compose.staging.yml up -d odoo odoo-runner
-
-          if [ ! -f /opt/ssl/certbot/live/mhs-stage.doneztech.com/fullchain.pem ]; then
-            echo "Bootstrapping SSL..."
-            docker-compose -f docker-compose.yml -f docker-compose.staging.yml run --rm certbot certbot certonly --webroot -w /var/www/certbot \
-              -d mhs-stage.doneztech.com --email admin@doneztech.com --agree-tos --non-interactive
-            cp nginx/stage/nginx-https.conf nginx/conf.d/default.conf
-            docker-compose -f docker-compose.yml -f docker-compose.staging.yml restart nginx
-          fi
-          echo "✅ Deployment complete"
           EOF
