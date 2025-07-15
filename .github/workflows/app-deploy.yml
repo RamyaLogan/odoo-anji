@@ -99,6 +99,7 @@ jobs:
           docker pull ${ECR_REPO}:${IMAGE_TAG}
 
           cp nginx/stage/nginx-http.conf nginx/conf.d/default.conf
+          docker rm -f nginx 2>/dev/null || true
           docker-compose -f docker-compose.yml -f docker-compose.staging.yml up -d nginx
           sleep 5
 
