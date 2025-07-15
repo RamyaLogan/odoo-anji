@@ -47,7 +47,7 @@ jobs:
 
       - name: Upload configs to EC2
         run: |
-          scp -r ./docker-compose.yml ./nginx ./init-cert.sh ubuntu@${{ env.ec2_ip }}:/home/ubuntu/
+          scp -r ./docker-compose.yml ./docker-compose.staging.yml ./nginx ./init-cert.sh ubuntu@${{ env.ec2_ip }}:/home/ubuntu/
       
       - name: Deploy to EC2
         env:
@@ -66,7 +66,6 @@ jobs:
           export IMAGE_TAG="${IMAGE_TAG}"
           export ECR_REPO="${ECR_REPO}"
           sudo chown -R ubuntu:ubuntu .
-          # Install Docker and Compose only if missing
           if ! command -v docker &> /dev/null; then
             sudo apt update && sudo apt install -y docker.io
             sudo systemctl enable docker && sudo systemctl start docker
@@ -78,53 +77,55 @@ jobs:
             sudo chmod +x /usr/local/bin/docker-compose
           fi
 
-          # Ensure Docker volumes exist
           for vol in odoo_local odoo_state db_data; do
-            docker volume inspect $vol >/dev/null 2>&1 || docker volume create $vol
+            docker volume inspect \$vol >/dev/null 2>&1 || docker volume create \$vol
           done
+
           if ! command -v aws &> /dev/null; then
             sudo apt update && sudo apt install -y unzip
-            echo "Installing AWS CLI..."
             curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
             unzip -q awscliv2.zip
             sudo ./aws/install
             rm -rf aws awscliv2.zip
           fi
-          # Login to ECR
+
           aws ecr get-login-password | docker login --username AWS --password-stdin \$ECR_REPO
 
           cd /home/ubuntu
-          
+          cat <<EOT > .env
+          ODOO_IMAGE=${ECR_REPO}:${IMAGE_TAG}
+          EOT
 
           docker pull ${ECR_REPO}:${IMAGE_TAG}
-          # First time certbot init (if needed)
+
           cp nginx/stage/nginx-http.conf nginx/conf.d/default.conf
-          docker-compose up -d nginx
+          docker-compose -f docker-compose.yml -f docker-compose.staging.yml up -d nginx
           sleep 5
 
           echo "📦 Ensuring volumes exist"
           for vol in odoo_local odoo_state; do
-            docker volume inspect \$vol >/dev/null 2>&1 || docker volume create \$vol
+            docker volume inspect $vol >/dev/null 2>&1 || docker volume create $vol
           done
 
-          docker-compose ps | grep db | grep -q Up && echo "Db already up" || {
-            echo "Starting DB..."; docker-compose up -d db || { docker-compose logs db; exit 1; }
+          docker-compose -f docker-compose.yml -f docker-compose.staging.yml ps | grep db | grep -q Up && echo "Db already up" || {
+            echo "Starting DB..."; docker-compose -f docker-compose.yml -f docker-compose.staging.yml up -d db || { docker-compose logs db; exit 1; }
           }
 
-          docker-compose ps | grep redis | grep -q Up && echo "Redis already up" || {
-            echo "Starting Redis..."; docker-compose up -d redis || { docker-compose logs redis; exit 1; }
+          docker-compose -f docker-compose.yml -f docker-compose.staging.yml ps | grep redis | grep -q Up && echo "Redis already up" || {
+            echo "Starting Redis..."; docker-compose -f docker-compose.yml -f docker-compose.staging.yml up -d redis || { docker-compose logs redis; exit 1; }
           }
-          
+
           echo "♻️ Restarting Odoo app containers..."
-          docker-compose stop odoo odoo-runner || true
-          docker-compose rm -f odoo odoo-runner || true
-          docker-compose up -d odoo odoo-runner
+          docker-compose -f docker-compose.yml -f docker-compose.staging.yml stop odoo odoo-runner || true
+          docker-compose -f docker-compose.yml -f docker-compose.staging.yml rm -f odoo odoo-runner || true
+          docker-compose -f docker-compose.yml -f docker-compose.staging.yml up -d odoo odoo-runner
+
           if [ ! -f /opt/ssl/certbot/live/mhs-stage.doneztech.com/fullchain.pem ]; then
             echo "Bootstrapping SSL..."
-            docker-compose run --rm certbot certbot certonly --webroot -w /var/www/certbot \
+            docker-compose -f docker-compose.yml -f docker-compose.staging.yml run --rm certbot certbot certonly --webroot -w /var/www/certbot \
               -d mhs-stage.doneztech.com --email admin@doneztech.com --agree-tos --non-interactive
             cp nginx/stage/nginx-https.conf nginx/conf.d/default.conf
-            docker-compose restart nginx
+            docker-compose -f docker-compose.yml -f docker-compose.staging.yml restart nginx
           fi
           echo "✅ Deployment complete"
           EOF
