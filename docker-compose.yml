@@ -11,6 +11,9 @@ services:
       - PGUSER=${PGUSER}
       - PGPASSWORD=${PGPASSWORD}
       - PGDATABASE=${PGDATABASE}
+      - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
+      - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
+      - AWS_REGION=${AWS_REGION}
     ports:
       - "8069:8069"
       - "8072:8072"
@@ -35,6 +38,9 @@ services:
       - PGUSER=${PGUSER}
       - PGPASSWORD=${PGPASSWORD}
       - PGDATABASE=${PGDATABASE}
+      - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
+      - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
+      - AWS_REGION=${AWS_REGION}
     volumes:
       - odoo_local:/opt/odoo/.local
       - odoo_state:/opt/odoo/.db-initialized
