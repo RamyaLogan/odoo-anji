@@ -28,8 +28,26 @@ class LeadImportWizard(models.TransientModel):
     import_type = fields.Selection([('lead', 'Lead'), ('opportunity', 'Opportunity')],default='lead',
         string='Import Type',
         invisible=True,)
+        # Hot lead split
+    percent_hot_senior = fields.Integer(string="Hot % - Senior", default=60)
+    percent_hot_junior = fields.Integer(string="Hot % - Junior", default=30)
+    percent_hot_trainee = fields.Integer(string="Hot % - Trainee", default=10)
 
+    # Warm lead split
+    percent_warm_senior = fields.Integer(string="Warm % - Senior", default=20)
+    percent_warm_junior = fields.Integer(string="Warm % - Junior", default=40)
+    percent_warm_trainee = fields.Integer(string="Warm % - Trainee", default=40)
 
+    @api.constrains('percent_hot_senior', 'percent_hot_junior', 'percent_hot_trainee',
+                    'percent_warm_senior', 'percent_warm_junior', 'percent_warm_trainee')
+    def _check_percentage_total(self):
+        for rec in self:
+            hot_total = rec.percent_hot_senior + rec.percent_hot_junior + rec.percent_hot_trainee
+            warm_total = rec.percent_warm_senior + rec.percent_warm_junior + rec.percent_warm_trainee
+            if hot_total != 100:
+                raise UserError("Hot lead distribution must total 100%.")
+            if warm_total != 100:
+                raise UserError("Warm lead distribution must total 100%.")
     @api.onchange('file')
     def _onchange_file(self):
         if self.filename:
@@ -75,7 +93,7 @@ class LeadImportWizard(models.TransientModel):
         assigned_users = online_team.member_ids.ids
         user_count = len(assigned_users)
 
-        header_map, data_rows = self._load_excel(file_path)
+        header_map, data_rows = self._load_excel(import_type,file_path)
         phones_to_import = self._extract_phones(data_rows, header_map)
         existing_leads = self.env['crm.lead'].search([('phone', 'in', list(phones_to_import))])
         existing_phones = set(self.normalize_phone(p) for p in existing_leads.mapped('phone'))
@@ -218,13 +236,13 @@ class LeadImportWizard(models.TransientModel):
             'existing_leads': len(existing_leads),
         }
 
-    def _load_excel(self, file_path):
+    def _load_excel(self,import_type, file_path):
         workbook = openpyxl.load_workbook(file_path)
         sheet = workbook.active
         header_row = [cell.value for cell in next(sheet.iter_rows(min_row=1, max_row=1))]
         header_map = {header.lower().strip(): idx for idx, header in enumerate(header_row)}
 
-        required_cols = ['name', 'phone', 'email', 'whatsapp_no'] if self.import_type == 'lead' else ['name', 'phone', 'category', 'sugar_level', 'stage', 'batch_code']
+        required_cols = ['name', 'phone', 'email', 'whatsapp_no'] if import_type == 'lead' else ['name', 'phone', 'category', 'sugar_level', 'stage', 'batch_code']
         for col in required_cols:
             if col not in header_map:
                 raise UserError(f"Missing required column: {col}")
