@@ -95,6 +95,9 @@ jobs:
           cd /home/ubuntu
           cat <<EOT > .env
           ODOO_IMAGE=${ECR_REPO}:${IMAGE_TAG}
+          AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
+          AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
+          AWS_REGION=${AWS_REGION}
           EOT
 
           docker pull ${ECR_REPO}:${IMAGE_TAG}
