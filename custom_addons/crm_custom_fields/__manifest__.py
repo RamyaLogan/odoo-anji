@@ -11,7 +11,9 @@
         "views/crm_phone_number_search_view.xml",
         "views/crm_lead_stage_view.xml",
         "views/crm_assign_lead_view.xml",
-        "views/crm_assign_lead_wizard_view.xml"
+        "views/crm_assign_lead_wizard_view.xml",
+        "views/res_users_view.xml",
+        "views/user_role_view.xml",
     ],
     "installable": True,
     "application": False,
