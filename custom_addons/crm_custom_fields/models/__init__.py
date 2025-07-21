@@ -1,1 +1,1 @@
-from . import crm_call_lead, user_role, res_users
+from . import crm_call_lead, res_users
