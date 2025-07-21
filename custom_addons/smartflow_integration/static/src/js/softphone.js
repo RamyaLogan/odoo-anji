@@ -38,7 +38,7 @@ export class FloatingSoftphone extends Component {
                             ...payload,
                             call_start_ist: this.formatToIST(payload.call_start),
                         });     
-                        if (this.state.todayCalls.length > 6) {
+                        if (this.state.todayCalls.length > 20) {
                             this.state.todayCalls.pop();
                         }
                     } else {

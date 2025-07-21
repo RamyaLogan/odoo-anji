@@ -4,7 +4,7 @@ from openpyxl import load_workbook
 import base64
 import os
 import logging
-from datetime import datetime
+from datetime import datetime, timedelta
 import openpyxl
 from dateutil.relativedelta import relativedelta
 from psycopg2.extras import execute_values
@@ -13,6 +13,7 @@ import psycopg2
 from odoo.modules.registry import Registry
 import boto3
 import io
+from collections import defaultdict, deque
 
 S3_BUCKET = 'mhs-doneztech'
 S3_PREFIX = 'crm-imports/' 
@@ -73,10 +74,12 @@ class LeadImportWizard(models.TransientModel):
                 s3.upload_fileobj(io.BytesIO(decoded_file), S3_BUCKET, s3_key)
 
                 # Trigger the job with the S3 path
-                self.env['lead.import.wizard'].with_delay(description="CRM S3 Import").process_uploaded_leads_from_s3(s3_key, self.import_type, self.lead_source)
+                self.env['lead.import.wizard'].with_delay(description="CRM S3 Import").process_uploaded_leads_from_s3(s3_key, self.import_type, self.lead_source,self.split_days, self.percent_hot_senior, self.percent_hot_junior, self.percent_hot_trainee,
+                                                                                                                self.percent_warm_senior, self.percent_warm_junior, self.percent_warm_trainee)
     
     @api.model
-    def process_uploaded_leads_from_s3(self, s3_key, import_type, lead_source):
+    def process_uploaded_leads_from_s3(self, s3_key, import_type, lead_source,split_days,percent_hot_senior=60, percent_hot_junior=30, percent_hot_trainee=10,
+                                       percent_warm_senior=20, percent_warm_junior=40, percent_warm_trainee=40):
         import tempfile
         s3 = boto3.client('s3')
         with tempfile.NamedTemporaryFile(delete=False, suffix=".xlsx") as tmp:
@@ -86,7 +89,8 @@ class LeadImportWizard(models.TransientModel):
             tmp_path = tmp.name
 
         try:
-            return self.process_uploaded_leads(tmp_path, import_type,lead_source) if import_type == 'lead' else self.process_uploaded_opportunity(tmp_path)
+            return self.process_uploaded_leads(tmp_path, import_type,lead_source) if import_type == 'lead' else self.process_uploaded_opportunity(tmp_path,percent_hot_senior, percent_hot_junior, percent_hot_trainee,
+                                     percent_warm_senior, percent_warm_junior, percent_warm_trainee,split_days)
         finally:
             if os.path.exists(tmp_path):
                 os.remove(tmp_path)
@@ -165,52 +169,63 @@ class LeadImportWizard(models.TransientModel):
             'duplicates': duplicates
         }
 
-    def process_uploaded_opportunity(self, file_path):
+    def process_uploaded_opportunity(self, file_path,percent_hot_senior, percent_hot_junior, percent_hot_trainee,
+                                     percent_warm_senior, percent_warm_junior, percent_warm_trainee,split_days):
         self = self.with_env(self.env(user=SUPERUSER_ID))
+        team = self.env['crm.team'].search([('name', '=', 'Offline Sales Team')], limit=1)
+        if not team:
+            raise UserError("Offline Sales Team not found.")
 
-        team_name = 'Offline Sales Team'
-        offline_team = self.env['crm.team'].search([('name', '=', team_name)], limit=1)
-        assigned_users = offline_team.member_ids.ids
-        user_count = len(assigned_users)
+        users_by_role = defaultdict(list)
+        for user in team.member_ids:
+            if user.role_level:
+                users_by_role[user.role_level].append(user.id)
 
-        if not assigned_users:
-            raise UserError(f"No members found in team: {team_name}")
+        role_weights = {
+            'hot': {
+                'senior': percent_hot_senior,
+                'junior': percent_hot_junior,
+                'trainee': percent_hot_trainee
+            },
+            'warm': {
+                'senior': percent_warm_senior,
+                'junior': percent_warm_junior,
+                'trainee': percent_warm_trainee
+            }
+        }
 
-        header_map, data_rows = self._load_excel(file_path)
-        phones_to_process = self._extract_phones(data_rows, header_map)
-        existing_leads = self.env['crm.lead'].search([
-            ('phone', 'in', list(phones_to_process)),
-            ('type', '=', 'lead')
-        ])
-        existing_lead_map = {self.normalize_phone(lead.phone): lead for lead in existing_leads}
+        header_map, data_rows = self._load_excel('opportunity', file_path)
+        phones = list(self._extract_phones(data_rows, header_map))
+        existing = self.env['crm.lead'].search([('phone', 'in', phones)])
+        existing_map = {self.normalize_phone(l.phone): l for l in existing}
 
-        # Prepare tag cache: hot, warm, cold
         tag_cache = {}
-        for tag_label in ['hot', 'warm', 'cold']:
-            tag = self.env['crm.tag'].search([('name', '=', tag_label)], limit=1)
-            if not tag:
-                tag = self.env['crm.tag'].create({'name': tag_label})
-            tag_cache[tag_label] = tag
+        for tag in ['hot', 'warm']:
+            t = self.env['crm.tag'].search([('name', '=', tag)], limit=1)
+            if not t:
+                t = self.env['crm.tag'].create({'name': tag})
+            tag_cache[tag] = t
 
-        updated, skipped, created, index = 0, 0, 0,0
+        assignments_by_day = defaultdict(list)
+        category_buckets = {'hot': [], 'warm': []}
+        seen_phones = set()
+
+        updated, created, skipped = 0, 0, 0
 
         for row in data_rows:
             try:
-                raw_phone = row[header_map.get('phone', '')]
-                if not raw_phone:
+                phone = self.normalize_phone(row[header_map['phone']])
+                if not phone or phone in seen_phones:
                     skipped += 1
                     continue
 
-                phone = self.normalize_phone(raw_phone)
-                lead = existing_lead_map.get(phone)
+                seen_phones.add(phone)
+                category = row[header_map['category']].strip().lower()
+                if category not in ['hot', 'warm']:
+                    skipped += 1
+                    continue
 
-                category_value = row[header_map['category']].strip().lower()
-                if category_value not in tag_cache:
-                    tag = self.env['crm.tag'].search([('name', '=', category_value)], limit=1)
-                    if not tag:
-                        tag = self.env['crm.tag'].create({'name': category_value})
-                    tag_cache[category_value] = tag
-                category_tag = tag_cache.get(category_value)
+                lead = existing_map.get(phone)
                 if not lead:
                     lead = self.env['crm.lead'].create({
                         'name': row[header_map['name']],
@@ -219,51 +234,132 @@ class LeadImportWizard(models.TransientModel):
                         'sugar_level': row[header_map['sugar_level']],
                         'status': row[header_map['stage']],
                         'access_batch_code_full': row[header_map['batch_code']],
-                        'user_id': assigned_users[index % user_count],
+                        'email_from': row[header_map.get('email')],
+                        'call_status': 'new',
+                        'user_id': False
                     })
                     created += 1
-                else:
-                # Add tag only if not already linked
+                elif lead.type == 'opportunity' :
                     lead.write({
+                        'name': row[header_map['name']],
+                        'sugar_level': row[header_map['sugar_level']],
+                        'status': row[header_map['stage']],
+                        'access_batch_code_full': row[header_map['batch_code']],
+                        'email_from': row[header_map.get('email')],
+                        'call_status': 'new',
+                    })
+                    if lead.user_id:
+                        self.env['mail.activity'].create({
+                            'res_model_id': self.env['ir.model']._get_id('crm.lead'),
+                            'res_id': lead.id,
+                            'activity_type_id': self.env.ref('mail.mail_activity_data_call').id,
+                            'summary': "Second Time - Recall",
+                            'user_id': lead.user_id.id,
+                            'date_deadline': fields.Date.today() + timedelta(days=2),
+                        })
+                        updated += 1
+                        continue
+                else:
+                    lead.write({
+                        'name': row[header_map['name']],
                         'type': 'opportunity',
                         'sugar_level': row[header_map['sugar_level']],
                         'status': row[header_map['stage']],
                         'access_batch_code_full': row[header_map['batch_code']],
-                        'user_id': assigned_users[index % user_count],
+                        'email_from': row[header_map.get('email')],
+                        'call_status': 'new',
+                        'user_id': False
                     })
                     updated += 1
-                if category_tag.id not in lead.tag_ids.ids:
-                        lead.write({'tag_ids': [(4, category_tag.id)]})
 
-                # Follow-up activity in 48 hours
-                self.env['mail.activity'].create({
-                    'res_model_id': self.env['ir.model']._get_id('crm.lead'),
-                    'res_id': lead.id,
-                    'activity_type_id': self.env.ref('mail.mail_activity_data_call').id,
-                    'summary': "Post Conversion Follow-up",
-                    'user_id': lead.user_id.id,
-                    'date_deadline': fields.Date.today() + timedelta(days=2),
+                lead.write({'tag_ids': [(4, tag_cache[category].id)]})
+
+                category_buckets[category].append({
+                    'id': lead.id,
+                    'phone': phone,
+                    'category_tag': tag_cache[category].id,
+                    'day': None
                 })
 
-                index += 1
-
-                if updated % 100 == 0:
-                    _logger.info(f"Updated {updated} leads...")
-
             except Exception as e:
-                _logger.warning(f"Error processing row: {e}")
                 skipped += 1
-                continue
+                _logger.warning(f"Skipping row due to error: {e}")
+
+        def assign_opportunities(tag, role_weights):
+            pool = category_buckets[tag]
+            total = len(pool)
+            if total == 0:
+                return
+
+            fractions = {}
+            counts = {}
+            for role in ['senior', 'junior', 'trainee']:
+                exact = (role_weights[role] / 100) * total
+                counts[role] = int(exact)
+                fractions[role] = exact - counts[role]
+
+            assigned = sum(counts.values())
+            leftover = total - assigned
+            leftover_roles = sorted(['senior', 'junior', 'trainee'], key=lambda r: (-fractions[r], -role_weights[r]))
+            for i in range(leftover):
+                counts[leftover_roles[i % len(leftover_roles)]] += 1
+
+            cursor = 0
+            for role in ['senior', 'junior', 'trainee']:
+                users = users_by_role[role]
+                if not users:
+                    continue
+                user_queue = deque(users)
+
+                per_day = counts[role] // split_days
+                leftover_day = counts[role] % split_days
+
+                for day in range(split_days):
+                    daily_count = per_day + (1 if day < leftover_day else 0)
+                    for _ in range(daily_count):
+                        if cursor >= total:
+                            break
+                        record = pool[cursor]
+                        record['assignee_id'] = user_queue[0]
+                        record['day'] = day
+                        assignments_by_day[day].append(record)
+                        user_queue.rotate(-1)
+                        cursor += 1
+        assign_opportunities('hot', role_weights['hot'])
+        assign_opportunities('warm', role_weights['warm'])
+            
+        for day, assignments in assignments_by_day.items():
+            eta = fields.Datetime.now() + timedelta(days=day)
+            _logger.info(f"Queuing job for Day {day + 1} with {len(assignments)} assignments. ETA: {eta}")
+            self.env['lead.import.wizard'].with_delay(eta=eta).finalize_opportunity_assignment(assignments)
 
         os.remove(file_path)
-        _logger.info(f"Conversion complete. Updated: {updated}, Skipped: {skipped}, Existing leads found: {len(existing_leads)}")
-
+        _logger.info(f"Conversion complete. Updated: {updated}, Created: {created}, Skipped: {skipped}, Existing: {len(existing_map)}")
         return {
             'updated': updated,
-            'skipped': skipped,
             'created': created,
-            'existing_leads': len(existing_leads),
+            'skipped': skipped,
+            'existing_leads': len(existing_map),
         }
+
+    @api.model
+    def finalize_opportunity_assignment(self, assignment_list):
+        for a in assignment_list:
+            lead = self.env['crm.lead'].browse(a['id'])
+            if not lead:
+                continue
+            lead.write({
+                'user_id': a['assignee_id']
+            })
+            lead.write({'tag_ids': [(4, a['category_tag'])]})
+            self.env['mail.activity'].create({
+                'res_model_id': self.env['ir.model']._get_id('crm.lead'),
+                'res_id': lead.id,
+                'activity_type_id': self.env.ref('mail.mail_activity_data_call').id,
+                'summary': "Post Conversion Follow-up",
+                'user_id': lead.user_id.id,
+                'date_deadline': fields.Date.today() + timedelta(days=2),
+            })
 
     def _load_excel(self,import_type, file_path):
         workbook = openpyxl.load_workbook(file_path)

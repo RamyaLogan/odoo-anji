@@ -22,7 +22,7 @@ class SmartfloController(http.Controller):
         calls = request.env['smartflo.call.log'].sudo().search(
             [('effective_start_time', '>=', today_utc)],
             order='effective_start_time desc',
-            limit=5
+            limit=20
         )
         return [{
             'uuid': c.uuid,
