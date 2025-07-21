@@ -218,7 +218,7 @@ class SmartfloCallLog(models.Model):
         return {'success': True}
 
     def update_call_summary(self,agent_user, call_start_str, duration):
-        call_start_dt = datetime.strptime(call_start_str, "%Y-%m-%d %H:%M:%SZ")
+        call_start_dt = datetime.strptime(call_start_str, "%Y-%m-%d %H:%M:%S")
         call_date = call_start_dt.date()
         summary = self.env['call.log.summary'].sudo().search([
             ('user_id', '=', agent_user.id),
