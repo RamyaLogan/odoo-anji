@@ -1,0 +1,20 @@
+<!-- views/res_users_view_inherit.xml -->
+<odoo>
+    <record id="view_users_form_inherit_role" model="ir.ui.view">
+        <field name="name">res.users.form.inherit.role</field>
+        <field name="model">res.users</field>
+        <field name="inherit_id" ref="base.view_users_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='login']" position="after">
+                <group string="Role Info" colspan="2">
+                <group>
+                    <field name="user_role_id"/>
+                    </group>
+                    <group>
+                    <field name="role_level"/>
+                           </group>
+                </group>
+            </xpath>
+        </field>
+    </record>
+</odoo>

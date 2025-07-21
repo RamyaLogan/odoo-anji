@@ -25,11 +25,34 @@ class LeadImportWizard(models.TransientModel):
     file = fields.Binary('Excel File', required=True)
     filename = fields.Char('File Name')
     saved_filename = fields.Char('Saved File Name', readonly=True)
+    lead_source = fields.Selection([
+        ('web', 'Website'),
+        ('fb', ' Facebook'),
+    ], string='Lead Source', required=True, default='web')
     import_type = fields.Selection([('lead', 'Lead'), ('opportunity', 'Opportunity')],default='lead',
         string='Import Type',
         invisible=True,)
+        # Hot lead split
+    split_days = fields.Integer(string="Split Over Days", required=True, default=1)
+    percent_hot_senior = fields.Integer(string="Hot % - Senior", default=60)
+    percent_hot_junior = fields.Integer(string="Hot % - Junior", default=30)
+    percent_hot_trainee = fields.Integer(string="Hot % - Trainee", default=10)
 
+    # Warm lead split
+    percent_warm_senior = fields.Integer(string="Warm % - Senior", default=20)
+    percent_warm_junior = fields.Integer(string="Warm % - Junior", default=40)
+    percent_warm_trainee = fields.Integer(string="Warm % - Trainee", default=40)
 
+    @api.constrains('percent_hot_senior', 'percent_hot_junior', 'percent_hot_trainee',
+                    'percent_warm_senior', 'percent_warm_junior', 'percent_warm_trainee')
+    def _check_percentage_total(self):
+        for rec in self:
+            hot_total = rec.percent_hot_senior + rec.percent_hot_junior + rec.percent_hot_trainee
+            warm_total = rec.percent_warm_senior + rec.percent_warm_junior + rec.percent_warm_trainee
+            if hot_total != 100:
+                raise UserError("Hot lead distribution must total 100%.")
+            if warm_total != 100:
+                raise UserError("Warm lead distribution must total 100%.")
     @api.onchange('file')
     def _onchange_file(self):
         if self.filename:
@@ -50,10 +73,10 @@ class LeadImportWizard(models.TransientModel):
                 s3.upload_fileobj(io.BytesIO(decoded_file), S3_BUCKET, s3_key)
 
                 # Trigger the job with the S3 path
-                self.env['lead.import.wizard'].with_delay(description="CRM S3 Import").process_uploaded_leads_from_s3(s3_key, self.import_type)
+                self.env['lead.import.wizard'].with_delay(description="CRM S3 Import").process_uploaded_leads_from_s3(s3_key, self.import_type, self.lead_source)
     
     @api.model
-    def process_uploaded_leads_from_s3(self, s3_key, import_type):
+    def process_uploaded_leads_from_s3(self, s3_key, import_type, lead_source):
         import tempfile
         s3 = boto3.client('s3')
         with tempfile.NamedTemporaryFile(delete=False, suffix=".xlsx") as tmp:
@@ -63,38 +86,64 @@ class LeadImportWizard(models.TransientModel):
             tmp_path = tmp.name
 
         try:
-            return self.process_uploaded_leads(tmp_path, import_type) if import_type == 'lead' else self.process_uploaded_opportunity(tmp_path)
+            return self.process_uploaded_leads(tmp_path, import_type,lead_source) if import_type == 'lead' else self.process_uploaded_opportunity(tmp_path)
         finally:
             if os.path.exists(tmp_path):
                 os.remove(tmp_path)
 
     
-    def process_uploaded_leads(self, file_path,import_type):
-        team_name = 'Online Sales Team' if import_type == 'lead' else 'Offline Sales Team'
+    def process_uploaded_leads(self, file_path, import_type, lead_source):
+        team_name = 'Online Sales Team - Web' if lead_source == 'web' else 'Online Sales Team - FB'
         online_team = self.env['crm.team'].search([('name', '=', team_name)], limit=1)
         assigned_users = online_team.member_ids.ids
         user_count = len(assigned_users)
 
-        header_map, data_rows = self._load_excel(file_path)
+        header_map, data_rows = self._load_excel(import_type, file_path)
         phones_to_import = self._extract_phones(data_rows, header_map)
         existing_leads = self.env['crm.lead'].search([('phone', 'in', list(phones_to_import))])
-        existing_phones = set(self.normalize_phone(p) for p in existing_leads.mapped('phone'))
+        existing_lead_map = {self.normalize_phone(lead.phone): lead for lead in existing_leads}
 
         leads_to_create, activities_to_create = [], []
         duplicate_records, imported, duplicates, index = set(), 0, 0, 0
         for row in data_rows:
             phone = self.normalize_phone(row[header_map['phone']])
-            if not phone or phone in existing_phones:
+            if not phone:
                 continue
             if phone in duplicate_records:
                 duplicates += 1
                 continue
-            name, email,whatsapp_no = row[header_map['name']], row[header_map['email']], row[header_map['whatsapp_no']]
-            assigned_user_id = assigned_users[index % user_count]
+
+            name = row[header_map['name']]
+            email = row[header_map['email']]
+            whatsapp_no = row[header_map['whatsapp_no']]
+            batch_code = row[header_map.get('batch_code')]
+            sugar_level = row[header_map.get('sugar_level')]
+            call_status = 'new'
+
+            lead = existing_lead_map.get(phone)
+            if lead:
+                lead.write({
+                    'name': name,
+                    'email_from': email,
+                    'whatsapp_no': whatsapp_no,
+                    'access_batch_code_full': batch_code,
+                    'sugar_level': sugar_level,
+                    'call_status': call_status
+                })
+                continue
+
+            assigned_user_id = assigned_users[index % user_count] if user_count > 0 else False
 
             leads_to_create.append({
-                'name': name, 'phone': phone, 'email_from': email,
-                'user_id': assigned_user_id, 'type': 'lead','whatsapp_no': whatsapp_no
+                'name': name,
+                'phone': phone,
+                'email_from': email,
+                'user_id': assigned_user_id,
+                'type': 'lead',
+                'whatsapp_no': whatsapp_no,
+                'access_batch_code_full': batch_code,
+                'sugar_level': sugar_level,
+                'call_status': call_status
             })
             duplicate_records.add(phone)
             index += 1
@@ -103,10 +152,8 @@ class LeadImportWizard(models.TransientModel):
                 imported += self._create_leads_and_activities(leads_to_create)
                 leads_to_create, activities_to_create = [], []
 
-        # Create activities for existing leads
         self.create_followup_activities(existing_leads, summary="Second Time - Recall", days=1)
 
-        # Final batch processing
         if leads_to_create:
             imported += self._create_leads_and_activities(leads_to_create)
 
@@ -218,13 +265,13 @@ class LeadImportWizard(models.TransientModel):
             'existing_leads': len(existing_leads),
         }
 
-    def _load_excel(self, file_path):
+    def _load_excel(self,import_type, file_path):
         workbook = openpyxl.load_workbook(file_path)
         sheet = workbook.active
         header_row = [cell.value for cell in next(sheet.iter_rows(min_row=1, max_row=1))]
         header_map = {header.lower().strip(): idx for idx, header in enumerate(header_row)}
 
-        required_cols = ['name', 'phone', 'email', 'whatsapp_no'] if self.import_type == 'lead' else ['name', 'phone', 'category', 'sugar_level', 'stage', 'batch_code']
+        required_cols = ['name', 'phone', 'email', 'whatsapp_no','sugar_level','batch_code'] if import_type == 'lead' else ['name', 'phone', 'category', 'sugar_level', 'stage', 'batch_code']
         for col in required_cols:
             if col not in header_map:
                 raise UserError(f"Missing required column: {col}")

@@ -1,0 +1,41 @@
+<!-- views/user_role_views.xml -->
+<odoo>
+    <record id="view_user_role_tree" model="ir.ui.view">
+        <field name="name">user.role.tree</field>
+        <field name="model">user.role</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="name"/>
+                <field name="code"/>
+                <field name="has_level"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="view_user_role_form" model="ir.ui.view">
+        <field name="name">user.role.form</field>
+        <field name="model">user.role</field>
+        <field name="arch" type="xml">
+            <form>
+                <group>
+                    <field name="name"/>
+                    <field name="code"/>
+                    <field name="has_level"/>
+                </group>
+            </form>
+        </field>
+    </record>
+
+    <menuitem id="menu_user_role_root" name="User Roles" parent="base.menu_custom" sequence="10"/>
+    
+    <record id="action_user_role" model="ir.actions.act_window">
+        <field name="name">User Roles</field>
+        <field name="res_model">user.role</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+    <menuitem id="menu_user_role_list" name="Manage Roles"
+          parent="menu_user_role_root"
+          action="action_user_role"
+          groups="base.group_system"
+          sequence="1"/>
+</odoo>

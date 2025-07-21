@@ -10,6 +10,28 @@
                     <field name="saved_filename" string="File Name"/>
                     <field name="import_type" invisible="1"/>
                 </group>
+                
+                <group invisible="import_type!='lead'">
+                    <field name="lead_source" string="Lead Source" required="1"/>
+                </group>
+               <group invisible="import_type!='opportunity'">
+               <group>
+                <field name="split_days" string="Split Over Days" />
+                </group>
+    <separator string="Lead Assignment Split (Hot / Warm)" colspan="3"/>
+
+    <group>
+        <field name="percent_hot_senior" string="Senior (Hot %)"/>
+        <field name="percent_hot_junior" string="Junior (Hot %)"/>
+        <field name="percent_hot_trainee" string="Trainee (Hot %)"/>
+       
+    </group>
+    <group>
+         <field name="percent_warm_senior" string="Senior (Warm %)"/>
+        <field name="percent_warm_junior" string="Junior (Warm %)"/>
+         <field name="percent_warm_trainee" string="Trainee (Warm %)"/>
+    </group>
+</group>
                 <footer>
                     <button name="action_import_leads" type="object" string="Import Leads" class="btn-primary"/>
                     <button string="Cancel" class="btn-secondary" special="cancel"/>
