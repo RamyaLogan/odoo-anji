@@ -25,7 +25,7 @@
     <field name="name">smartflo.call.log.form</field>
     <field name="model">smartflo.call.log</field>
     <field name="arch" type="xml">
-      <form string="Smartflo Call Log">
+      <form string="Smartflo Call Log" create="false" edit="false" delete="false">
         <group>
           <field name="call_id"/>
           <field name="uuid"/>
@@ -50,6 +50,29 @@
     <field name="res_model">smartflo.call.log</field>
     <field name="view_mode">tree,form</field>
   </record>
+<!-- Regular users: see only their own call logs -->
+<!-- Rule 1: Regular users see only their own logs -->
+<record id="rule_smartflo_call_log_user_only_own" model="ir.rule">
+    <field name="name">Smartflo Call Log - Own Only</field>
+    <field name="model_id" ref="model_smartflo_call_log"/>
+    <field name="domain_force">[('agent_id', '=', user.id)]</field>
+    <field name="groups" eval="[(4, ref('base.group_user'))]"/>
+    <field name="perm_read" eval="1"/>
+    <field name="perm_write" eval="0"/>
+    <field name="perm_create" eval="0"/>
+    <field name="perm_unlink" eval="0"/>
+</record>
 
+<!-- Rule 2: Admins see all logs (but can't edit/delete) -->
+<record id="rule_smartflo_call_log_admin_readonly" model="ir.rule">
+    <field name="name">Smartflo Call Log - Admin Read-Only</field>
+    <field name="model_id" ref="model_smartflo_call_log"/>
+    <field name="domain_force">[(1, '=', 1)]</field>
+    <field name="groups" eval="[(4, ref('base.group_system'))]"/>
+    <field name="perm_read" eval="1"/>
+    <field name="perm_write" eval="0"/>
+    <field name="perm_create" eval="0"/>
+    <field name="perm_unlink" eval="0"/>
+</record>
   <menuitem id="menu_smartflo_root" name="Call Logs"  action="action_smartflo_call_log"/>
 </odoo>
