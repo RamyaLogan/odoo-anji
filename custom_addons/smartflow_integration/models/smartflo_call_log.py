@@ -88,7 +88,7 @@ class SmartfloCallLog(models.Model):
     def _resolve_lead(self, customer_number_raw):
         if customer_number_raw and customer_number_raw.startswith("+91"):
             customer_number_trimmed = customer_number_raw[3:]
-        elif len(call_to_number) == 10:
+        elif len(customer_number_raw) == 10:
             customer_number_trimmed = customer_number_raw
         else:
             customer_number_trimmed = customer_number_raw[2:]
