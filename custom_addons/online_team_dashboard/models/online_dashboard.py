@@ -75,8 +75,8 @@ class OnlineTeamDashboard(models.AbstractModel):
         ])
 
     def _get_sales_users(self):
-        team = self.env['crm.team'].search([('name', '=', 'Online Sales Team')], limit=1)
-        return team.member_ids if team else self.env['res.users']
+        teams = self.env['crm.team'].search([('name', 'in', ['Online Sales Team - Web', 'Online Sales Team - FB'])])
+        return teams.mapped('member_ids') if teams else self.env['res.users']
 
     def _aggregate_leads(self, leads):
         summary = {
