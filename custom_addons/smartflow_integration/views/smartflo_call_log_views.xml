@@ -81,7 +81,7 @@
     <field name="name">Smartflo Call Log - Programmatic Create/Write</field>
     <field name="model_id" ref="model_smartflo_call_log"/>
     <field name="domain_force">[(1, '=', 1)]</field>
-    <field name="groups" eval="[(4, ref('your_module.group_smartflo_call_log_programmatic'))]"/>
+    <field name="groups" eval="[(4, ref('smartflow_integration.group_smartflo_call_log_programmatic'))]"/>
     <field name="perm_read" eval="1"/>
     <field name="perm_write" eval="1"/>
     <field name="perm_create" eval="1"/>
