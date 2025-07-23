@@ -68,7 +68,7 @@ class SmartfloController(http.Controller):
             resp = requests.post("https://api-smartflo.tatateleservices.com/v1/click_to_call", headers=headers,
                     json=payload)
             print(resp.status_code, resp.text)
-            request.env['ir.logging'].create({
+            request.env['ir.logging'].sudo().create({
                 'name': 'Smartflo Call',
                 'type': 'server',
                 'level': 'info',
