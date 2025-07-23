@@ -12,16 +12,19 @@
 
     <menuitem id="menu_sales_dashboard_root"
               name="Sales Dashboards"
-              sequence="100"/>
+              sequence="100"
+              groups="crm_custom_fields.group_online_sales_team,crm_custom_fields.group_offline_sales_team,crm_custom_fields.group_sales_manager"/>
 
     <menuitem id="menu_online_team_dashboard"
               name="Online Team"
               parent="menu_sales_dashboard_root"
               action="action_online_team_dashboard"
-              sequence="10"/>
+              sequence="10"
+              groups="crm_custom_fields.group_online_sales_team,crm_custom_fields.group_sales_manager"/>
     <menuitem id="menu_offline_team_dashboard"
               name="Offline Team"
               parent="menu_sales_dashboard_root"
               action="action_offline_team_dashboard"
-              sequence="20"/>
+              sequence="20"
+              groups="crm_custom_fields.group_offline_sales_team,crm_custom_fields.group_sales_manager"/>
 </odoo>

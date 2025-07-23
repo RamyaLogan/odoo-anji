@@ -18,7 +18,7 @@
             </attribute>
         </xpath>
        <xpath expr="//search" position="inside">
-            <field name="access_batch_code_full" string="Access Batch Code"/>
+            <field name="batch_code_full" string="Batch Code"/>
         </xpath>
     </field>
 </record>
@@ -40,7 +40,7 @@
             </attribute>
         </xpath>
        <xpath expr="//search" position="inside">
-            <field name="access_batch_code_full" string="Access Batch Code"/>
+            <field name="batch_code_full" string="Batch Code"/>
         </xpath>
     </field>
 </record>

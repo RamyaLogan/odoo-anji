@@ -1,4 +1,4 @@
-from odoo import models, fields, api
+from odoo import models, fields, api,_,exceptions
 from datetime import timedelta
 
 class CrmCallLead(models.Model):
@@ -17,11 +17,13 @@ class CrmCallLead(models.Model):
     import_source = fields.Char(string='Lead Source')
     age = fields.Integer(string='Age')
     sugar_level = fields.Selection([
+        ('no-sugar', 'No Sugar'),
         ('120-150', '120-150'),
         ('150-200', '150-200'),
         ('200-250', '200-250'),
         ('250-300', '250-300'),
-        ('>300', '>300')
+        ('>300', '>300'),
+        ('other', 'Other disease')
     ], string='Sugar Level')
     available_for_webinar = fields.Boolean(string="Available for Webinar")
     treatment_status = fields.Selection([
@@ -78,10 +80,11 @@ class CrmCallLead(models.Model):
         ('razorpay', 'Razor Pay'),
         ('upi', 'UPI'),
     ],  string="Payment Mode", track_visibility='onchange')
-    access_batch_code_full = fields.Char("Batch Code", required=False)
+    access_batch_code = fields.Char(string="Access Batch Code", required=False)
+    batch_code_full = fields.Char(" Batch Code", required=False)
 
-    access_batch_code = fields.Char(
-        string="Access Batch Code",
+    batch_code = fields.Char(
+        string=" Batch Code",
         compute="_compute_access_batch_code",
         inverse="_inverse_access_batch_code",
         store=False
@@ -105,7 +108,20 @@ class CrmCallLead(models.Model):
     remarks = fields.Text(string="Remarks")
     log_remarks = fields.Text(string="Remarks", track_visibility='onchange', compute='_compute_remarks')
     walk_in_date = fields.Datetime(string="Walk In Date")
+    show_online_tab = fields.Boolean(compute="_compute_tab_access", store=False)
+    is_online_tab_readonly = fields.Boolean(compute="_compute_tab_access", store=False)
 
+    @api.depends_context('uid')
+    def _compute_tab_access(self):
+        for rec in self:
+            user = self.env.user
+            is_offline = user.has_group('crm_custom_fields.group_offline_sales_team')
+            is_manager = user.has_group('crm_custom_fields.group_sales_manager')  # or your custom manager group
+
+            rec.show_online_tab =  is_offline or is_manager
+            rec.is_online_tab_readonly = is_offline and not is_manager
+
+   
     @api.depends('remarks')
     def _compute_remarks(self):
         for rec in self:
@@ -121,20 +137,20 @@ class CrmCallLead(models.Model):
             self.payment_status = 'partial'
             self.status = 'l1_basic_course_enrolled_partially_paid'
 
-    @api.depends('access_batch_code_full')
+    @api.depends('batch_code_full')
     def _compute_access_batch_code(self):
         for rec in self:
-            if rec.access_batch_code_full and rec.access_batch_code_full.startswith('DS'):
-                rec.access_batch_code = rec.access_batch_code_full[2:]
+            if rec.batch_code_full and rec.batch_code_full.startswith('DS'):
+                rec.access_batch_code = rec.batch_code_full[2:]
             else:
-                rec.access_batch_code = rec.access_batch_code_full or ''
+                rec.access_batch_code = rec.batch_code_full or ''
 
     def _inverse_access_batch_code(self):
         for rec in self:
             if rec.access_batch_code:
-                rec.access_batch_code_full = f'DS{rec.access_batch_code}'
+                rec.batch_code_full = f'DS{rec.access_batch_code}'
             else:
-                rec.access_batch_code_full = ''
+                rec.batch_code_full = ''
     @api.model
     def _group_expand_call_status(self, states, domain, order):
         return ['new', 'dnp', 'follow_up', 'disqualified', 'done']
@@ -278,6 +294,23 @@ class CrmCallLead(models.Model):
                 rec.masked_phone = ''
 
     def write(self, vals):
+        if 'call_status' in vals:
+            for rec in self:
+            # compare current db status vs incoming new one
+                if rec.call_status != vals['call_status']:
+                    # Check remarks: either in incoming vals or already present
+                    remarks = vals.get('remarks') or rec.remarks
+                    if not remarks:
+                        raise exceptions.ValidationError(_("Please enter a remark before changing the Status."))
+        if 'status' in vals:
+            for rec in self:
+            # compare current db status vs incoming new one
+                if rec.status != vals['status']:
+                    # Check remarks: either in incoming vals or already present
+                    remarks = vals.get('remarks') or rec.remarks
+                    if not remarks:
+                        raise exceptions.ValidationError(_("Please enter a remark before changing the Status."))
+        
         res = super().write(vals)
                 # Only trigger follow-up when relevant fields change
         trigger_fields = {'status', 'follow_up_on', 'walk_in_date', 'next_payment_date','call_status'}

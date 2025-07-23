@@ -18,7 +18,7 @@ class Dashboard extends Component {
 
     setup() {
         this.orm = useService("orm");
-
+        this.user = useService("user");
         const { active_tab } = this.props.action.context;
 
         this.state = useState({
@@ -29,6 +29,8 @@ class Dashboard extends Component {
             to_date: null,
             show_custom_range: false,
             users: [],
+            showOnlineTab: false,
+            showOfflineTab: false,
         });
 
         // ✅ Needed for tab switching from XML
@@ -56,6 +58,12 @@ class Dashboard extends Component {
         };
 
         onWillStart(async () => {
+            const hasOnlineGroup = await this.user.hasGroup("crm_custom_fields.group_online_sales_team");
+            const hasOfflineGroup = await this.user.hasGroup("crm_custom_fields.group_offline_sales_team");
+            const hasManagerGroup = await this.user.hasGroup("crm_custom_fields.group_sales_manager");
+
+            this.state.showOnlineTab = hasOnlineGroup || hasManagerGroup;
+            this.state.showOfflineTab = hasOfflineGroup || hasManagerGroup;
             const modelName = `${this.state.activeTab}.team.dashboard`;
             const users = await this.orm.call(modelName, "get_users", []);
             this.state.users = users;

@@ -130,7 +130,7 @@ class LeadImportWizard(models.TransientModel):
                     'name': name,
                     'email_from': email,
                     'whatsapp_no': whatsapp_no,
-                    'access_batch_code_full': batch_code,
+                    'batch_code_full': batch_code,
                     'sugar_level': sugar_level,
                     'call_status': call_status
                 })
@@ -145,7 +145,7 @@ class LeadImportWizard(models.TransientModel):
                 'user_id': assigned_user_id,
                 'type': 'lead',
                 'whatsapp_no': whatsapp_no,
-                'access_batch_code_full': batch_code,
+                'batch_code_full': batch_code,
                 'sugar_level': sugar_level,
                 'call_status': call_status
             })
@@ -233,7 +233,7 @@ class LeadImportWizard(models.TransientModel):
                         'type': 'opportunity',
                         'sugar_level': row[header_map['sugar_level']],
                         'status': row[header_map['stage']],
-                        'access_batch_code_full': row[header_map['batch_code']],
+                        'batch_code_full': row[header_map['batch_code']],
                         'email_from': row[header_map.get('email')],
                         'call_status': 'new',
                         'user_id': False
@@ -244,7 +244,7 @@ class LeadImportWizard(models.TransientModel):
                         'name': row[header_map['name']],
                         'sugar_level': row[header_map['sugar_level']],
                         'status': row[header_map['stage']],
-                        'access_batch_code_full': row[header_map['batch_code']],
+                        'batch_code_full': row[header_map['batch_code']],
                         'email_from': row[header_map.get('email')],
                         'call_status': 'new',
                     })
@@ -265,7 +265,7 @@ class LeadImportWizard(models.TransientModel):
                         'type': 'opportunity',
                         'sugar_level': row[header_map['sugar_level']],
                         'status': row[header_map['stage']],
-                        'access_batch_code_full': row[header_map['batch_code']],
+                        'batch_code_full': row[header_map['batch_code']],
                         'email_from': row[header_map.get('email')],
                         'call_status': 'new',
                         'user_id': False

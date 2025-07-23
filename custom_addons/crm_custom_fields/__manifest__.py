@@ -6,6 +6,7 @@
     "depends": ["base", "crm", "mail","queue_job","calendar"],
     "data": [
         "security/ir.model.access.csv",
+        "security/leads_groups.xml",
         "views/crm_call_lead_view.xml",
         "views/lead_import_wizard_view.xml",
         "views/crm_phone_number_search_view.xml",
