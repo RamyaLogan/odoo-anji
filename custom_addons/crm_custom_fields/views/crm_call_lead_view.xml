@@ -10,6 +10,7 @@
 </xpath>
 <xpath expr="//label[@for='street']" position="before" multiple="True">
 <field name="sugar_level"/>
+<field name="crm_location_id"/>
 <span  class="o_form_label" style="width:100%;white-space:nowrap">Batch Code</span>
                                         <div class="o_row" style="width: 50%;margin-top: -2px;">
                                         <span style="width:5%;">DS</span>
