@@ -30,10 +30,14 @@
             <!-- Sidebar Menu -->
         <div class="o_sidebar bg-light border-end pe-3 pt-4" style="width: 220px;">
                 <ul class="list-unstyled ps-2">
+                 <t t-if="state.showOnlineTab">
                     <li><a href="#" t-on-click="() => onSwitchTab('online')"
              t-att-class="state.activeTab === 'online' ? 'fw-bold text-primary' : 'text-muted'">Online Team </a></li>
+             </t>
+              <t t-if="state.showOfflineTab">
                     <li class="mt-2"><a href="#" t-on-click="() => onSwitchTab('offline')"
              t-att-class="state.activeTab === 'offline' ? 'fw-bold text-primary' : 'text-muted'">Offline Team </a></li>
+             </t>
                 </ul>
         </div>
         <div class="flex-grow-1 ps-4 pt-4 pb-5 overflow-auto" style="padding-bottom: 200px !important;max-width: 99%">

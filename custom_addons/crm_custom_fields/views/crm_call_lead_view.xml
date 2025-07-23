@@ -10,6 +10,12 @@
 </xpath>
 <xpath expr="//label[@for='street']" position="before" multiple="True">
 <field name="sugar_level"/>
+<field name="crm_location_id"/>
+<span  class="o_form_label" style="width:100%;white-space:nowrap">Batch Code</span>
+                                        <div class="o_row" style="width: 50%;margin-top: -2px;">
+                                        <span style="width:5%;">DS</span>
+                                          <div style="width:40%;display:inline-block;margin-left:-5px"><field name="batch_code" id="masked_phone_page_lead"/></div>
+                                         <div></div>  </div>
 </xpath>
 <xpath expr="//label[@for='email_from']" position="before" multiple="True">
 <span  class="o_form_label">Phone</span>
@@ -80,28 +86,31 @@
  <attribute name="invisible">1</attribute>
 </xpath>
 <xpath expr="//sheet/notebook/page[@name='internal_notes']" position="before">
-        <page string="Online Sales" name='online_sales'>
+        <page string="Online Sales" name='online_sales' >
           <group>
-          <group>
-          <field name="available_for_webinar"/>       
-          <field name="webinar_attended"/>
-          <field name="call_status"/>
-          <field name="follow_up_on" invisible="call_status!='follow_up'" required="call_status=='follow_up'"/>
-          <field name="remarks" />         
+g          <group>
+          <field name="is_online_tab_readonly" invisible="1"/>
+          
+          <field name="available_for_webinar" readonly="is_online_tab_readonly==True"/>       
+          <field name="webinar_attended" readonly="is_online_tab_readonly==True"/>
+          <field name="call_status" readonly="is_online_tab_readonly==True"/>
+          <field name="follow_up_on" invisible="call_status!='follow_up'" required="call_status=='follow_up'" readonly="is_online_tab_readonly==True"/>
+          <field name="remarks"  readonly="is_online_tab_readonly==True"/>         
           </group>
           <group>
-          <field name="age"/>
-          <field name="gender"/>
-          <field name="language"/>
-          <field name="treatment_status"/>
-          <field name="occupation"/>       
+          <field name="age" readonly="is_online_tab_readonly==True"/>
+          <field name="gender" readonly="is_online_tab_readonly==True"/>
+          <field name="language" readonly="is_online_tab_readonly==True"/>
+          <field name="treatment_status" readonly="is_online_tab_readonly==True"/>
+          <field name="occupation" readonly="is_online_tab_readonly==True"/>     
+          <field name="occupation_remarks" readonly="is_online_tab_readonly==True"   required="occupation=='business' or occupation=='working_professional'"/>       
           </group>
           </group>
         </page>
-        <page string="Offline Sales">
+        <page string="Offline Sales" groups="crm_custom_fields.group_offline_sales_team,crm_custom_fields.group_sales_manager">
           <group>
           <group>
-          <field name="status"/>
+          <field name="status" />
           <field name="walk_in_date"  invisible="status!='walk_in'" required="status=='walk_in'"/>
           <field name="follow_up_on" invisible="status!='follow_up'" required="status=='follow_up'" />
           <field name="next_payment_date" invisible="status!='l1_basic_course_enrolled_partially_paid'" required="status=='l1_basic_course_enrolled_partially_paid'"/>
@@ -120,11 +129,7 @@
           <group>
           <field name="payment_date" required="payment_status in ['paid','partial']"/>
           <field name="next_payment_date" invisible="payment_status!='partial'" required="payment_status in ['partial']"/>
-          <span  class="o_form_label" style="width:100%;white-space:nowrap">Access Batch Code</span>
-                                        <div class="o_row" style="width: 50%;margin-top: -2px;">
-                                        <span style="width:5%;">DS</span>
-                                          <div style="width:40%;display:inline-block;margin-left:-5px"><field name="access_batch_code" id="masked_phone_page_lead"/></div>
-                                         <div></div>  </div>
+          <field name="access_batch_code" />
           </group>
              <field name="payment_attachments" widget="many2many_binary" />
           </group>

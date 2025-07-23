@@ -101,7 +101,7 @@
                                 <th t-on-click="() => toggleSort('total_assigned')">Assigned <t t-if="state.sort_field === 'total_assigned' and  state.sort_order === 'desc'">▲</t></th>
                                 <th t-on-click="() => toggleSort('total_touched')">Touched <t t-if="state.sort_field === 'total_touched' and  state.sort_order === 'desc'">▲</t></th>
                                 <th t-on-click="() => toggleSort('pending')">Pending <t t-if="state.sort_field === 'pending' and  state.sort_order === 'desc'">▲</t></th>
-                                <th t-on-click="() => toggleSort('done')">Done <t t-if="state.sort_field === 'done' and  state.sort_order === 'desc'">▲</t></th>
+                                <th t-on-click="() => toggleSort('done')">Total Interested <t t-if="state.sort_field === 'done' and  state.sort_order === 'desc'">▲</t></th>
                                 <th t-on-click="() => toggleSort('total_calls')">Total Calls <t t-if="state.sort_field === 'total_calls' and  state.sort_order === 'desc'">▲</t></th>
                                 <th t-on-click="() => toggleSort('call_duration')">Total Duration <t t-if="state.sort_field === 'call_duration' and  state.sort_order === 'desc'">▲</t></th>
                                 <th t-on-click="() => toggleSort('connected')">Connected % <t t-if="state.sort_field === 'connected' and  state.sort_order === 'desc'">▲</t></th>

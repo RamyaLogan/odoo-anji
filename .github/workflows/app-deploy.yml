@@ -89,7 +89,10 @@ jobs:
             sudo ./aws/install
             rm -rf aws awscliv2.zip
           fi
-
+          echo "🧹 Cleaning up Docker system to prevent space issues..."
+          docker system prune -af
+          docker volume prune -f
+          
           aws ecr get-login-password | docker login --username AWS --password-stdin \$ECR_REPO
 
           cd /home/ubuntu

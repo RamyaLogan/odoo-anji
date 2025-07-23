@@ -37,7 +37,7 @@ class OfflineTeamDashboard(models.AbstractModel):
         if batch_code:
             batch_list = [b.strip() for b in batch_code.split(",") if b.strip()]
             if batch_list:
-                domain.append(('access_batch_code_full', 'in', batch_list))
+                domain.append(('batch_code_full', 'in', batch_list))
 
         # -----------------------
         # Fetch filtered leads

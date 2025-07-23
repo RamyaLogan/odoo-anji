@@ -1,4 +1,5 @@
 id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
 access_res_users_custom,access.res.users.custom,base.model_res_users,base.group_system,1,1,0,0
-access_smartflo_call_log_user,Smartflo Call Log,model_smartflo_call_log,base.group_user,1,1,1,0
-access_call_log_summary_user,access_call_log_summary_user,model_call_log_summary,base.group_user,1,0,0,0
+access_smartflo_call_log_user,Smartflo Call Log,model_smartflo_call_log,base.group_user,1,0,0,0
+access_call_log_summary_user,Call Log Summary,model_call_log_summary,base.group_user,1,0,0,0
+access_smartflo_call_log_admin,Smartflo Call Log Admin,model_smartflo_call_log,base.group_system,1,1,1,1

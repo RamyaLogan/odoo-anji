@@ -88,7 +88,7 @@ class SmartfloCallLog(models.Model):
     def _resolve_lead(self, customer_number_raw):
         if customer_number_raw and customer_number_raw.startswith("+91"):
             customer_number_trimmed = customer_number_raw[3:]
-        elif len(call_to_number) == 10:
+        elif len(customer_number_raw) == 10:
             customer_number_trimmed = customer_number_raw
         else:
             customer_number_trimmed = customer_number_raw[2:]
@@ -218,7 +218,7 @@ class SmartfloCallLog(models.Model):
         return {'success': True}
 
     def update_call_summary(self,agent_user, call_start_str, duration):
-        call_start_dt = datetime.strptime(call_start_str, "%Y-%m-%dT%H:%M:%SZ")
+        call_start_dt = datetime.strptime(call_start_str, "%Y-%m-%d %H:%M:%S")
         call_date = call_start_dt.date()
         summary = self.env['call.log.summary'].sudo().search([
             ('user_id', '=', agent_user.id),

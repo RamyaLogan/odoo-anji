@@ -10,3 +10,4 @@ class ResUsers(models.Model):
         ('junior', 'Junior'),
         ('trainee', 'Trainee'),
     ], string="Role Level")
+

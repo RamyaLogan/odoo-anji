@@ -1,55 +1,90 @@
 <odoo>
+  <!-- Tree View -->
   <record id="view_smartflo_call_log_tree" model="ir.ui.view">
     <field name="name">smartflo.call.log.tree</field>
     <field name="model">smartflo.call.log</field>
     <field name="arch" type="xml">
-      <tree string="Call Logs" default_order="effective_start_time desc" decoration-danger="color == 1"
-      decoration-warning="color == 2"
-      decoration-info="color == 3"
-      decoration-primary="color == 7"
-      decoration-success="color == 10">
+      <tree string="Call Logs" default_order="effective_start_time desc"
+            decoration-danger="color == 1"
+            decoration-warning="color == 2"
+            decoration-info="color == 3"
+            decoration-primary="color == 7"
+            decoration-success="color == 10">
         <field name="agent_id"/>
         <field name="color" invisible="1"/>
-        <field name="lead_id"/> 
-        <field name="start_time"  widget="datetime" options="{'timezone': 'Asia/Kolkata'}"/>
+        <field name="lead_id"/>
+        <field name="start_time" widget="datetime" options="{'timezone': 'Asia/Kolkata'}"/>
         <field name="status"/>
         <field name="direction"/>
         <field name="duration"/>
-        <field name="recording_url" widget="url"/> 
-        <field name="requested_time" widget="datetime" options="{'timezone': 'Asia/Kolkata'}"/>  
+        <field name="recording_url" widget="url"/>
+        <field name="requested_time" widget="datetime" options="{'timezone': 'Asia/Kolkata'}"/>
       </tree>
     </field>
   </record>
 
+  <!-- Form View (read-only for all) -->
   <record id="view_smartflo_call_log_form" model="ir.ui.view">
     <field name="name">smartflo.call.log.form</field>
     <field name="model">smartflo.call.log</field>
     <field name="arch" type="xml">
-      <form string="Smartflo Call Log">
+      <form string="Smartflo Call Log" create="false" edit="false" delete="false">
         <group>
           <field name="call_id"/>
           <field name="uuid"/>
           <field name="status"/>
           <field name="direction"/>
-          <field name="lead_id"/> 
+          <field name="lead_id"/>
           <field name="agent_id"/>
-          <field name="start_time" widget="datetime" options="{'timezone': 'Asia/Kolkata'}" />
+          <field name="start_time" widget="datetime" options="{'timezone': 'Asia/Kolkata'}"/>
           <field name="answer_time" widget="datetime" options="{'timezone': 'Asia/Kolkata'}"/>
           <field name="end_time" widget="datetime" options="{'timezone': 'Asia/Kolkata'}"/>
           <field name="duration"/>
           <field name="hangup_cause"/>
-          <field name="requested_time" widget="datetime"/>
+          <field name="requested_time" widget="datetime" options="{'timezone': 'Asia/Kolkata'}"/>
           <field name="recording_url" widget="audio_player"/>
         </group>
       </form>
     </field>
   </record>
 
+  <!-- Action -->
   <record id="action_smartflo_call_log" model="ir.actions.act_window">
     <field name="name">Call Logs</field>
     <field name="res_model">smartflo.call.log</field>
     <field name="view_mode">tree,form</field>
   </record>
 
-  <menuitem id="menu_smartflo_root" name="Call Logs"  action="action_smartflo_call_log"/>
+  <!-- Menu -->
+  <menuitem id="menu_smartflo_root" name="Call Logs" action="action_smartflo_call_log"/>
+
+  <!-- Group: For programmatic sudo() access -->
+  <record id="group_smartflo_call_log_programmatic" model="res.groups">
+    <field name="name">Smartflo Programmatic Create</field>
+    <field name="category_id" ref="base.module_category_hidden"/>
+  </record>
+
+  <!-- Rule 1: Regular users see only their own logs (no write/create/delete) -->
+  <record id="rule_smartflo_call_log_user_only_own" model="ir.rule">
+    <field name="name">Smartflo Call Log - Own Only</field>
+    <field name="model_id" ref="model_smartflo_call_log"/>
+    <field name="domain_force">[('agent_id', '=', user.id)]</field>
+    <field name="groups" eval="[(4, ref('base.group_user'))]"/>
+    <field name="perm_read" eval="1"/>
+    <field name="perm_write" eval="0"/>
+    <field name="perm_create" eval="0"/>
+    <field name="perm_unlink" eval="0"/>
+  </record>
+
+  <!-- Rule 2: Programmatic access via sudo(), create/write allowed -->
+  <record id="rule_smartflo_call_log_programmatic_access" model="ir.rule">
+    <field name="name">Smartflo Call Log - Programmatic Create/Write</field>
+    <field name="model_id" ref="model_smartflo_call_log"/>
+    <field name="domain_force">[(1, '=', 1)]</field>
+    <field name="groups" eval="[(4, ref('smartflow_integration.group_smartflo_call_log_programmatic'))]"/>
+    <field name="perm_read" eval="1"/>
+    <field name="perm_write" eval="1"/>
+    <field name="perm_create" eval="1"/>
+    <field name="perm_unlink" eval="0"/>
+  </record>
 </odoo>
