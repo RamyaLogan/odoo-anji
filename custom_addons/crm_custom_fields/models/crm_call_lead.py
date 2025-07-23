@@ -16,14 +16,19 @@ class CrmCallLead(models.Model):
     masked_phone = fields.Char(string='Phone', compute='_compute_masked_phone')
     whatsapp_no = fields.Char(string='Whatsapp No.',  track_visibility='onchange')
     import_source = fields.Char(string='Lead Source')
-    age = fields.Integer(string='Age',  track_visibility='onchange')
+    age = fields.Selection([
+        ('below_18', 'Below 18'),
+        ('18-24', '18 - 24'),
+        ('25-34', '25 - 34'),
+        ('35-44', '35 - 44'),
+        ('45-54', '45 - 54'),
+        ('55-64', '55 - 64'),
+        ('65+', '65+')
+    ], string='Age',  track_visibility='onchange')
     sugar_level = fields.Selection([
-        ('no-sugar', 'No Sugar'),
-        ('120-150', '120-150'),
-        ('150-200', '150-200'),
-        ('200-250', '200-250'),
-        ('250-300', '250-300'),
-        ('>300', '>300'),
+        ('no_sugar', 'No Sugar'),
+        ('150-250_sugar_level', '150 - 250'),
+        ('above_250_sugar_level', 'Above 250'),
         ('other', 'Other disease')
     ], string='Sugar Level',  track_visibility='onchange')
     available_for_webinar = fields.Boolean(string="Available for Webinar",  track_visibility='onchange')
@@ -40,8 +45,12 @@ class CrmCallLead(models.Model):
             ('new', 'New'),
             ('dnp', 'DNP'),
             ('follow_up', 'Follow Up'),
+            ('diabetes_interested_in_webinar','Diabetes interested in webinar'),
+            ('diabetes_not_interested_in_webinar','Diabetes not interested in webinar'),
+            ('no_sugar_interested','No Sugar Interested'),
+            ('no_sugar_not_interested','No Sugar Not Interested'),      
             ('disqualified', 'Disqualified'),
-            ('done', 'Done'),
+            ('already_paid', 'Already Paid'),
         ],
         default="new",
         required=True,
@@ -57,12 +66,13 @@ class CrmCallLead(models.Model):
         ('other', 'Other')
     ], string="Language")
     occupation = fields.Selection([
+        ('business', 'Business'),
+        ('working_professional', 'Working professional'),
         ('house_wife', 'House Wife'),
-        ('it', 'IT'),
-        ('student', 'Student'),
         ('retired', 'Retired'),
-        ('other','Other')], string="Occupation",  track_visibility='onchange'
+        ('student', 'Student')], string="Occupation",  track_visibility='onchange'
     )
+    occupation_remarks = fields.Char(string="Occupation Remarks",  track_visibility='onchange')
     gender = fields.Selection([
         ('male','Male'),
         ('female','Female')
@@ -154,7 +164,7 @@ class CrmCallLead(models.Model):
                 rec.batch_code_full = ''
     @api.model
     def _group_expand_call_status(self, states, domain, order):
-        return ['new', 'dnp', 'follow_up', 'disqualified', 'done']
+        return ['new', 'dnp', 'follow_up','diabetes_interested_in_webinar','diabetes_not_interested_in_webinar', 'no_sugar_interested','no_sugar_not_interested','disqualified', 'already_paid']
 
     @api.model
     def _group_expand_stage(self, states, domain, order):

@@ -82,8 +82,8 @@ class OnlineTeamDashboard(models.AbstractModel):
         summary = {
             "total_leads": len(leads),
             "total_assigned": len(leads.filtered(lambda l: l.user_id)),
-            "total_touched": len(leads.filtered(lambda l: (l.call_status or '').lower() in ['done', 'dnp', 'disqualified', 'follow_up'])),
-            "total_done": len(leads.filtered(lambda l: (l.call_status or '').lower() == 'done')),
+            "total_touched": len(leads.filtered(lambda l: (l.call_status or '').lower() in [ 'diabetes_interested_in_webinar','diabetes_not_interested_in_webinar', 'no_sugar_interested','no_sugar_not_interested','disqualified', 'already_paid', 'dnp', 'disqualified', 'follow_up'])),
+            "total_done": len(leads.filtered(lambda l: (l.call_status or '').lower() in ['diabetes_interested_in_webinar','no_sugar_interested'])),
             "close_rate": 0.0,
         }
 
@@ -115,8 +115,8 @@ class OnlineTeamDashboard(models.AbstractModel):
 
         for user_id, leads in user_leads_map.items():
             user = user_model.browse(user_id)
-            touched = len([l for l in leads if (l.call_status or '').lower() in ['done', 'dnp', 'disqualified', 'follow_up']])
-            done = len([l for l in leads if (l.call_status or '').lower() == 'done'])
+            touched = len([l for l in leads if (l.call_status or '').lower() in ['diabetes_interested_in_webinar','diabetes_not_interested_in_webinar', 'no_sugar_interested','no_sugar_not_interested','disqualified', 'already_paid', 'dnp', 'disqualified', 'follow_up']])
+            done = len([l for l in leads if (l.call_status or '').lower() in ['diabetes_interested_in_webinar','no_sugar_interested']])
             new = len([l for l in leads if (l.call_status or '').lower() == 'new'])
             untouched = len(leads) - touched
 

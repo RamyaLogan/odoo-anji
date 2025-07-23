@@ -19,6 +19,8 @@
         </xpath>
        <xpath expr="//search" position="inside">
             <field name="batch_code_full" string="Batch Code"/>
+            <field name="call_status" string="Call Status"/>
+            <field name="sugar_level" string="Sugar Level"/>
         </xpath>
     </field>
 </record>
@@ -41,6 +43,8 @@
         </xpath>
        <xpath expr="//search" position="inside">
             <field name="batch_code_full" string="Batch Code"/>
+            <field name="call_status" string="Call Status"/>
+            <field name="sugar_level" string="Sugar Level"/>
         </xpath>
     </field>
 </record>
