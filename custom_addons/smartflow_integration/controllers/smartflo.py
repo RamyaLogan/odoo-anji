@@ -20,7 +20,8 @@ class SmartfloController(http.Controller):
         # Convert to UTC for search
         today_utc = today_ist.astimezone(pytz.utc)
         calls = request.env['smartflo.call.log'].sudo().search(
-            [('effective_start_time', '>=', today_utc)],
+            [('effective_start_time', '>=', today_utc),
+            ('agent_id', '=', request.env.user.id)],
             order='effective_start_time desc',
             limit=20
         )
