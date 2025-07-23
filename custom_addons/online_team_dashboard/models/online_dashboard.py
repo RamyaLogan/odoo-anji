@@ -126,8 +126,7 @@ class OnlineTeamDashboard(models.AbstractModel):
                 "total_assigned": len(leads),
                 "total_touched": touched,
                 "pending": new,
-                "done": done,
-                "interested": 0,  # You can compute this if applicable
+                "done": done,# You can compute this if applicable
                 "connected": round((touched / len(leads)) * 100, 2) if leads else 0,
                 "call_duration": round(duration_map.get(user.id, 0.0), 2),
                 "total_calls": total_calls.get(user.id, 0),

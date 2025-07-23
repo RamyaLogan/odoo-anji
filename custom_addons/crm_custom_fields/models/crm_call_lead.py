@@ -12,7 +12,7 @@ class CrmCallLead(models.Model):
         string="Payment Attachments",
         domain="[('res_model','=','crm.lead'), ('res_id','=', id)]",
     )
-    crm_location_id = fields.Many2one('crm.location', string="District")
+    crm_location_id = fields.Many2one('crm.location', string="Location")
     masked_phone = fields.Char(string='Phone', compute='_compute_masked_phone')
     whatsapp_no = fields.Char(string='Whatsapp No.',  track_visibility='onchange')
     import_source = fields.Char(string='Lead Source')
