@@ -44,11 +44,25 @@ class SmartfloController(http.Controller):
         extension = request.env.user.smartflo_extension_number
         if not phone:
             return {"error": "Phone number is required"}
-
         # Replace these with your actual Smartflo values
+        config = request.env['ir.config_parameter'].sudo()
+        user = request.env.user
+        groups = user.groups_id
+
+        # Replace with your actual group external IDs
+        online_group = request.env.ref('crm_custom_fields.group_online_sales_team')
+        offline_group = request.env.ref('crm_custom_fields.group_offline_sales_team')
+
+        if online_group in groups:
+            api_key = config.get_param("smartflo.online.api_key")
+        elif offline_group in groups:
+            api_key = config.get_param("smartflo.offline.api_key")
+        else:
+            return {"error": "Smartflo API Key not configured for this user."}
+
         headers = {
             "accept": "application/json",
-            "Authorization": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiI2MDg5MDUiLCJjciI6ZmFsc2UsImlzcyI6Imh0dHBzOi8vY2xvdWRwaG9uZS50YXRhdGVsZXNlcnZpY2VzLmNvbS90b2tlbi9nZW5lcmF0ZSIsImlhdCI6MTc0OTY3ODE4MywiZXhwIjoyMDQ5Njc4MTgzLCJuYmYiOjE3NDk2NzgxODMsImp0aSI6ImoyUVhMb2FZUzRSTWtrSlUifQ.W4G7O5wCj-KS_v42xAn3iYGW0xryA1zqj-mZ0P9Yl1E",
+            "Authorization": api_key,
             "Content-Type": "application/json"
         }
         call_uuid = str(uuid.uuid4())
