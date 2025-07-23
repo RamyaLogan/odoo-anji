@@ -13,9 +13,9 @@ class CrmCallLead(models.Model):
         domain="[('res_model','=','crm.lead'), ('res_id','=', id)]",
     )
     masked_phone = fields.Char(string='Phone', compute='_compute_masked_phone')
-    whatsapp_no = fields.Char(string='Whatsapp No.')
+    whatsapp_no = fields.Char(string='Whatsapp No.',  track_visibility='onchange')
     import_source = fields.Char(string='Lead Source')
-    age = fields.Integer(string='Age')
+    age = fields.Integer(string='Age',  track_visibility='onchange')
     sugar_level = fields.Selection([
         ('no-sugar', 'No Sugar'),
         ('120-150', '120-150'),
@@ -24,8 +24,8 @@ class CrmCallLead(models.Model):
         ('250-300', '250-300'),
         ('>300', '>300'),
         ('other', 'Other disease')
-    ], string='Sugar Level')
-    available_for_webinar = fields.Boolean(string="Available for Webinar")
+    ], string='Sugar Level',  track_visibility='onchange')
+    available_for_webinar = fields.Boolean(string="Available for Webinar",  track_visibility='onchange')
     treatment_status = fields.Selection([
         ('yes','Yes'),
         ('no','No')
@@ -33,7 +33,7 @@ class CrmCallLead(models.Model):
     webinar_attended = fields.Selection([
         ('yes','Yes'),
         ('no','No')
-    ], string="Webinar Attended", default='no')
+    ], string="Webinar Attended", default='no',  track_visibility='onchange')
     call_status = fields.Selection(
         [
             ('new', 'New'),
@@ -45,7 +45,7 @@ class CrmCallLead(models.Model):
         default="new",
         required=True,
         string="Call Status",
-        group_expand='_group_expand_call_status'
+        group_expand='_group_expand_call_status',  track_visibility='onchange'
     )
     language = fields.Selection([
         ('tamil','Tamil'),
@@ -60,12 +60,12 @@ class CrmCallLead(models.Model):
         ('it', 'IT'),
         ('student', 'Student'),
         ('retired', 'Retired'),
-        ('other','Other')], string="Occupation"
+        ('other','Other')], string="Occupation",  track_visibility='onchange'
     )
     gender = fields.Selection([
         ('male','Male'),
         ('female','Female')
-    ],string="Gender")
+    ],string="Gender",  track_visibility='onchange')
 
     payment_status = fields.Selection([
         ('partial', 'Partially Paid'),

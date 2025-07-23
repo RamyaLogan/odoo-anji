@@ -16,6 +16,11 @@
         "views/res_users_view.xml",
         "views/user_role_view.xml",
     ],
+    "assets": {
+        "web.assets_backend": [
+            "crm_custom_fields/static/src/js/mail_message_patch.js",
+        ],
+    },
     "installable": True,
     "application": False,
     "auto_install": False,
