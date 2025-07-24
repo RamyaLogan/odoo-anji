@@ -13,7 +13,20 @@
 <field name="crm_location_id"/>
 <span  class="o_form_label" style="width:100%;white-space:nowrap">Batch Code</span>
                                         <div class="o_row" style="width: 50%;margin-top: -2px;">
-                                        <span style="width:5%;">DS</span>
+                                        <span style="width:5%;">
+                                        <field name="batch_prefix" readonly="1" nolabel="1" class="text-start"/>
+                                        </span>
+                                          <div style="width:40%;display:inline-block;margin-left:-5px"><field name="batch_code" id="masked_phone_page_lead"/></div>
+                                         <div></div>  </div>
+</xpath>
+<xpath expr="//group//field[@name='tag_ids']" position="after" multiple="True">
+<field name="sugar_level"/>
+<field name="crm_location_id"/>
+<span  class="o_form_label" style="width:100%;white-space:nowrap">Batch Code</span>
+                                        <div class="o_row" style="width: 50%;margin-top: -2px;">
+                                        <span style="width:5%;">
+                                        <field name="batch_prefix" readonly="1" nolabel="1" class="text-start"/>
+                                        </span>
                                           <div style="width:40%;display:inline-block;margin-left:-5px"><field name="batch_code" id="masked_phone_page_lead"/></div>
                                          <div></div>  </div>
 </xpath>

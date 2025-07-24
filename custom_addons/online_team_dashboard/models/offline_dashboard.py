@@ -148,7 +148,7 @@ class OfflineTeamDashboard(models.AbstractModel):
             if any(tag.name.lower() == 'warm' for tag in lead.tag_ids):
                 summary["warm_leads"] += 1
 
-            batch = lead.access_batch_code or "No Batch"
+            batch = lead.batch_code_full or "No Batch"
             batch_data = batch_map[batch]
             batch_data["lead_count"] += 1
             if lead.status == 'l1_basic_course_enrolled_fully_paid':

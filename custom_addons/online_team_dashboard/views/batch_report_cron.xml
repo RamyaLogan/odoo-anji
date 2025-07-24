@@ -1,0 +1,12 @@
+<odoo>
+  <record id="ir_cron_send_batch_report" model="ir.cron">
+    <field name="name">Send Online Batch Report Email</field>
+    <field name="model_id" ref="online_team_dashboard.model_batch_report"/>
+    <field name="state">code</field>
+    <field name="code">model.run_batch_summary_cron()</field>
+    <field name="interval_type">days</field>
+    <field name="interval_number">1</field>
+    <field name="numbercall">-1</field>
+    <field name="active">True</field>
+  </record>
+</odoo>
