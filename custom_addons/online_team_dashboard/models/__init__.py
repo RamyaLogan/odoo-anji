@@ -1,1 +1,1 @@
-from . import  online_dashboard, offline_dashboard
+from . import  online_dashboard, offline_dashboard, batch_report

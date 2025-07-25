@@ -1,0 +1,22 @@
+<odoo>
+  <data >
+    <record id="batch_report_email_template" model="mail.template">
+      <field name="name">Batch Summary Email</field>
+      <field name="model_id" ref="crm.model_crm_lead"/>
+      <field name="subject">Weekly Batch Summary Report</field>
+      <field name="body_html" type="html">
+       <div style="margin: 0px; padding: 0px;">
+    <p style="margin: 0px; padding: 0px; font-size: 13px;">
+        Hello,
+          <p>This  your batch-wise summary report for batch codes: </p>
+          <span style="font-weight: bold;" t-out="ctx['batch_code']"/>
+          <br/><br/>
+          <p>Regards,<br/>Your Team</p>
+          </p>
+     </div>
+      </field>
+      <field name="email_from">${(user.email or 'noreply@example.com')|safe}</field>
+      <field name="email_to">${(user.email or 'admin@example.com')|safe}</field>
+    </record>
+  </data>
+</odoo>

@@ -2,9 +2,10 @@ resource "aws_db_instance" "odoo_rds" {
   identifier              = "odoo-prod-db"
   engine                  = "postgres"
   engine_version          = "14.15"
-  instance_class          = "db.t3.micro" # change to t3.small or t3.medium if needed
-  allocated_storage       = 20
-  storage_type            = "gp2"
+  instance_class          = "db.t3.large" # change to t3.small or t3.medium if needed
+  allocated_storage       = 50
+  max_allocated_storage   = 200  
+  storage_type            = "gp3"
   db_name                 = "odoo"
   username                = var.rds_master_username
   password                = var.rds_master_password
@@ -13,6 +14,8 @@ resource "aws_db_instance" "odoo_rds" {
   skip_final_snapshot     = true
   publicly_accessible     = false
   multi_az                = false
+  backup_retention_period = 7                           
+  performance_insights_enabled = true  
 
   tags = {
     Name = "odoo-rds"

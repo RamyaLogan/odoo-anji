@@ -100,6 +100,7 @@ class CrmCallLead(models.Model):
         inverse="_inverse_access_batch_code",
         store=False
     )
+    batch_prefix = fields.Char(compute="_compute_access_batch_prefix",store=False)
     next_payment_date = fields.Date(string="Next Partial Payment Date",  track_visibility='onchange')
     follow_up_on = fields.Datetime(string="Next Follow Up Date")
 
@@ -151,15 +152,21 @@ class CrmCallLead(models.Model):
     @api.depends('batch_code_full')
     def _compute_access_batch_code(self):
         for rec in self:
-            if rec.batch_code_full and rec.batch_code_full.startswith('DS'):
-                rec.access_batch_code = rec.batch_code_full[2:]
+            if rec.batch_code_full and (rec.batch_code_full.startswith('DS') or rec.batch_code_full.startswith('AS')):
+                rec.batch_code = rec.batch_code_full[2:]
             else:
-                rec.access_batch_code = rec.batch_code_full or ''
+                rec.batch_code = rec.batch_code_full or ''
+    
+    @api.depends('batch_code_full')
+    def _compute_access_batch_prefix(self):
+        for rec in self:
+            rec.batch_prefix = rec.batch_code_full[:2] if rec.batch_code_full else ('AS' if rec.type == 'lead' else 'DS')
 
     def _inverse_access_batch_code(self):
         for rec in self:
-            if rec.access_batch_code:
-                rec.batch_code_full = f'DS{rec.access_batch_code}'
+            if rec.batch_code:
+                prefix = rec.batch_code_full[:2] if rec.batch_code_full else ('AS' if rec.type == 'lead' else 'DS')
+                rec.batch_code_full = f'{prefix}{rec.batch_code}'
             else:
                 rec.batch_code_full = ''
     @api.model
@@ -307,28 +314,30 @@ class CrmCallLead(models.Model):
     def write(self, vals):
         if 'call_status' in vals:
             for rec in self:
-            # compare current db status vs incoming new one
                 if rec.call_status != vals['call_status']:
-                    # Check remarks: either in incoming vals or already present
-                    remarks = vals.get('remarks') or rec.remarks
-                    if not remarks:
-                        raise exceptions.ValidationError(_("Please enter a remark before changing the Status."))
+                    if not self.env.context.get('skip_remarks_check'):
+                        remarks = vals.get('remarks') or rec.remarks
+                        if not remarks:
+                            raise exceptions.ValidationError(_("Please enter a remark before changing the Status."))
+
         if 'status' in vals:
             for rec in self:
-            # compare current db status vs incoming new one
                 if rec.status != vals['status']:
-                    # Check remarks: either in incoming vals or already present
-                    remarks = vals.get('remarks') or rec.remarks
-                    if not remarks:
-                        raise exceptions.ValidationError(_("Please enter a remark before changing the Status."))
-        
+                    if not self.env.context.get('skip_remarks_check'):
+                        remarks = vals.get('remarks') or rec.remarks
+                        if not remarks:
+                            raise exceptions.ValidationError(_("Please enter a remark before changing the Status."))
+
         res = super().write(vals)
-                # Only trigger follow-up when relevant fields change
-        trigger_fields = {'status', 'follow_up_on', 'walk_in_date', 'next_payment_date','call_status'}
-        if trigger_fields & set(vals.keys()):
-            self.create_followup_activity()
-        if 'call_status' in vals:
-            self.create_followup_activity_online_team()
+
+        if not self.env.context.get('skip_followup_creation'):
+            trigger_fields = {'status', 'follow_up_on', 'walk_in_date', 'next_payment_date', 'call_status'}
+            if trigger_fields & set(vals.keys()):
+                self.create_followup_activity()
+
+            if 'call_status' in vals:
+                self.create_followup_activity_online_team()
+
         return res
 
     def action_trigger_smartflo_call(self):

@@ -6,6 +6,8 @@
     "depends": ["base", "web", "crm", "smartflow_integration"],
     "data": [
         "views/menu.xml",
+        'views/batch_report_template.xml',
+        'views/batch_report_cron.xml',
     ],
     "assets": {
         "web.assets_backend": [
