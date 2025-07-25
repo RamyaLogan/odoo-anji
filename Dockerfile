@@ -18,6 +18,7 @@
     RUN pip install --prefix=/install -r /opt/odoo/requirements.txt || true
     RUN pip install --prefix=/install boto3
     RUN pip install --prefix=/install google-auth
+    RUN pip install --prefix=/install pandas openpyxl
     # -------- Stage 2: Runtime Stage --------
     FROM python:3.11-slim-bookworm
     
@@ -33,6 +34,7 @@
         && rm -rf /var/lib/apt/lists/*
     RUN pip install --upgrade pip
     RUN pip install zope.event==5.1
+    RUN pip install pandas openpyxl
     WORKDIR /opt/odoo
     
     # Copy Odoo source code
