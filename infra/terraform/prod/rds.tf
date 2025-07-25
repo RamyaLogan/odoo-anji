@@ -1,7 +1,7 @@
 resource "aws_db_instance" "odoo_rds" {
   identifier              = "odoo-prod-db"
   engine                  = "postgres"
-  engine_version          = "14.15"
+  engine_version          = "14.17"
   instance_class          = "db.t3.medium" # change to t3.small or t3.medium if needed
   allocated_storage       = 50
   max_allocated_storage   = 200  
