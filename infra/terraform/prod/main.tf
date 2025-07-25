@@ -45,7 +45,7 @@ resource "aws_security_group" "ec2_sg" {
 resource "aws_instance" "odoo" {
 
   ami = "ami-021a584b49225376d"
-  instance_type = "t3.small"
+  instance_type = "t3.large"
   availability_zone = "ap-south-1a"
   key_name = aws_key_pair.deploy_key.key_name
   root_block_device {
