@@ -115,6 +115,7 @@ class LeadImportWizard(models.TransientModel):
                 'name': first_batch_code,
                 'import_type': 'lead',
             })
+
         for row in data_rows:
             phone = self.normalize_phone(row[header_map['phone']])
             if not phone:
@@ -123,38 +124,23 @@ class LeadImportWizard(models.TransientModel):
                 duplicates += 1
                 continue
 
-            name = row[header_map['name']]
-            email = row[header_map['email']]
-            whatsapp_no = row[header_map['whatsapp_no']]
-            batch_code = row[header_map.get('batch_code')]
-            sugar_level = row[header_map.get('sugar_level')]
-            call_status = 'new'
-
             lead = existing_lead_map.get(phone)
+            updates = {}
+            self.safe_get_str(row, header_map.get('name'),updates, 'name')
+            self.safe_get_str(row, header_map.get('email'),updates, 'email_from')
+            self.safe_get_str(row, header_map.get('whatsapp_no'),updates, 'whatsapp_no')
+            self.safe_get_str(row, header_map.get('batch_code'),updates, 'batch_code_full')
+            self.safe_get_str(row, header_map.get('sugar_level'),updates, 'sugar_level')
+            updates['call_status'] = 'new'
             if lead:
-                lead.write({
-                    'name': name,
-                    'email_from': email,
-                    'whatsapp_no': whatsapp_no,
-                    'batch_code_full': batch_code,
-                    'sugar_level': sugar_level,
-                    'call_status': call_status
-                })
+                lead.write(updates)
                 continue
 
             assigned_user_id = assigned_users[index % user_count] if user_count > 0 else False
-
-            leads_to_create.append({
-                'name': name,
-                'phone': phone,
-                'email_from': email,
-                'user_id': assigned_user_id,
-                'type': 'lead',
-                'whatsapp_no': whatsapp_no,
-                'batch_code_full': batch_code,
-                'sugar_level': sugar_level,
-                'call_status': call_status
-            })
+            updates['user_id'] = assigned_user_id
+            updates['type'] = 'lead'
+            updates['phone'] = phone
+            leads_to_create.append(updates)
             duplicate_records.add(phone)
             index += 1
 
@@ -245,27 +231,28 @@ class LeadImportWizard(models.TransientModel):
                         user_map[salesperson_name] = user_id  # Store even if False to avoid rechecking
 
                 lead = existing_map.get(phone)
+                values = {}
+                self.safe_get_str(row, header_map.get('name'),values, 'name')
+                self.safe_get_str(row, header_map.get('sugar_level'),values, 'sugar_level')
+                self.safe_get_str(row, header_map.get('stage'),values, 'status')
+                self.safe_get_str(row, header_map.get('batch_code'),values, 'batch_code_full')
+                self.safe_get_str(row, header_map.get('email'),values, 'email_from')
+
+                
                 if not lead:
-                    lead = self.env['crm.lead'].with_context(skip_remarks_check=True,skip_followup_creation=True).create({
-                        'name': row[header_map['name']],
-                        'phone': phone,
-                        'type': 'opportunity',
-                        'sugar_level': row[header_map['sugar_level']],
-                        'status': row[header_map['stage']],
-                        'batch_code_full': row[header_map['batch_code']],
-                        'email_from': row[header_map.get('email')],
-                        'call_status': 'new',
-                        'user_id': user_id
-                    })
+                    values['user_id'] = user_id
+                    values['type'] = 'opportunity'
+                    values['phone'] = phone
+                    lead = self.env['crm.lead'].with_context(skip_remarks_check=True,skip_followup_creation=True).create(values)
                     created += 1
                 elif lead.type == 'opportunity' :
-                    lead.with_context(skip_remarks_check=True,skip_followup_creation=True).write({
-                        'name': row[header_map['name']],
-                        'sugar_level': row[header_map['sugar_level']],
-                        'status': 'new',
-                        'batch_code_full': row[header_map['batch_code']],
-                        'email_from': row[header_map.get('email')]
-                    })
+                    if 'hot' in lead.tag_ids.mapped('name'):
+                        values['status'] = 'hot'
+                    elif 'warm' in lead.tag_ids.mapped('name'):
+                        values['status'] = 'warm'
+                    else:
+                        values['status'] = 'new'
+                    lead.with_context(skip_remarks_check=True,skip_followup_creation=True).write(values)
                     if lead.user_id:
                         self.env['mail.activity'].create({
                             'res_model_id': self.env['ir.model']._get_id('crm.lead'),
@@ -278,16 +265,9 @@ class LeadImportWizard(models.TransientModel):
                         updated += 1
                         continue
                 else:
-                    lead.with_context(skip_remarks_check=True,skip_followup_creation=True).write({
-                        'name': row[header_map['name']],
-                        'type': 'opportunity',
-                        'sugar_level': row[header_map['sugar_level']],
-                        'status': row[header_map['stage']],
-                        'batch_code_full': row[header_map['batch_code']],
-                        'email_from': row[header_map.get('email')],
-                        'call_status': 'new',
-                        'user_id': user_id
-                    })
+                    values['type'] = 'opportunity'
+                    values['user_id'] = user_id
+                    lead.with_context(skip_remarks_check=True,skip_followup_creation=True).write(values)
                     updated += 1
 
                 lead.with_context(skip_remarks_check=True,skip_followup_creation=True).write({'tag_ids': [(4, tag_cache[category].id)]})
@@ -302,7 +282,7 @@ class LeadImportWizard(models.TransientModel):
             except Exception as e:
                 skipped += 1
                 _logger.warning(f"Skipping row due to error: {e}")
-
+        
         def assign_opportunities(tag, role_weights):
             pool = category_buckets[tag]
             total = len(pool)
@@ -379,13 +359,20 @@ class LeadImportWizard(models.TransientModel):
                 'date_deadline': fields.Date.today() + timedelta(days=2),
             })
 
-    def _load_excel(self,import_type, file_path):
+    def _load_excel(self, import_type, file_path):
         workbook = openpyxl.load_workbook(file_path)
         sheet = workbook.active
-        header_row = [cell.value for cell in next(sheet.iter_rows(min_row=1, max_row=1))]
-        header_map = {header.lower().strip(): idx for idx, header in enumerate(header_row)}
 
-        required_cols = ['name', 'phone', 'email', 'whatsapp_no','sugar_level','batch_code'] if import_type == 'lead' else ['name', 'phone', 'category', 'sugar_level', 'stage', 'batch_code']
+        # Normalize and sanitize headers
+        raw_headers = [cell.value for cell in next(sheet.iter_rows(min_row=1, max_row=1))]
+        header_row = [str(h).strip().lower() if h else '' for h in raw_headers]
+        header_map = {header: idx for idx, header in enumerate(header_row)}
+
+        required_cols = (
+            ['name', 'phone', 'email', 'whatsapp_no', 'sugar_level', 'batch_code']
+            if import_type == 'lead'
+            else ['name', 'phone', 'category', 'sugar_level', 'stage', 'batch_code']
+        )
         for col in required_cols:
             if col not in header_map:
                 raise UserError(f"Missing required column: {col}")
@@ -414,6 +401,13 @@ class LeadImportWizard(models.TransientModel):
         created = self.env['crm.lead'].create(leads_data)
         self.create_followup_activities(created, summary="Follow Up Call", days=1)
         return len(created)
+
+    def safe_get_str(self,row, name_idx,values, value_name):
+        if name_idx is not None:
+            raw_name = row[name_idx]
+            value = raw_name.strip() if isinstance(raw_name, str) else str(raw_name).strip() if raw_name else ""
+            if value:
+                values[value_name] = value
 
     def create_followup_activities(self, leads, summary='Second Time - Recall', days=1):
         Activity = self.env['mail.activity'].sudo().with_context(mail_notrack=True, tracking_disable=True, mail_create_nolog=True)
