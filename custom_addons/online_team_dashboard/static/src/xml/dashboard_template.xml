@@ -28,7 +28,7 @@
     </div>
     <div class="o_dashboard o_form_sheet d-flex" style="min-height: 100vh;height:100vh;">
             <!-- Sidebar Menu -->
-        <div class="o_sidebar bg-light border-end pe-3 pt-4" style="width: 220px;">
+        <!-- <div class="o_sidebar bg-light border-end pe-3 pt-4" style="width: 220px;">
                 <ul class="list-unstyled ps-2">
                  <t t-if="state.showOnlineTab">
                     <li><a href="#" t-on-click="() => onSwitchTab('online')"
@@ -39,7 +39,7 @@
              t-att-class="state.activeTab === 'offline' ? 'fw-bold text-primary' : 'text-muted'">Offline Team </a></li>
              </t>
                 </ul>
-        </div>
+        </div> -->
         <div class="flex-grow-1 ps-4 pt-4 pb-5 overflow-auto" style="padding-bottom: 200px !important;max-width: 99%">
                 <t t-if="state.activeTab === 'online'">
         <OnlineTeamDashboard ref="onlineDashboardRef" state="state"/>
