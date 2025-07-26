@@ -122,13 +122,19 @@ g          <group>
         </page>
         <page string="Offline Sales" groups="crm_custom_fields.group_offline_sales_team,crm_custom_fields.group_sales_manager">
           <group>
-          <group>
-          <field name="status" />
+          <span  class="o_form_label" style="width:100%;white-space:nowrap">Status</span>
+                                        <div class="o_row" style="margin-top: -2px;">
+                                        <span>
+                                        <field name="status" nolabel="1" />
+                                        </span>
+                                          <div style="display:inline-block;margin-left:20px"><field name="dnp_count" invisible="status!='dnp'" />
+                                          <field name="lost_reasons" invisible="status!='disqualified'" required="status=='disqualified'" />
+                                          </div>
+                                         <div></div>  </div>
           <field name="walk_in_date"  invisible="status!='walk_in'" required="status=='walk_in'"/>
           <field name="follow_up_on" invisible="status!='follow_up'" required="status=='follow_up'" />
           <field name="next_payment_date" invisible="status!='l1_basic_course_enrolled_partially_paid'" required="status=='l1_basic_course_enrolled_partially_paid'"/>
           <field name="remarks" />
-          </group>
           </group>
         </page>
         <page string="Payment">

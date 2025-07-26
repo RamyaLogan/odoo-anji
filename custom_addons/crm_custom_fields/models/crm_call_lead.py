@@ -104,11 +104,14 @@ class CrmCallLead(models.Model):
     next_payment_date = fields.Date(string="Next Partial Payment Date",  track_visibility='onchange')
     follow_up_on = fields.Datetime(string="Next Follow Up Date")
 
-    status = fields.Selection([('new','New L1'),
+    status = fields.Selection([('new','Prospect'),
+        ('hot','Hot'),
+        ('warm','Warm'),
         ('walk_in','Walk In'),
         ('follow_up', 'Follow Up'),
         ('dnp', 'DNP'),
-        ('not_interested','Not Interested'),
+        ('diabetes_interested_in_webinar','Diabetes interested in webinar'),
+        ('diabetes_not_interested_in_webinar','Diabetes not interested in webinar'),
         ('disqualified','Disqualified'),     
         ('l1_basic_course_enrolled_fully_paid','L1 Basic Course Enrolled - Fully Paid'),
         ('l1_basic_course_enrolled_partially_paid','L1 Basic Course Enrolled - Partially Paid')],
@@ -116,7 +119,18 @@ class CrmCallLead(models.Model):
         required=True,
         string="Status",
         group_expand='_group_expand_stage',track_visibility='onchange')
-
+    dnp_count = fields.Selection([
+        ('1', 'once'),
+        ('2', 'twice'),
+        ('3', 'thrice')],default="1")
+    lost_reasons = fields.Selection([
+        ('financial_issue', 'Financial issue'),
+        ('already_paid', 'Already paid'),
+        ('no_sugar', 'No Sugar'),
+        ('decision_maker_declined', 'Decision-Maker Declined'),
+        ('trust_issue', 'Trust Issue'),
+        ('junk', 'Junk'),
+        ('other','Other')],track_visibility='onchange')
     remarks = fields.Text(string="Remarks")
     log_remarks = fields.Text(string="Remarks", track_visibility='onchange', compute='_compute_remarks')
     walk_in_date = fields.Datetime(string="Walk In Date")
@@ -140,13 +154,20 @@ class CrmCallLead(models.Model):
             if rec.status:
                 rec.log_remarks = f"{rec.status} - {rec.remarks}"
 
-    @api.onchange('status', 'payment_status')
+    @api.onchange('status')
     def _onchange_file(self):
-        if self.status == 'l1_basic_course_enrolled_fully_paid' or self.payment_status == 'paid':
+        if self.status == 'l1_basic_course_enrolled_fully_paid':
             self.payment_status = 'paid'
-            self.status = 'l1_basic_course_enrolled_fully_paid'
-        elif self.status == 'l1_basic_course_enrolled_partially_paid' or self.payment_status == 'partial':
+        elif self.status == 'l1_basic_course_enrolled_partially_paid':
             self.payment_status = 'partial'
+        else:
+            self.payment_status = ''
+
+    @api.onchange('payment_status')
+    def _onchange_status(self):
+        if self.payment_status == 'paid':
+            self.status = 'l1_basic_course_enrolled_fully_paid'
+        elif self.payment_status == 'partial':
             self.status = 'l1_basic_course_enrolled_partially_paid'
 
     @api.depends('batch_code_full')
@@ -175,7 +196,7 @@ class CrmCallLead(models.Model):
 
     @api.model
     def _group_expand_stage(self, states, domain, order):
-        return ['new',  'follow_up', 'walk_in', 'dnp', 'not_interested','l1_basic_course_enrolled_fully_paid', 'l1_basic_course_enrolled_partially_paid', 'disqualified' ]
+        return ['new', 'hot','warm', 'follow_up','diabetes_interested_in_webinar','diabetes_not_interested_in_webinar', 'walk_in', 'dnp','l1_basic_course_enrolled_fully_paid', 'l1_basic_course_enrolled_partially_paid', 'disqualified' ]
 
     @api.model
     def create_payment_followup_activity(self):
@@ -209,10 +230,21 @@ class CrmCallLead(models.Model):
                 note     = f'Follow-up: {lead.remarks}' or 'Follow-up on lead'
 
             elif lead.status == 'dnp':
-                # 48 hours from "now"
-                event_dt = fields.Datetime.now() + timedelta(hours=48)
-                all_day   = True
-                note     = f'DNP: {lead.remarks}' or 'DNP follow-up'
+                if lead.dnp_count == '1':
+                    event_dt = fields.Datetime.now() + timedelta(hours=2)
+                    all_day   = False
+                    duration = timedelta(minutes=3)
+                    note     = f'DNP: {lead.remarks} 1st ' or 'DNP follow-up 1st time'
+                elif lead.dnp_count == '2':
+                    event_dt = fields.Datetime.now() + timedelta(hours=2)
+                    duration = timedelta(minutes=3)
+                    all_day   = False
+                    note     = f'DNP: {lead.remarks} 2nd' or 'DNP follow-up 2d time'
+                elif lead.dnp_count == '3':    
+                    event_dt = fields.Datetime.now() + timedelta(hours=24)
+                    duration = timedelta(minutes=3)
+                    all_day   = False
+                    note     = f'DNP: {lead.remarks} 3rd' or 'DNP follow-up 3rd time'
 
             elif lead.status == 'walk_in' and lead.walk_in_date:
                 event_dt = lead.walk_in_date
@@ -331,12 +363,11 @@ class CrmCallLead(models.Model):
         res = super().write(vals)
 
         if not self.env.context.get('skip_followup_creation'):
-            trigger_fields = {'status', 'follow_up_on', 'walk_in_date', 'next_payment_date', 'call_status'}
-            if trigger_fields & set(vals.keys()):
-                self.create_followup_activity()
-
+            trigger_fields = {'status', 'follow_up_on', 'walk_in_date', 'next_payment_date', 'call_status','dnp_count'}        
             if 'call_status' in vals:
                 self.create_followup_activity_online_team()
+            elif trigger_fields & set(vals.keys()):
+                self.create_followup_activity()    
 
         return res
 
