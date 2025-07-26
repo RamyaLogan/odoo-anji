@@ -96,9 +96,8 @@ class OfflineTeamDashboard(models.AbstractModel):
 
     def _aggregate_leads(self, leads):
         touched_statuses = {
-            'follow_up', 'dnp', 'disqualified',
-            'l1_basic_course_enrolled_fully_paid',
-            'l1_basic_course_enrolled_partially_paid'
+            'follow_up','diabetes_interested_in_webinar','diabetes_not_interested_in_webinar',
+             'walk_in', 'dnp','l1_basic_course_enrolled_fully_paid', 'l1_basic_course_enrolled_partially_paid', 'disqualified'
         }
 
         summary = {
@@ -165,9 +164,8 @@ class OfflineTeamDashboard(models.AbstractModel):
 
     def _compute_user_stats(self, user_leads_map, call_logs):
         touched_statuses = {
-            'follow_up', 'dnp', 'disqualified',
-            'l1_basic_course_enrolled_fully_paid',
-            'l1_basic_course_enrolled_partially_paid'
+            'follow_up','diabetes_interested_in_webinar','diabetes_not_interested_in_webinar',
+             'walk_in', 'dnp','l1_basic_course_enrolled_fully_paid', 'l1_basic_course_enrolled_partially_paid', 'disqualified'
         }
 
         duration_map = defaultdict(float)
