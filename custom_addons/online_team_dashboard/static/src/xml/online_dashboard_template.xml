@@ -49,44 +49,56 @@
                 <!-- Stat Boxes -->
                 <div class="row mb-4 g-3" style="justify-content: space-between; max-width: 100%">
     <div class="col-md-2">
-        <div class="alert alert-info shadow-sm" style="height: 120px;">
+        <div class="alert alert-info shadow-sm" style="height: 170px;">
             <div class="fw-bold">Total Leads:</div>
+            <br/>
             <div class="display-6"><t t-esc="state.total_leads"/></div>
+            <br/>
         </div>
     </div>
     <div class="col-md-2">
-        <div class="alert alert-info shadow-sm" style="height: 120px;">
+        <div class="alert alert-info shadow-sm" style="height: 170px;">
             <div class="fw-bold">Unassigned Leads:</div>
+            <br/>
             <div class="display-6"><t t-esc="state.unassigned_leads"/></div>
+            <br/>
         </div>
     </div>
     <div class="col-md-2">
-        <div class="alert alert-warning shadow-sm" style="height: 120px;">
+        <div class="alert alert-warning shadow-sm" style="height: 170px;">
             <div class="fw-bold">Touched:</div>
+            <br/>
             <div class="display-6"><t t-esc="state.total_touched"/></div>
+            <br/>
         </div>
     </div>
     <div class="col-md-2">
-        <div class="alert alert-success shadow-sm" style="height: 120px;">
+        <div class="alert alert-success shadow-sm" style="height: 170px;">
             <div class="fw-bold">Done:</div>
+            <br/>
             <div class="display-6"><t t-esc="state.total_done"/></div>
+            <br/>
         </div>
     </div>
     <div class="col-md-2">
-        <div class="alert alert-danger shadow-sm" style="height: 120px;
+        <div class="alert alert-danger shadow-sm" style="height: 170px;
     color: #d6580e;
     background-color: #f0a171;
     border-color: #ba632b;">
             <div class="fw-bold">Total Calls Made:</div>
+            <br/>
             <div class="display-6"><t t-esc="state.overall_total_calls"/></div>
+            <br/>
         </div>
     </div>
     <div class="col-md-2">
-        <div class="alert alert-danger shadow-sm" style="height: 120px;">
+        <div class="alert alert-danger shadow-sm" style="height: 170px;">
             <div class="fw-bold">Close Rate:</div>
+            <br/>
             <div t-attf-class="display-6 #{state.close_rate >= 70 ? 'text-white' : state.close_rate >= 40 ? 'text-dark' : 'text-white'}">
                 <t t-esc="state.close_rate"/>%
             </div>
+            <br/>
         </div>
     </div>
 </div>
