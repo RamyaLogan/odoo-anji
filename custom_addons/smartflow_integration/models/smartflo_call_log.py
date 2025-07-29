@@ -2,6 +2,8 @@ from odoo import models, fields, api
 from dateutil.relativedelta import relativedelta
 import pytz
 from datetime import datetime
+import logging
+_logger = logging.getLogger(__name__)
 
 class SmartfloCallLog(models.Model):
     _name = 'smartflo.call.log'
@@ -84,8 +86,10 @@ class SmartfloCallLog(models.Model):
             return 'initiated'
         else:
             return 'answered_talk'
-
+            
+    
     def _resolve_lead(self, customer_number_raw):
+
         if customer_number_raw and customer_number_raw.startswith("+91"):
             customer_number_trimmed = customer_number_raw[3:]
         elif len(customer_number_raw) == 10:
@@ -99,42 +103,72 @@ class SmartfloCallLog(models.Model):
         return lead
 
     def _resolve_agent(self, data):
-        agent_number = data.get('answered_agent_number')
+        def generate_possible_variants(number):
+            """Generate all useful variants for comparison with DB."""
+            if not number or not isinstance(number, str):
+                return []
+            digits = ''.join(filter(str.isdigit, number))
+            variants = set()
+            if len(digits) == 10:
+                variants.add(digits)
+                variants.add('91' + digits)
+                variants.add('+91' + digits)
+            elif len(digits) == 12 and digits.startswith('91'):
+                variants.add(digits)
+                variants.add('+' + digits)
+                variants.add(digits[2:])  # raw 10-digit
+            elif len(digits) == 13 and digits.startswith('91') and digits[2] == '0':
+                variants.add(digits)
+            else:
+                variants.add(digits)  # could be extension or internal code
+            return list(variants)
+
+        # Step 1: Get number + extension
+        agent_number_raw = data.get('answered_agent_number')
         answered_agent = data.get('answered_agent')
-        agent_extension = answered_agent.get('number') if isinstance(answered_agent, dict) else None
+        agent_extension_raw = answered_agent.get('number') if isinstance(answered_agent, dict) else None
 
-        if not agent_number or agent_number == "_number":
+        # Step 2: Fallback to missed agent if needed
+        if not agent_number_raw or agent_number_raw == "_number":
             missed_agents = data.get('missed_agent') or []
-            if missed_agents and isinstance(missed_agents, list):
-                agent_number = missed_agents[0].get('agent_number')
-                agent_extension = missed_agents[0].get('number')
+            if missed_agents and isinstance(missed_agents, list) and missed_agents[0]:
+                agent_number_raw = missed_agents[0].get('agent_number')
+                agent_extension_raw = missed_agents[0].get('number')
 
-        if agent_number:
-            agent_user = self.env['res.users'].sudo().search([
-                '|',
-                ('smartflo_agent_number', '=', agent_number),
-                ('smartflo_extension_number', '=', agent_extension)
-            ])
+        variants = set(generate_possible_variants(agent_number_raw) + generate_possible_variants(agent_extension_raw))
+
+        if not variants:
+            _logger.warning("⚠️ No number variants found to resolve agent.")
+            return None
+
+        # Step 3: Search across smartflo fields
+        domain = ['|', '|']
+        domain += [('smartflo_agent_number', 'in', list(variants))]
+        domain += [('smartflo_extension_number', 'in', list(variants))]
+        domain += [('smartflo_caller_id', 'in', list(variants))]
+
+        agent_user = self.env['res.users'].sudo().search(domain, limit=1)
+        if agent_user:
+            _logger.info("✅ Agent resolved: %s (%s)", agent_user.name, agent_user.id)
+            return agent_user
+
+        # Step 4: Fallback to call_to_number or caller_id_number
+        direction = data.get('direction')
+        raw_fallback = data.get('call_to_number') if direction == 'inbound' else data.get('caller_id_number')
+        fallback_variants = generate_possible_variants(raw_fallback)
+
+       
+        if fallback_variants:
+            domain = ['|', '|']
+            domain += [('smartflo_agent_number', 'in', fallback_variants)]
+            domain += [('smartflo_extension_number', 'in', fallback_variants)]
+            domain += [('smartflo_caller_id', 'in', fallback_variants)]
+            agent_user = self.env['res.users'].sudo().search(domain, limit=1)
             if agent_user:
-                return agent_user[0]  # ✅ only return if actually matched
+                _logger.info("✅ Agent resolved via fallback: %s (%s)", agent_user.name, agent_user.id)
+                return agent_user
 
-        call_to_number = data.get('call_to_number')
-        if call_to_number:
-            if not call_to_number.startswith("+"):
-                if call_to_number.startswith("91"):
-                    call_to_number = "+" + call_to_number
-                elif len(call_to_number) == 10:
-                    call_to_number = "+91" + call_to_number
-
-            agent_user = self.env['res.users'].sudo().search([
-                '|','|',
-                ('smartflo_agent_number', '=', call_to_number),
-                ('smartflo_extension_number', '=', call_to_number),
-                ('smartflo_caller_id', '=', call_to_number)
-            ])
-            if agent_user:
-                return agent_user[0]  # ✅ only return if actually matched
-
+        _logger.warning("❌ No agent resolved for this call.")
         return None
 
     @api.model
@@ -143,17 +177,21 @@ class SmartfloCallLog(models.Model):
         uuid = custom_identifier.get('odoo_uuid') or data.get('uuid')
         call_id = data.get('call_id')
         direction_raw = data.get('direction') or ''
-        direction = 'outbound' if direction_raw == 'clicktocall' else 'inbound'
+        direction = 'outbound' if direction_raw == 'clicktocall' or direction_raw == 'click_to_call' else 'inbound'
 
+       
         customer_number_raw = (
-            data.get('customer_no_with_prefix') or 
-            data.get('customer_number') or 
-            data.get('caller_id_number')
+            data.get('customer_no_with_prefix') or
+            data.get('customer_number') or
+            (data.get('caller_id_number') if direction_raw == 'inbound' else data.get('call_to_number'))
         )
 
         # Resolve Agent
-        agent_user = self._resolve_agent(data)
 
+        agent_user = self._resolve_agent(data)
+        if not agent_user:
+            _logger.warning("No agent found for call data: %s", data)
+            return {'error': 'No agent found for this call.'}
         # Resolve Lead
         lead_id = custom_identifier.get('lead_id')
         lead_name = custom_identifier.get('lead_name')
@@ -193,7 +231,6 @@ class SmartfloCallLog(models.Model):
                 'initiated': 3,
             }.get(status, 0),
         }
-
         # Create or update record
         log = self.env['smartflo.call.log'].sudo().search([('uuid', '=', uuid)], limit=1)
         if log:
@@ -214,10 +251,11 @@ class SmartfloCallLog(models.Model):
             }
             channel = f"smartflo.agent.{agent_user.partner_id.id}"
             self.env['bus.bus']._sendone(channel, 'smartflo.call', message)
-        self.update_call_summary(agent_user, data.get('start_stamp'), values['duration'])
+            self.update_call_summary(agent_user, data.get('start_stamp'), values['duration'])
         return {'success': True}
 
     def update_call_summary(self,agent_user, call_start_str, duration):
+        _logger.info("update call summart: %s", agent_user.id)
         call_start_dt = datetime.strptime(call_start_str, "%Y-%m-%d %H:%M:%S")
         call_date = call_start_dt.date()
         summary = self.env['call.log.summary'].sudo().search([
