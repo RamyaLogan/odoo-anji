@@ -174,9 +174,9 @@ class SmartfloCallLog(models.Model):
             'customer_number': customer_number_raw,
             'agent_number': data.get('answered_agent_number'),
             'agent_id': agent_user.id if agent_user else False,
-            'start_time': data.get('start_stamp'),
-            'answer_time': data.get('answer_stamp'),
-            'end_time': data.get('end_stamp'),
+            'start_time': self._safe_datetime(data.get('start_stamp')),
+            'answer_time': self._safe_datetime(data.get('answer_stamp')),
+            'end_time': self._safe_datetime(data.get('end_stamp')),
             'duration': self.safe_int(data.get('duration')),
             'billsec': self.safe_int(data.get('billsec')),
             'recording_url': data.get('recording_url'),
@@ -243,7 +243,15 @@ class SmartfloCallLog(models.Model):
         try:
             return int(val)
         except (ValueError, TypeError):
-            return default      
+            return default  
+
+    def _safe_datetime(self, val):
+        if isinstance(val, str) and val.strip():
+            try:
+                return fields.Datetime.from_string(val)
+            except Exception:
+                return False
+        return False
 
     def convert_utc_str_to_ist_str(self,utc_str):
         if not utc_str:
