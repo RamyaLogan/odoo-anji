@@ -103,23 +103,21 @@ class SmartfloCallLog(models.Model):
         answered_agent = data.get('answered_agent')
         agent_extension = answered_agent.get('number') if isinstance(answered_agent, dict) else None
 
-        # Fallback from missed agent block
         if not agent_number or agent_number == "_number":
             missed_agents = data.get('missed_agent') or []
             if missed_agents and isinstance(missed_agents, list):
                 agent_number = missed_agents[0].get('agent_number')
                 agent_extension = missed_agents[0].get('number')
 
-        # Primary search if agent_number exists
         if agent_number:
             agent_user = self.env['res.users'].sudo().search([
                 '|',
                 ('smartflo_agent_number', '=', agent_number),
                 ('smartflo_extension_number', '=', agent_extension)
-            ], limit=1)
-            return agent_user
+            ])
+            if agent_user:
+                return agent_user[0]  # ✅ only return if actually matched
 
-        # ✅ Final fallback using inbound `call_to_number` → DID based mapping
         call_to_number = data.get('call_to_number')
         if call_to_number:
             if not call_to_number.startswith("+"):
@@ -127,13 +125,15 @@ class SmartfloCallLog(models.Model):
                     call_to_number = "+" + call_to_number
                 elif len(call_to_number) == 10:
                     call_to_number = "+91" + call_to_number
+
             agent_user = self.env['res.users'].sudo().search([
                 '|','|',
                 ('smartflo_agent_number', '=', call_to_number),
                 ('smartflo_extension_number', '=', call_to_number),
                 ('smartflo_caller_id', '=', call_to_number)
-            ], limit=1)
-            return agent_user
+            ])
+            if agent_user:
+                return agent_user[0]  # ✅ only return if actually matched
 
         return None
 
