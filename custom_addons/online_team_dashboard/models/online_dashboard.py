@@ -41,8 +41,9 @@ class OnlineTeamDashboard(models.AbstractModel):
         # -----------------------
         # Remaining logic
         # -----------------------
-        call_logs = self._get_call_logs(from_date, to_date)
         users = self._get_sales_users()
+        all_user_ids = [u.id for u in self._get_sales_users()]
+        call_logs = self._get_call_logs(from_date, to_date,selected_user_ids or all_user_ids)   
 
         summary, user_leads_map, status_counter = self._aggregate_leads(leads)
         summary["unassigned_leads"] = summary["total_leads"] - summary["total_assigned"]
@@ -68,11 +69,13 @@ class OnlineTeamDashboard(models.AbstractModel):
             "status": status_list,
         }
 
-    def _get_call_logs(self, from_date, to_date):
-        return self.env['call.log.summary'].search([
+    def _get_call_logs(self, from_date, to_date, user_ids=None):
+        domain = [
             ('date', '>=', from_date),
             ('date', '<=', to_date),
-        ])
+            ('user_id', 'in', user_ids),
+        ]
+        return self.env['call.log.summary'].search(domain)
 
     def _get_sales_users(self):
         teams = self.env['crm.team'].search([('name', 'in', ['Online Sales Team - Web', 'Online Sales Team - FB'])])
