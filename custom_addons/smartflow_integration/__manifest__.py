@@ -1,6 +1,6 @@
 {
     'name': 'Smart Flow Integration',
-    'version': '17.0.1.0.0',
+    'version': '17.0.1.0.2',
     'category': 'Tools',
     'depends': ['base','crm','web'],
     'data': [
