@@ -21,7 +21,7 @@
     <div class="form-control o_input d-flex flex-wrap align-items-center gap-1" style="height: auto; max-height: 100px; overflow-y: auto;max-width:280px">
         <t t-foreach="state.selected_user_ids" t-as="uid" t-key="uid">
             <t t-set="user" t-value="state.users.find(u => u.id === uid)"/>
-            <span class="badge rounded-pill text-bg-primary px-2 py-1">
+            <span class="badge rounded-pill text-bg-primary px-2 py-1" style="max-height: 35px;">
                 <t t-esc="user.name"/>
                 <i class="fa fa-times ms-1 cursor-pointer" t-on-click="() => this.removeUser(uid)"></i>
             </span>
