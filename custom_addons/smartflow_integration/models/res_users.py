@@ -9,5 +9,6 @@ class ResUsers(models.Model):
     smartflo_account_type = fields.Selection([
         ('OR165136', 'OR165136'),
         ('TACN6513', 'TACN6513'),
+        ('TACN1346', 'TACN1346'),
     ], string="Smartflo Account Type")
    
