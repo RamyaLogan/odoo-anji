@@ -148,6 +148,7 @@
                                 <th>Touched</th>
                                 <th>UnTouched</th>
                                 <th>Total Calls</th>
+                                <th>Total Lead Calls</th>
                                 <th>Total Duration</th>
                                 <th>Total Enrolled</th>
                                 <th>Conversion Rate %</th>
@@ -164,6 +165,7 @@
                                             <td><t t-esc="row.total_touched"/></td>
                                             <td><t t-esc="row.untouched"/></td>
                                             <td><t t-esc="row.total_calls"/></td>
+                                            <td><t t-esc="row.lead_total_calls"/></td>
                                             <td><t t-esc="row.call_duration"/></td>
                                             <td><t t-esc="row.total_enrolled"/></td>
                                             <td><t t-esc="row.close_rate"/></td>

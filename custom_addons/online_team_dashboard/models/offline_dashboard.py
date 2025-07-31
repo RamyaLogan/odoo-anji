@@ -174,12 +174,14 @@ class OfflineTeamDashboard(models.AbstractModel):
 
         duration_map = defaultdict(float)
         total_calls = defaultdict(int)
+        lead_total_calls = defaultdict(int)
         leaderboard = []
         touch_rate_data = []
 
         for log in call_logs:
             duration_map[log.user_id.id] += log.total_duration / 60.0
             total_calls[log.user_id.id] += log.total_calls
+            lead_total_calls[log.user_id.id] += log.total_lead_calls
 
         user_model = self.env['res.users']
         for user_id, leads in user_leads_map.items():
@@ -209,6 +211,7 @@ class OfflineTeamDashboard(models.AbstractModel):
                 "total_touched": touched,
                 "untouched": untouched,
                 "total_calls": total_calls.get(user_id, 0),
+                "lead_total_calls": lead_total_calls.get(user.id, 0),
                 "call_duration": round(duration_map.get(user_id, 0.0), 2),
                 "total_enrolled": enrolled,
                 "close_rate": round((enrolled / len(leads)) * 100, 2) if leads else 0,

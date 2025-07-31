@@ -107,10 +107,11 @@ class OnlineTeamDashboard(models.AbstractModel):
     def _compute_user_stats(self, user_leads_map, call_logs):
         duration_map = defaultdict(float)
         total_calls = defaultdict(int)
-
+        lead_total_calls = defaultdict(int)
         for log in call_logs:
             duration_map[log.user_id.id] += log.total_duration / 60.0
             total_calls[log.user_id.id] += log.total_calls
+            lead_total_calls[log.user_id.id] += log.total_lead_calls
 
         user_model = self.env['res.users']
         leaderboard = []
@@ -133,6 +134,7 @@ class OnlineTeamDashboard(models.AbstractModel):
                 "connected": round((touched / len(leads)) * 100, 2) if leads else 0,
                 "call_duration": round(duration_map.get(user.id, 0.0), 2),
                 "total_calls": total_calls.get(user.id, 0),
+                "lead_total_calls": lead_total_calls.get(user.id, 0),
             })
 
             touch_rate_data.append({
