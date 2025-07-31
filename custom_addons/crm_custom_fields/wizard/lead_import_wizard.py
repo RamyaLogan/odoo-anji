@@ -132,6 +132,7 @@ class LeadImportWizard(models.TransientModel):
             self.safe_get_str(row, header_map.get('batch_code'),updates, 'batch_code_full')
             self.safe_get_str(row, header_map.get('sugar_level'),updates, 'sugar_level')
             updates['call_status'] = 'new'
+            updates['import_source'] = lead_source
             if lead:
                 lead.write(updates)
                 continue

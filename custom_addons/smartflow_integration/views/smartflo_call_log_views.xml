@@ -5,13 +5,12 @@
     <field name="model">smartflo.call.log</field>
     <field name="arch" type="xml">
       <tree string="Call Logs" default_order="effective_start_time desc"
-            decoration-danger="color == 1"
-            decoration-warning="color == 2"
-            decoration-info="color == 3"
-            decoration-primary="color == 7"
-            decoration-success="color == 10">
+            decoration-danger="status == 'missed_by_agent'"
+            decoration-warning="status == 'missed_by_customer'"
+            decoration-info="status == 'initiated'"
+            decoration-primary="status == 'voicemail'"
+            decoration-success="status == 'answered'">
         <field name="agent_id"/>
-        <field name="color" invisible="1"/>
         <field name="lead_id"/>
         <field name="start_time" widget="datetime" options="{'timezone': 'Asia/Kolkata'}"/>
         <field name="status"/>
