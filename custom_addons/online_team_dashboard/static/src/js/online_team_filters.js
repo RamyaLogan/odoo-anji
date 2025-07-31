@@ -27,8 +27,13 @@ export class OnlineTeamFilters extends Component {
             this.state.to_date = null;
             return;
         }
-
-        if (range === "last_7") {
+        if( range === "yesterday") {
+            from = new Date(today);
+            from.setDate(today.getDate() - 1);
+            to = from;
+        } else if (range === "today") {
+            from = to;
+        }else if (range === "last_7") {
             from = new Date(today);
             from.setDate(today.getDate() - 6);
         } else if (range === "last_15") {

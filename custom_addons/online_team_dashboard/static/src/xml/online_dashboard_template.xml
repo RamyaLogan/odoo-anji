@@ -7,6 +7,8 @@
             <option value="last_7" selected="selected" >Last 7 Days</option>
             <option value="last_15">Last 15 Days</option>
             <option value="last_30">Last 30 Days</option>
+            <option value="yesterday">Yesterday</option>
+            <option value="today">Today</option>
             <option value="custom">Custom Range</option>
         </select>
     </div>
