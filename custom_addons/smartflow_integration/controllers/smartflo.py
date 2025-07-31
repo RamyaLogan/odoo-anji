@@ -52,6 +52,8 @@ class SmartfloController(http.Controller):
             api_key = config.get_param("smartflo.OR165136.api_key")
         elif account_type == 'TACN6513':
             api_key = config.get_param("smartflo.TACN6513.api_key")
+        elif account_type == 'TACN1346':
+            api_key = config.get_param("smartflo.TACN1346.api_key")
         else:
             return {"error": "Smartflo API Key not configured for this user."}
 
