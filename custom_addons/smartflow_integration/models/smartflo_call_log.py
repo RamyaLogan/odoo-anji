@@ -237,6 +237,7 @@ class SmartfloCallLog(models.Model):
             log.write(values)
         else:
             self.env['smartflo.call.log'].sudo().create(values)
+            self.update_call_summary(agent_user, data.get('start_stamp'), values['duration'],lead_id)
         # Send realtime bus only if agent found
         if agent_user:
             message = {
@@ -251,10 +252,11 @@ class SmartfloCallLog(models.Model):
             }
             channel = f"smartflo.agent.{agent_user.partner_id.id}"
             self.env['bus.bus']._sendone(channel, 'smartflo.call', message)
-            self.update_call_summary(agent_user, data.get('start_stamp'), values['duration'])
         return {'success': True}
 
-    def update_call_summary(self,agent_user, call_start_str, duration):
+    def update_call_summary(self,agent_user, call_start_str, duration,lead_id):
+        if not agent_user:
+            return
         _logger.info("update call summart: %s", agent_user.id)
         call_start_dt = datetime.strptime(call_start_str, "%Y-%m-%d %H:%M:%S")
         call_date = call_start_dt.date()
@@ -262,17 +264,21 @@ class SmartfloCallLog(models.Model):
             ('user_id', '=', agent_user.id),
             ('date', '=', call_date)
         ], limit=1)
-
+        lead_total_calls = summary.total_lead_calls if summary else 0
+        if lead_id:
+            lead_total_calls +=1
         if summary:
             summary.sudo().write({
                 'total_calls': summary.total_calls + 1,
-                'total_duration': summary.total_duration + duration
+                'total_duration': summary.total_duration + duration,
+                'total_lead_calls': lead_total_calls
             })
         else:
             self.env['call.log.summary'].sudo().create({
                 'user_id': agent_user.id,
                 'date': call_date,
                 'total_calls': 1,
+                'total_lead_calls': lead_total_calls,
                 'total_duration': duration
             })
 

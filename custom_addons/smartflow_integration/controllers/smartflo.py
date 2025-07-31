@@ -98,6 +98,9 @@ class SmartfloController(http.Controller):
                 'requested_time': fields.Datetime.now(),
                 'call_connected': False,
             })
+            SmartfloLogModel = request.env['smartflo.call.log'].sudo()
+            call_start_str = fields.Datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+            SmartfloLogModel.update_call_summary(request.env.user, call_start_str, 0, data.get('lead_id'))
             message = {
                     'type': 'smartflo.call',
                     'lead_name': data.get('lead_name'),

@@ -8,6 +8,7 @@ class CallLogSummary(models.Model):
     date = fields.Date(required=True, index=True)
     total_calls = fields.Integer(default=0)
     total_duration = fields.Float(default=0.0, help="Total call duration in minutes")
+    total_lead_calls = fields.Integer(default=0, help="Total calls associated with leads")
 
     _sql_constraints = [
         ('unique_user_date', 'unique(user_id, date)', 'One summary per user per day!')

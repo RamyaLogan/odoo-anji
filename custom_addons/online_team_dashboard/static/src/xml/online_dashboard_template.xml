@@ -21,7 +21,7 @@
     <div class="form-control o_input d-flex flex-wrap align-items-center gap-1" style="height: auto; max-height: 100px; overflow-y: auto;max-width:280px">
         <t t-foreach="state.selected_user_ids" t-as="uid" t-key="uid">
             <t t-set="user" t-value="state.users.find(u => u.id === uid)"/>
-            <span class="badge rounded-pill text-bg-primary px-2 py-1">
+            <span class="badge rounded-pill text-bg-primary px-2 py-1" style="max-height: 35px;">
                 <t t-esc="user.name"/>
                 <i class="fa fa-times ms-1 cursor-pointer" t-on-click="() => this.removeUser(uid)"></i>
             </span>
@@ -115,6 +115,7 @@
                                 <th t-on-click="() => toggleSort('pending')">Pending <t t-if="state.sort_field === 'pending' and  state.sort_order === 'desc'">▲</t></th>
                                 <th t-on-click="() => toggleSort('done')">Total Interested <t t-if="state.sort_field === 'done' and  state.sort_order === 'desc'">▲</t></th>
                                 <th t-on-click="() => toggleSort('total_calls')">Total Calls <t t-if="state.sort_field === 'total_calls' and  state.sort_order === 'desc'">▲</t></th>
+                                <th t-on-click="() => toggleSort('total_calls')">Total Lead Calls <t t-if="state.sort_field === 'total_lead_calls' and  state.sort_order === 'desc'">▲</t></th>
                                 <th t-on-click="() => toggleSort('call_duration')">Total Duration <t t-if="state.sort_field === 'call_duration' and  state.sort_order === 'desc'">▲</t></th>
                                 <th t-on-click="() => toggleSort('connected')">Connected % <t t-if="state.sort_field === 'connected' and  state.sort_order === 'desc'">▲</t></th>
                                 </tr>
@@ -129,6 +130,7 @@
                                             <td><t t-esc="row.pending"/></td>
                                             <td><t t-esc="row.done"/></td>
                                             <td><t t-esc="row.total_calls"/></td>
+                                            <td><t t-esc="row.lead_total_calls"/></td>
                                             <td><t t-esc="row.call_duration"/></td>
                                             <td><t t-esc="row.connected"/>%</td>
                                         </tr>

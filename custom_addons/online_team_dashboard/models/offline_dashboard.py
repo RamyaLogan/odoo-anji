@@ -53,8 +53,10 @@ class OfflineTeamDashboard(models.AbstractModel):
         # -----------------------
         # Remaining logic unchanged
         # -----------------------
-        call_logs = self._get_call_logs(from_date, to_date)
         users = self._get_sales_users()
+        all_user_ids = [u.id for u in self._get_sales_users()]
+        call_logs = self._get_call_logs(from_date, to_date,selected_user_ids or all_user_ids)
+        
 
         summary, user_leads_map, batch_map, status_counter = self._aggregate_leads(leads)
         summary["unassigned_count"] = summary["total_leads"] - summary["total_assigned"]
@@ -84,11 +86,13 @@ class OfflineTeamDashboard(models.AbstractModel):
             ('create_date', '<=', to_dt),
         ])
 
-    def _get_call_logs(self, from_date, to_date):
-        return self.env['call.log.summary'].search([
+    def _get_call_logs(self, from_date, to_date, user_ids=None):
+        domain = [
             ('date', '>=', from_date),
             ('date', '<=', to_date),
-        ])
+            ('user_id', 'in', user_ids),
+        ]
+        return self.env['call.log.summary'].search(domain)
 
     def _get_sales_users(self):
         team = self.env['crm.team'].search([('name', '=', 'Offline Sales Team')], limit=1)
@@ -170,12 +174,14 @@ class OfflineTeamDashboard(models.AbstractModel):
 
         duration_map = defaultdict(float)
         total_calls = defaultdict(int)
+        lead_total_calls = defaultdict(int)
         leaderboard = []
         touch_rate_data = []
 
         for log in call_logs:
             duration_map[log.user_id.id] += log.total_duration / 60.0
             total_calls[log.user_id.id] += log.total_calls
+            lead_total_calls[log.user_id.id] += log.total_lead_calls
 
         user_model = self.env['res.users']
         for user_id, leads in user_leads_map.items():
@@ -205,6 +211,7 @@ class OfflineTeamDashboard(models.AbstractModel):
                 "total_touched": touched,
                 "untouched": untouched,
                 "total_calls": total_calls.get(user_id, 0),
+                "lead_total_calls": lead_total_calls.get(user.id, 0),
                 "call_duration": round(duration_map.get(user_id, 0.0), 2),
                 "total_enrolled": enrolled,
                 "close_rate": round((enrolled / len(leads)) * 100, 2) if leads else 0,
