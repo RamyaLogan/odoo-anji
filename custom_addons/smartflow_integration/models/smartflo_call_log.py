@@ -70,7 +70,7 @@ class SmartfloCallLog(models.Model):
     def _resolve_call_status(self, data, direction):
         call_status_raw = (data.get('call_status') or '').lower()
         reason_key = (data.get('reason_key') or '').lower()
-        billsec = self.safe_int(data.get('billsec'))
+        billsec = self.safe_int(data.get('outbound_sec'))
         call_flow = data.get('call_flow') or []
         missed_agents = data.get('missed_agent') or []
 
@@ -80,7 +80,7 @@ class SmartfloCallLog(models.Model):
             else:
                 return 'missed_by_customer'
         elif any(step.get("type") == "Agent" and step.get("id") is None for step in call_flow[1:]) \
-                and reason_key == "call disconnected by caller" and billsec < 30:
+                and reason_key == "call disconnected by caller" and billsec < 20:
             return 'answered_voicemail'
         elif not call_status_raw and direction == 'inbound':
             return 'initiated'
@@ -215,8 +215,8 @@ class SmartfloCallLog(models.Model):
             'start_time': self._safe_datetime(data.get('start_stamp')),
             'answer_time': self._safe_datetime(data.get('answer_stamp')),
             'end_time': self._safe_datetime(data.get('end_stamp')),
-            'duration': self.safe_int(data.get('duration')),
-            'billsec': self.safe_int(data.get('billsec')),
+            'duration': self.safe_int(data.get('outbound_sec')),
+            'billsec': self.safe_int(data.get('outbound_sec')),
             'recording_url': data.get('recording_url'),
             'hangup_cause': data.get('hangup_cause'),
             'call_connected': data.get('call_connected', False),
