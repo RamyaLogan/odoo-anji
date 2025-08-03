@@ -1,5 +1,5 @@
 
-name: Deploy Odoo Stage
+name: Deploy Odoo Contabo
 
 on:
   workflow_dispatch:
