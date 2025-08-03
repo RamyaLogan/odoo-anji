@@ -38,10 +38,6 @@ jobs:
             sudo chmod +x /usr/local/bin/docker-compose
           fi
 
-          for vol in odoo_local odoo_state db_data; do
-            docker volume inspect \$vol >/dev/null 2>&1 || docker volume create \$vol
-          done
-
           
           echo "🧹 Cleaning up Docker system to prevent space issues..."
           docker system prune -af
