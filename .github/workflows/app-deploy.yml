@@ -87,7 +87,7 @@ jobs:
             echo "Bootstrapping SSL..."
             docker-compose  run --rm certbot certbot certonly --webroot -w /var/www/certbot \
               -d tarotmaai.com --email tarotmaai@gmail.com --agree-tos --non-interactive
-            cp nginx/stage/nginx-https.conf nginx/conf.d/default.conf
+            cp nginx/nginx-https.conf nginx/conf.d/default.conf
             docker-compose restart nginx
           fi
           echo "✅ Deployment complete"
