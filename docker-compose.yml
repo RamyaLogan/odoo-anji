@@ -37,6 +37,7 @@ services:
       - "8072:8072"
     volumes:
       - ./odoo:/opt/odoo
+      - ./odoo.conf:/etc/odoo/odoo.conf  # <-- MANDATORY
       - odoo_local:/opt/odoo/.local
       - odoo_state:/opt/odoo/.db-initialized
       - /opt/ssl:/opt/ssl
@@ -64,6 +65,7 @@ services:
         condition: service_healthy
     volumes:
       - ./odoo:/opt/odoo
+      - ./odoo.conf:/etc/odoo/odoo.conf  # <-- MANDATORY
       - odoo_local:/opt/odoo/.local
       - odoo_state:/opt/odoo/.db-initialized
       - /opt/ssl:/opt/ssl
