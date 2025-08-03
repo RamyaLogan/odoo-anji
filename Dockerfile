@@ -35,6 +35,20 @@
     RUN pip install --upgrade pip
     RUN pip install zope.event==5.1
     RUN pip install pandas openpyxl
+    RUN apt-get update && apt-get install -y \
+    gcc \
+    build-essential \
+    python3-dev \
+    libpq-dev \
+    libssl-dev \
+    libffi-dev \
+    libldap2-dev \
+    libsasl2-dev \
+    libxml2-dev \
+    libxslt1-dev \
+    libjpeg-dev \
+    zlib1g-dev \
+    libsass-dev
     WORKDIR /opt/odoo
     
     # Copy Odoo source code
@@ -57,7 +71,12 @@
     RUN mkdir -p /opt/odoo/.local && chown -R odoo:odoo /opt/odoo/.local
 
     USER odoo
-    
+    ENV PYTHONPATH="/opt/odoo/.local/lib/python3.11/site-packages:/usr/local/lib/python3.11/site-packages"
+    RUN mkdir -p /opt/odoo/.local/lib/python3.11/site-packages
+
+# Install Python dependencies to odoo user-level path
+    RUN pip install --target=/opt/odoo/.local/lib/python3.11/site-packages zope.event
+    RUN pip install --target=/opt/odoo/.local/lib/python3.11/site-packages -r /opt/odoo/requirements.txt
     EXPOSE 8069 8071 8072
     
     CMD ["bash"]

@@ -1,23 +1,42 @@
 version: "3.9"
 
 services:
+  db:
+      image: postgres:14
+      container_name: odoo-db
+      restart: always
+      environment:
+        POSTGRES_USER: odoo
+        POSTGRES_PASSWORD: odoo
+      ports:
+        - "5432:5432"
+      volumes:
+        - db_data:/var/lib/postgresql/data
+      healthcheck:
+        test: ["CMD-SHELL", "pg_isready -U odoo"]
+        interval: 5s
+        timeout: 5s
+        retries: 5
+      networks:
+        - odoo-net
   odoo:
-    image: ${ODOO_IMAGE}
+    build:
+      context: .
+      dockerfile: Dockerfile
     container_name: odoo-web
     restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
     environment:
-      - MAX_CRON_THREADS=0
-      - PGHOST=${PGHOST}
-      - PGUSER=${PGUSER}
-      - PGPASSWORD=${PGPASSWORD}
-      - PGDATABASE=${PGDATABASE}
-      - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
-      - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
-      - AWS_REGION=${AWS_REGION}
+      - VIRTUAL_HOST=tarotmaai.com
+      - LETSENCRYPT_HOST=tarotmaai.com
+      - LETSENCRYPT_EMAIL=tarotmaai@gmail.com
     ports:
       - "8069:8069"
       - "8072:8072"
     volumes:
+      - ./odoo:/opt/odoo
       - odoo_local:/opt/odoo/.local
       - odoo_state:/opt/odoo/.db-initialized
       - /opt/ssl:/opt/ssl
@@ -26,22 +45,25 @@ services:
     command: >
       bash -c "
         sleep 10 ;
+        if [ ! -f /opt/odoo/.db-initialized ]; then
+          echo 'Initializing db';
+          python3 /opt/odoo/odoo-bin -c /etc/odoo/odoo.conf -d odoo -i base --without-demo=all --stop-after-init &&
+          touch /opt/odoo/.db-initialized;
+        fi;
         exec python3 /opt/odoo/odoo-bin -c /etc/odoo/odoo.conf 
       "
 
   odoo-runner:
-    image: ${ODOO_IMAGE}
+    build:
+      context: .
+      dockerfile: Dockerfile
     container_name: odoo-jobrunner
     restart: unless-stopped
-    environment:
-      - PGHOST=${PGHOST}
-      - PGUSER=${PGUSER}
-      - PGPASSWORD=${PGPASSWORD}
-      - PGDATABASE=${PGDATABASE}
-      - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
-      - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
-      - AWS_REGION=${AWS_REGION}
+    depends_on:
+      db:
+        condition: service_healthy
     volumes:
+      - ./odoo:/opt/odoo
       - odoo_local:/opt/odoo/.local
       - odoo_state:/opt/odoo/.db-initialized
       - /opt/ssl:/opt/ssl
@@ -86,6 +108,7 @@ services:
       - odoo-net
 
 volumes:
+  db_data:
   odoo_local:
   odoo_state:
   certbot-webroot:

@@ -3,13 +3,9 @@ name: Deploy Odoo Stage
 
 on:
   workflow_dispatch:
-    inputs:
-      image_tag:
-        description: 'ECR Image Tag to deploy (usually branch name)'
-        required: true
 
 env:
-  TF_TOKEN_app_terraform_io: ${{ secrets.TF_CLOUD_TOKEN }}
+  VPS_IP: 147.93.182.108
 
 jobs:
   deploy:
@@ -17,56 +13,23 @@ jobs:
     steps:
       - name: Checkout repo
         uses: actions/checkout@v4
-
-      - name: Setup Terraform
-        uses: hashicorp/setup-terraform@v2
         with:
-          terraform_version: 1.5.0
-          terraform_wrapper: false
-
-      - name: Init Terraform
-        working-directory: infra/terraform/stage
-        env:
-          TF_TOKEN_app_terraform_io: ${{ secrets.TF_CLOUD_TOKEN }}
-        run: terraform init
-
-      - name: Get EC2 IP
-        id: get_ip
-        working-directory: infra/terraform/stage
-        run: |
-          RAW_OUTPUT=$(terraform output -raw odoo_server_ip 2>&1)
-          SERVER_IP=$(echo "$RAW_OUTPUT" | grep -Eo '([0-9]{1,3}\.){3}[0-9]{1,3}' | tail -n 1 | tr -d '\r\n')
-          echo "Extracted EC2 IP: $SERVER_IP"
-          echo "ec2_ip=$SERVER_IP" >> $GITHUB_ENV
+          clean: true
+          submodules: recursive
 
       - name: Setup SSH
         run: |
           mkdir -p ~/.ssh
           echo "${{ secrets.DEPLOY_PRIVATE_KEY_SSH }}" > ~/.ssh/id_rsa
           chmod 600 ~/.ssh/id_rsa
-          ssh-keyscan -H ${{ env.ec2_ip }} >> ~/.ssh/known_hosts
-
-      - name: Upload configs to EC2
-        run: |
-          scp -r ./docker-compose.yml ./docker-compose.staging.yml ./nginx ./init-cert.sh ubuntu@${{ env.ec2_ip }}:/home/ubuntu/
-      
+          ssh-keyscan -H ${{ env.VPS_IP }} >> ~/.ssh/known_hosts
+   
       - name: Deploy to EC2
-        env:
-          IMAGE_TAG: ${{ github.event.inputs.image_tag }}
-          ECR_REPO: ${{ secrets.ECR_REPO }}
-          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          AWS_REGION: ap-south-1
         run: |
-          ssh -o StrictHostKeyChecking=no ubuntu@${{ env.ec2_ip }} <<EOF
+          ssh -o StrictHostKeyChecking=no root@${{ env.VPS_IP }} << 'EOF'
           set -e
-          export DEBIAN_FRONTEND=noninteractive
-          export AWS_ACCESS_KEY_ID="${AWS_ACCESS_KEY_ID}"
-          export AWS_SECRET_ACCESS_KEY="${AWS_SECRET_ACCESS_KEY}"
-          export AWS_REGION="${AWS_REGION}"
-          export IMAGE_TAG="${IMAGE_TAG}"
-          export ECR_REPO="${ECR_REPO}"
-          sudo chown -R ubuntu:ubuntu .
+          
+
           if ! command -v docker &> /dev/null; then
             sudo apt update && sudo apt install -y docker.io
             sudo systemctl enable docker && sudo systemctl start docker
@@ -82,58 +45,53 @@ jobs:
             docker volume inspect \$vol >/dev/null 2>&1 || docker volume create \$vol
           done
 
-          if ! command -v aws &> /dev/null; then
-            sudo apt update && sudo apt install -y unzip
-            curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
-            unzip -q awscliv2.zip
-            sudo ./aws/install
-            rm -rf aws awscliv2.zip
-          fi
+          
           echo "🧹 Cleaning up Docker system to prevent space issues..."
           docker system prune -af
           docker volume prune -f
           
-          aws ecr get-login-password | docker login --username AWS --password-stdin \$ECR_REPO
+          echo "${{ secrets.GIT_DEPLOY_KEY }}" > ~/git_deploy_key
+          chmod 600 ~/git_deploy_key
+          export GIT_SSH_COMMAND="ssh -i ~/git_deploy_key -o StrictHostKeyChecking=no"
 
-          cd /home/ubuntu
-          cat <<EOT > .env
-          ODOO_IMAGE=${ECR_REPO}:${IMAGE_TAG}
-          AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
-          AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
-          AWS_REGION=${AWS_REGION}
-          EOT
+          cd /home
+          if [ ! -d "tarot-odoo" ]; then
+          git clone git@github.com:yourusername/tarot-odoo.git
+          fi
+          cd tarot-odoo
+          git reset --hard
+          git clean -fd
+          git fetch origin
+          git checkout main
+          git pull origin main
+          git submodule update --init --depth 1 --recursive
 
-          docker pull ${ECR_REPO}:${IMAGE_TAG}
 
-          cp nginx/stage/nginx-http.conf nginx/conf.d/default.conf
-          docker rm -f nginx 2>/dev/null || true
-          docker-compose -f docker-compose.yml -f docker-compose.staging.yml up -d nginx
+          cp nginx/nginx-http.conf nginx/conf.d/default.conf
+          docker-compose up -d nginx
           sleep 5
 
-          echo "📦 Ensuring volumes exist"
-          for vol in odoo_local odoo_state; do
-            docker volume inspect $vol >/dev/null 2>&1 || docker volume create $vol
-          done
+          
 
-          docker-compose -f docker-compose.yml -f docker-compose.staging.yml ps | grep db | grep -q Up && echo "Db already up" || {
-            echo "Starting DB..."; docker-compose -f docker-compose.yml -f docker-compose.staging.yml up -d db || { docker-compose logs db; exit 1; }
+          docker-compose ps | grep db | grep -q Up && echo "Db already up" || {
+            echo "Starting DB..."; docker-compose  up -d db || { docker-compose logs db; exit 1; }
           }
 
-          docker-compose -f docker-compose.yml -f docker-compose.staging.yml ps | grep redis | grep -q Up && echo "Redis already up" || {
-            echo "Starting Redis..."; docker-compose -f docker-compose.yml -f docker-compose.staging.yml up -d redis || { docker-compose logs redis; exit 1; }
+          docker-compose  ps | grep redis | grep -q Up && echo "Redis already up" || {
+            echo "Starting Redis..."; docker-compose  up -d redis || { docker-compose logs redis; exit 1; }
           }
 
           echo "♻️ Restarting Odoo app containers..."
-          docker-compose -f docker-compose.yml -f docker-compose.staging.yml stop odoo odoo-runner || true
-          docker-compose -f docker-compose.yml -f docker-compose.staging.yml rm -f odoo odoo-runner || true
-          docker-compose -f docker-compose.yml -f docker-compose.staging.yml up -d odoo odoo-runner
+          docker-compose stop odoo odoo-runner || true
+          docker-compose rm -f odoo odoo-runner || true
+          docker-compose up -d odoo odoo-runner
 
-          if [ ! -f /opt/ssl/certbot/live/mhs-stage.doneztech.com/fullchain.pem ]; then
+          if [ ! -f /opt/ssl/certbot/live/tarotmaai.com/fullchain.pem ]; then
             echo "Bootstrapping SSL..."
-            docker-compose -f docker-compose.yml -f docker-compose.staging.yml run --rm certbot certbot certonly --webroot -w /var/www/certbot \
-              -d mhs-stage.doneztech.com --email admin@doneztech.com --agree-tos --non-interactive
+            docker-compose  run --rm certbot certbot certonly --webroot -w /var/www/certbot \
+              -d tarotmaai.com --email tarotmaai@gmail.com --agree-tos --non-interactive
             cp nginx/stage/nginx-https.conf nginx/conf.d/default.conf
-            docker-compose -f docker-compose.yml -f docker-compose.staging.yml restart nginx
+            docker-compose restart nginx
           fi
           echo "✅ Deployment complete"
           EOF
