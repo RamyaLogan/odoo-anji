@@ -86,7 +86,8 @@ jobs:
           if [ ! -f /opt/ssl/certbot/live/tarotmaai.com/fullchain.pem ]; then
             echo "Bootstrapping SSL..."
             docker-compose  run --rm certbot certbot certonly --webroot -w /var/www/certbot \
-              -d tarotmaai.com --email tarotmaai@gmail.com --agree-tos --non-interactive
+            -d tarotmaai.com -d www.tarotmaai.com \
+            --email tarotmaai@gmail.com --agree-tos --non-interactive
             cp nginx/nginx-https.conf nginx/conf.d/default.conf
             docker-compose restart nginx
           fi
