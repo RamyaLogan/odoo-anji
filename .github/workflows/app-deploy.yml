@@ -5,7 +5,7 @@ on:
   workflow_dispatch:
 
 env:
-  VPS_IP: 147.93.182.108
+  VPS_IP: 147.93.190.199
 
 jobs:
   deploy:
