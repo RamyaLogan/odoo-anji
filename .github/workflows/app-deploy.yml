@@ -52,10 +52,10 @@ jobs:
           export GIT_SSH_COMMAND="ssh -i ~/git_deploy_key -o StrictHostKeyChecking=no"
 
           cd /home
-          if [ ! -d "odoo-tarot-maai" ]; then
-          git clone git@github.com:RamyaLogan/odoo-tarot-maai.git
+          if [ ! -d "odoo-donez" ]; then
+          git clone git@github.com:RamyaLogan/odoo-donez.git
           fi
-          cd odoo-tarot-maai
+          cd odoo-donez
           git reset --hard
           git clean -fd
           git fetch origin
@@ -83,13 +83,6 @@ jobs:
           docker-compose rm -f odoo odoo-runner || true
           docker-compose up -d odoo odoo-runner
 
-          if [ ! -f /opt/ssl/certbot/live/tarotmaai.com/fullchain.pem ]; then
-            echo "Bootstrapping SSL..."
-            docker-compose  run --rm certbot certbot certonly --webroot -w /var/www/certbot \
-            -d tarotmaai.com -d www.tarotmaai.com \
-            --email tarotmaai@gmail.com --agree-tos --non-interactive
-            cp nginx/nginx-https.conf nginx/conf.d/default.conf
-            docker-compose restart nginx
-          fi
+          .init-cert.sh
           echo "✅ Deployment complete"
           EOF

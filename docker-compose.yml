@@ -29,9 +29,9 @@ services:
       db:
         condition: service_healthy
     environment:
-      - VIRTUAL_HOST=tarotmaai.com
-      - LETSENCRYPT_HOST=tarotmaai.com
-      - LETSENCRYPT_EMAIL=tarotmaai@gmail.com
+      - VIRTUAL_HOST=c.doneztech.com
+      - LETSENCRYPT_HOST=c.doneztech.com
+      - LETSENCRYPT_EMAIL=admin@doneztech.com
     ports:
       - "8069:8069"
       - "8072:8072"
