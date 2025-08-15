@@ -83,6 +83,6 @@ jobs:
           docker-compose rm -f odoo odoo-runner || true
           docker-compose up -d odoo odoo-runner
 
-          .init-cert.sh
+          bash ./init-cert.sh
           echo "✅ Deployment complete"
           EOF
