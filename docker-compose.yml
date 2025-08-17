@@ -40,6 +40,8 @@ services:
       - odoo_local:/opt/odoo/.local
       - odoo_state:/opt/odoo/.db-initialized
       - /opt/ssl:/opt/ssl
+      - ./config:/etc/odoo
+      - ./custom_addons:/opt/odoo/custom_addons
     networks:
       - odoo-net
     command: >
@@ -62,6 +64,8 @@ services:
       - odoo_local:/opt/odoo/.local
       - odoo_state:/opt/odoo/.db-initialized
       - /opt/ssl:/opt/ssl
+      - ./config:/etc/odoo
+      - ./custom_addons:/opt/odoo/custom_addons
     networks:
       - odoo-net
     command: >
