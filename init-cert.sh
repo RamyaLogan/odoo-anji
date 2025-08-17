@@ -10,7 +10,7 @@ for DOMAIN in "${DOMAINS[@]}"; do
     if [ ! -f "$CERTBOT_PATH/live/$DOMAIN/fullchain.pem" ]; then
         echo "no cert found. Bootstrapping https..."
     
-        docker-compose run --rm certbot certbot certonly --webroot -w $WEBROOT -d $DOMAIN   -d www.$DOMAIN   --email $EMAIL --agree-tos --non-interactive
+        docker-compose run --rm certbot certbot certonly --webroot -w $WEBROOT -d $DOMAIN    --email $EMAIL --agree-tos --non-interactive
              
     fi
 done
