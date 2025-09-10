@@ -5,7 +5,7 @@ on:
   workflow_dispatch:
 
 env:
-  VPS_IP: 147.93.190.199
+  VPS_IP: 89.117.76.16
 
 jobs:
   deploy:
@@ -52,10 +52,10 @@ jobs:
           export GIT_SSH_COMMAND="ssh -i ~/git_deploy_key -o StrictHostKeyChecking=no"
 
           cd /home
-          if [ ! -d "odoo-donez" ]; then
-          git clone git@github.com:RamyaLogan/odoo-donez.git
+          if [ ! -d "odoo-lumino" ]; then
+          git clone git@github.com:RamyaLogan/odoo-lumino.git
           fi
-          cd odoo-donez
+          cd odoo-lumino
           git reset --hard
           git clean -fd
           git fetch origin
