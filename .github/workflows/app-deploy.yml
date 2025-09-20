@@ -46,7 +46,7 @@ jobs:
           echo "🧹 Cleaning up Docker system to prevent space issues..."
           docker system prune -af
           docker volume prune -f
-          
+          docker network create proxy || true
           echo "${{ secrets.GIT_DEPLOY_KEY }}" > ~/git_deploy_key
           chmod 600 ~/git_deploy_key
           export GIT_SSH_COMMAND="ssh -i ~/git_deploy_key -o StrictHostKeyChecking=no"
