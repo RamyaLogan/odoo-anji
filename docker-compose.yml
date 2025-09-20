@@ -98,6 +98,7 @@ services:
     entrypoint: ""
     networks:
       - odoo-net
+      - proxy     
 
   redis:
     image: redis:7
@@ -115,3 +116,5 @@ volumes:
 networks:
   odoo-net:
     driver: bridge
+  proxy:           
+    external: true
