@@ -88,6 +88,8 @@ services:
       - /opt/ssl:/etc/letsencrypt
     networks:
       - odoo-net
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
 
   certbot:
     image: certbot/certbot
