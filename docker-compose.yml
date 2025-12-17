@@ -1,4 +1,4 @@
-version: "3.9"
+#version: "3.9"
 
 services:
   db:
@@ -46,8 +46,14 @@ services:
       - odoo-net
     command: >
       bash -c "
-        sleep 10 ;
-        exec python3 /opt/odoo/odoo-bin -c /etc/odoo/odoo.conf 
+        set -e;
+        if [ ! -f /opt/odoo/.db-initialized/initialized ]; then
+          echo 'Initializing database odoo18 (no demo)...';
+          python3 /opt/odoo/odoo-bin -c /etc/odoo/odoo.conf -d odoo18 -i base --without-demo=all;
+          touch /opt/odoo/.db-initialized/initialized;
+          echo 'Database initialized.';
+        fi;
+        exec python3 /opt/odoo/odoo-bin -c /etc/odoo/odoo.conf
       "
 
   odoo-runner:
@@ -91,16 +97,16 @@ services:
     extra_hosts:
       - "host.docker.internal:host-gateway"
 
-  certbot:
-    image: certbot/certbot
-    container_name: certbot
-    volumes:
-      - ./certbot/webroot:/var/www/certbot
-      - /opt/ssl:/etc/letsencrypt
-    entrypoint: ""
-    networks:
-      - odoo-net
-      - proxy     
+  # certbot:
+  #   image: certbot/certbot
+  #   container_name: certbot
+  #   volumes:
+  #     - ./certbot/webroot:/var/www/certbot
+  #     - /opt/ssl:/etc/letsencrypt
+  #   entrypoint: ""
+  #   networks:
+  #     - odoo-net
+  #     - proxy     
 
   redis:
     image: redis:7
@@ -118,5 +124,5 @@ volumes:
 networks:
   odoo-net:
     driver: bridge
-  proxy:           
-    external: true
+  # proxy:           
+  #   external: true
