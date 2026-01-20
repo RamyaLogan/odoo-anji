@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+  <t t-name="pos_whatsapp_after_payment.PaymentScreenUPI"
+     t-inherit="point_of_sale.PaymentScreen"
+     t-inherit-mode="extension">
+
+    <!-- desktop layout -->
+    <xpath expr="//div[hasclass('payment-summary')]" position="inside">
+      <div t-if="showUpiBlock" class="mt-2 p-3 rounded-3 bg-view border">
+        <div class="fw-bold mb-2">UPI QR Payment</div>
+
+        <div class="d-flex gap-3 align-items-start">
+          <img t-att-src="upiQrUrl"
+               style="width:160px;height:160px;border:1px solid #ddd;border-radius:8px"
+               alt="UPI QR"/>
+
+          <div class="flex-grow-1">
+
+            <button class="btn btn-success w-100"
+                    t-att-disabled="sendUpiWhatsapp.status === 'loading' or sendUpiWhatsapp.status === 'success'"
+                    t-on-click="sendUpiOnWhatsapp">
+              <t t-if="sendUpiWhatsapp.status === 'loading'">
+                <i class="fa fa-spin fa-circle-o-notch me-1"/> Sending…
+              </t>
+              <t t-elif="sendUpiWhatsapp.status === 'success'">
+                <i class="fa fa-check me-1"/> Sent on WhatsApp
+              </t>
+              <t t-else="">
+                <i class="fa fa-whatsapp me-1"/> Send payment link + QR
+              </t>
+            </button>
+
+            <div class="text-center mt-2">
+              <div t-if="sendUpiWhatsapp.status === 'error'" class="text-danger">
+                WhatsApp send failed. Please try again.
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </xpath>
+
+  </t>
+</templates>

@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <record id="view_pos_config_form_whatsapp" model="ir.ui.view">
+        <field name="name">pos.config.form.whatsapp</field>
+        <field name="model">pos.config</field>
+        <field name="inherit_id" ref="point_of_sale.pos_config_view_form"/>
+        <field name="arch" type="xml">
+            <!-- Put settings inside the existing "Payments" page (safe target) -->
+            <xpath expr="//sheet" position="inside">
+                <group string="WhatsApp Receipt">
+                    <field name="whatsapp_auto_send_receipt"/>
+                    <field name="whatsapp_receipt_message" />
+                    <field name="whatsapp_template_id"/>
+                    <field name="upi_payee_vpa" placeholder="example@bank"/>
+                    <field name="upi_payee_name" placeholder="Your Business Name"/>
+                </group>
+            </xpath>
+        </field>
+    </record>
+</odoo>

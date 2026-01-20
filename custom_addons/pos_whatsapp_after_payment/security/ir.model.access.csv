@@ -1,0 +1,3 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_pos_order_whatsapp,pos.order.whatsapp,point_of_sale.model_pos_order,base.group_user,1,1,1,0
+access_pos_config_whatsapp,pos.config.whatsapp,point_of_sale.model_pos_config,base.group_system,1,1,1,0

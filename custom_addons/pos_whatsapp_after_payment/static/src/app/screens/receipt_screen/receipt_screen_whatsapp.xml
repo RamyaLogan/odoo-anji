@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+    <!-- Extend Odoo 18 POS ReceiptScreen -->
+<t t-name="pos_whatsapp_after_payment.ReceiptScreen" t-inherit="point_of_sale.ReceiptScreen" t-inherit-mode="extension">
+        <xpath expr="//div[hasclass('o_payment_successful')]" position="inside">
+        <!-- ✅ Insert button right after the email row -->
+            <button class="btn btn-success btn-lg mt-2 w-100"
+        t-att-disabled="sendWhatsapp.status === 'loading' or sendWhatsapp.status === 'success'"
+        t-on-click="sendReceiptByWhatsapp">
+    <t t-if="sendWhatsapp.status === 'loading'">
+        <i class="fa fa-spin fa-circle-o-notch me-1"/>
+        Sending via WhatsApp…
+    </t>
+    <t t-elif="sendWhatsapp.status === 'success'">
+        <i class="fa fa-check me-1"/>
+        Sent via WhatsApp
+    </t>
+    <t t-else="">
+        <i class="fa fa-whatsapp me-1"/>
+        Send via WhatsApp
+    </t>
+</button>
+
+<!-- Optional status text (below button) -->
+<div class="text-center mt-1">
+    <div t-if="sendWhatsapp.status === 'error'" class="text-danger">
+        WhatsApp send failed. Please try again.
+    </div>
+</div>
+        </xpath>
+
+    </t>
+
+</templates>
